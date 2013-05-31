@@ -1,0 +1,41 @@
+TODO: (by Priority)
+
+komma8.komma1:
+Tasks:
+- Improve Project File support. Look at suggestions in enhancement list online/email.
+- Execution of projects to console instead of that modal popup? 
+- Add Sample plugins of each type. Zip them up and put them on sourceforge. SqlTool for document(done), CodeSmith for simple(done), new template library for conent(not yet started)
+- Keyboard shortcut to iterate through open template documents. CTRL+TAB is the standard in Windows environments but right now CTRL+TAB and CTRL-PGUP/PGDN do the same thing -- iterate trough the tabs of the current template document;
+- Keyboard shortcut to jump to the declaration or definition of an item;
+- Brace matching;
+- Code collapse/expand feature (tree-like structure in the editor with +/- signs next to collapsible code);
+- Keyboard shortcuts for code collapse/expand feature;
+- Enhanced Intellisense-like feature that shows method overloads and their signatures;
+- Keyboard shortcut for inserting predefined code snippets;
+- operation Completed message after project regen.
+- There is going to need to be some serious testing before we have a stable application again. I will start building test fixtures soon.
+
+Q/A:
+- Test in Windows Vista/Windows 7.
+- Full Application Wide Test. Build test suite?
+
+Docs/Press/Other:
+- Create more tutorial videos on youtube
+- Create new help file for MyGeneration
+- Update all API Documentation
+- A getting started guide;
+- Samples of creating custom templates;
+- More complete / contextual samples of using the ZeusCmd;
+- Usage patterns and samples in the documentation;
+- Deeper explanations / discussions of subjects, such as:
+
+- MyGeneration framework
+- Template options
+- ZeusCmd
+- DnpUtils
+- Custom mapping
+- Custom template UI
+
+K3B:
+	* interlink MyGeneration.chm <-> MyGenXsd3b.chm
+		<A HREF="ms-its:file name.chm::/topic.htm"> or mk:@MSITStore:file name.chm::/topic.htm

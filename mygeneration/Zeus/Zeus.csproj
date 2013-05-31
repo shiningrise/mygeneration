@@ -1,0 +1,418 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CE8A697D-D45C-4E60-838D-E36980227543}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Zeus</AssemblyName>
+    <AssemblyOriginatorKeyFile>Zeus.snk</AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Zeus</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <PublishUrl>http://localhost/Zeus/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.EnterpriseServices">
+      <Name>System.EnterpriseServices</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+    <ProjectReference Include="..\..\mymeta\MyMeta.csproj">
+      <Project>{72BEAB1C-B55F-4F0E-89AF-17F71E74A452}</Project>
+      <Name>MyMeta</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EngineInterface\PluginInterfaces.csproj">
+      <Name>PluginInterfaces</Name>
+      <Project>{61B369D1-95DD-4158-9F30-2E051CEB9D50}</Project>
+      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
+    <COMReference Include="MSScriptControl">
+      <Guid>{0E59F1D2-1FBE-11D0-8FF2-00A0D10038BC}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="Scripting">
+      <Guid>{420B2830-E718-11CF-893D-00A0C9054228}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Configuration\ZeusConfig.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ContextPreprocessors\DefaultContextProcessor.cs" />
+    <Compile Include="Data\SimpleColumn.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\SimpleColumnCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\SimpleRow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\SimpleRowCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\SimpleTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\SimpleTableTools.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DotNetScriptEngine\DotNetScriptCodeParser.cs" />
+    <Compile Include="DotNetScriptEngine\DotNetScriptEngine.cs" />
+    <Compile Include="DotNetScriptEngine\DotNetScriptError.cs" />
+    <Compile Include="DotNetScriptEngine\DotNetScriptExecutioner.cs" />
+    <Compile Include="DotNetScriptEngine\_DotNetScriptGui.cs" />
+    <Compile Include="DotNetScriptEngine\_DotNetScriptTemplate.cs" />
+    <Compile Include="MicrosoftScriptEngine\MicrosoftScriptCodeParser.cs" />
+    <Compile Include="MicrosoftScriptEngine\MicrosoftScriptEngine.cs" />
+    <Compile Include="MicrosoftScriptEngine\MicrosoftScriptError.cs" />
+    <Compile Include="MicrosoftScriptEngine\MicrosoftScriptExecutioner.cs" />
+    <Compile Include="ErrorHandling\ZeusRuntimeException.cs" />
+    <Compile Include="ErrorHandling\ZeusDynamicException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ErrorHandling\ZeusException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ErrorHandling\ZeusExecutionException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ErrorHandling\ZeusParseException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Legacy\LegacyTemplateParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Projects\ZeusModule.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Projects\ZeusModuleCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Projects\ZeusProject.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SavedInput\InputItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SavedInput\InputItemCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SavedInput\SavedTemplateInput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SavedInput\SavedTemplateInputCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SavedInput\ZeusSavedInput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serializers\CollectionSerializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serializers\MasterSerializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serializers\SerializeHashtable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serializers\SerializeIList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serializers\SerializeSimpleTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serializers\MyMeta\IColumnSerializer.cs" />
+    <Compile Include="Serializers\MyMeta\IDatabaseSerializer.cs" />
+    <Compile Include="Serializers\MyMeta\IProcedureSerializer.cs" />
+    <Compile Include="Serializers\MyMeta\ITableSerializer.cs" />
+    <Compile Include="Serializers\MyMeta\IViewSerializer.cs" />
+    <Compile Include="Serializers\MyMeta\MyMetaSerializer.cs" />
+    <Compile Include="UserInterface\GuiButton.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiCheckBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiCheckBoxList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiComboBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiController.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiDataBinder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiFilePicker.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiLabel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiListBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\GuiTextBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiButton.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiCheckBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiCheckBoxList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiComboBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiController.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiFilePicker.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiGrid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiLabel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiListBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiListControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiTextBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\Interfaces\IGuiBindableListControl.cs" />
+    <Compile Include="UserInterface\WinForms\DynamicForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserInterface\WinForms\FormBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\WinForms\ILogger.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserInterface\WinForms\ZeusDisplayError.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Utilities\DynamicAssemblyTools.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\FileTools.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\HttpTools.cs" />
+    <Compile Include="Utilities\WindowsTools.cs" />
+    <Compile Include="ZeusCodeParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusCodeSegment.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusEncryption.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusExecutioner.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusInput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusIntrinsicObject.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusSimpleLog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusTemplate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusTemplateHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusTemplateParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZeusWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <None Include="Zeus.chm" />
+    <None Include="Zeus.snk" />
+    <EmbeddedResource Include="Configuration\DefaultZeusConfig.xml" />
+    <EmbeddedResource Include="UserInterface\WinForms\DynamicForm.resx">
+      <DependentUpon>DynamicForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserInterface\WinForms\ZeusDisplayError.resx">
+      <DependentUpon>ZeusDisplayError.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 和 x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

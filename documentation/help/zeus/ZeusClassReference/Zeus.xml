@@ -1,0 +1,1854 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Zeus</name>
+    </assembly>
+    <members>
+        <member name="T:Zeus.ZeusOutput">
+            <summary>
+            The ZeusOutput object is only available in the template code segment and is very much like a 
+            StringBuilder. It contains methods that allow the developer to manipulate the current output buffer. 
+            </summary>
+            <remarks>
+            The ZeusOutput is simply an output buffer. It's primary methods are <see cref="M:Zeus.ZeusOutput.write(System.String)">write()</see> and 
+            <see cref="M:Zeus.ZeusOutput.writeln(System.String)">writeln()</see>, which naturally
+            append string data to the buffer. Using the save and append methods, the buffer can be saved to disk.
+            Code preservation is also supported using the ZeusOutput object. The two methods that enable code preservation 
+            are <see cref="M:Zeus.ZeusOutput.setPreserveSource(System.String,System.String,System.String)">setPreserveSource()</see>, <see cref="M:Zeus.ZeusOutput.preserve(System.String)">preserve()</see>, <see cref="M:Zeus.ZeusOutput.getPreservedData(System.String)">getPreservedData()</see>, 
+            and <see cref="M:Zeus.ZeusOutput.getPreserveBlock(System.String)">getPreserveBlock()</see>. The <see cref="M:Zeus.ZeusOutput.preserve(System.String)">preserve()</see> method
+            writes directly to the output stream where the <see cref="M:Zeus.ZeusOutput.getPreserveBlock(System.String)">getPreserveBlock()</see> returns the entire preserve block as a string.
+            You can then write that string to the output buffer manually. The <see cref="M:Zeus.ZeusOutput.getPreservedData(System.String)">getPreservedData()</see> method returns the data inside the
+            preserve block without the preserve tags.
+            </remarks>
+            <example>
+            Saving the buffer to disk, replacing an existing file: (JScript)
+            <code>
+            var filename = "c:\testfile.txt";
+            output.write("Hello World!");
+            output.save(filename, "o");
+            </code>
+            </example>
+            <example>
+            Backing up an existing file before overwriting: (JScript)
+            <code>
+            var filename = "c:\testfile.txt";
+            output.write("Hello World!");
+            output.save(filename, "b");
+            </code>
+            </example>
+            <example>
+            Append the buffer to an existing file before overwriting: (JScript)
+            <code>
+            var filename = "c:\testfile.txt";
+            output.write("Hello World!");
+            output.save(filename, "a");
+            </code>
+            </example>
+            <example>
+            Save the buffer to an new file with no overwrite (if the file exists, nothing will happen): (JScript)
+            <code>
+            var filename = "c:\testfile.txt";
+            output.write("Hello World!");
+            output.save(filename, "d");
+            </code>
+            </example>
+            <example>
+            Preserving a region the buffer to an existing file before overwriting: (JScript)
+            <code>
+            // The Template Code
+            var filename = "c:\testfile.txt";
+            output.setPreserveSource(filePath, "/*::", "::*/"); 
+            output.write("Hello World!");
+            output.preserve("myCustomProperties");
+            output.write("Hello World Again!");
+            output.save(filename, "o");
+            </code>
+            The existing file before template execution: "c:\testfile.txt"
+            <code>
+            Hello World!
+            /*::PRESERVE_BEGIN myCustomProperties::*/ 
+            preserved data here
+            /*::PRESERVE_END myCustomProperties::*/ 
+            Hello World Again!
+            </code>
+            Note that the preserved data is between the PRESERVE_BEGIN and PRESERVE_END tags. 
+            When you set the preserve source, the start and end tags for the PRESERVE tags
+            are defined; is this case, it's "/*::" and "::*/".
+            </example>
+        </member>
+        <member name="M:Zeus.ZeusOutput.#ctor">
+            <summary>
+            Creates a new ZeusOutput object.
+            </summary>
+        </member>
+        <member name="M:Zeus.ZeusOutput.write(System.String)">
+            <summary>
+            Writes the inputed string, text, to the output buffer.
+            </summary>
+            <param name="text">A string to write to the output buffer</param>
+        </member>
+        <member name="M:Zeus.ZeusOutput.writeln(System.String)">
+            <summary>
+            Writes the inputed string, text, to the output buffer followed by a newline.
+            </summary>
+            <param name="text">A string to write to the output buffer</param>
+        </member>
+        <member name="M:Zeus.ZeusOutput.autoTab(System.String)">
+            <summary>
+            Writes the inputed string, text, to the output buffer, prepended with the number of
+            tabs specified by the tabLevel property.
+            </summary>
+            <param name="text">A string to write to the output buffer</param>
+        </member>
+        <member name="M:Zeus.ZeusOutput.autoTabLn(System.String)">
+            <summary>
+            Writes the inputed string, text, to the output buffer followed by a newline, 
+            prepended with the number of
+            tabs specified by the tabLevel property.
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="M:Zeus.ZeusOutput.incTab">
+            <summary>
+            Increments the tabLevel property.
+            </summary>
+        </member>
+        <member name="M:Zeus.ZeusOutput.decTab">
+            <summary>
+            Decrements the tabLevel property.
+            </summary>
+        </member>
+        <member name="M:Zeus.ZeusOutput.clear">
+            <summary>
+            Clears the output buffer.
+            </summary>
+        </member>
+        <member name="M:Zeus.ZeusOutput.append(System.String)">
+            <summary>
+            Save the current buffer to a file at path. If the file exists, append to the file.
+            </summary>
+            <param name="path">The path of the file to append to.</param>
+        </member>
+        <member name="M:Zeus.ZeusOutput.saveEnc(System.String,System.Object,System.Object)">
+             <summary>
+             Save the current buffer to a file at path. If the file exists, 
+             backup the existing file (by renaming it) and replace it. 
+            <code>
+            output.save(filename, "d", "ascii"); // Save only if file doesn't exists
+            output.save(filename, "o", "utf7"); // Overwrite
+            output.save(filename, "b", "unicode"); // Backup and overwrite
+            output.save(filename, "a", "utf8"); // Append
+            </code>
+             </summary>
+             <param name="path">The path of the file to write to.</param>
+             <param name="action">
+             "d" or "default" saves the file if it doesn't exist, 
+             "o" or "overwrite" saves the file even if it has to overwrite, 
+             "b" or "backup" backs up the existing file before overwriting it,
+             "a" or "append" appends to the end of the current file if it exists,
+             true or false for backup or overwrite (for legacy support)</param>
+             <param name="encoding">
+             The encoding object or a string value ("utf8", "utf7", "ascii", "unicode", "bigendianunicode").
+            </param>
+        </member>
+        <member name="M:Zeus.ZeusOutput.setPreserveSource(System.String,System.String,System.String)">
+            <summary>
+            The file at the path parameter will be opened up and all PRESERVE blocks will be loaded
+            and kept for use in this ZeusOutput object. The preserve(key) method can be used to get
+            preserved code segments by it's key parameter.
+            </summary>
+            <param name="path">A path to the file that contains code segments that are to be preserved.</param>
+            <param name="prefix">Prefix to the PRESERVE_BEGIN tag.</param>
+            <param name="suffix">Suffix to the PRESERVE_END tag.</param>
+        </member>
+        <member name="M:Zeus.ZeusOutput.preserve(System.String)">
+            <summary>
+            If the setPreserveSource(targetFile, prefex, suffix) function was called, all of the custom code from
+            the targetFile is stored in the ZeusOutput object. When the preserve method is called, the code
+            segment that correlates to the key parameter is written to the output buffer surrounted by the appropriate preserve tags.
+            </summary>
+            <param name="key">The key that identifies the desired code segment</param>
+        </member>
+        <member name="M:Zeus.ZeusOutput.getPreservedData(System.String)">
+            <summary>
+            This function returns the preserved data (without the preserve tags) that corresponds to the key parameter.
+            </summary>
+            <param name="key">The key that identifies the desired code segment</param>
+            <returns>The preserved data that corresponds to the key parameter</returns>
+        </member>
+        <member name="M:Zeus.ZeusOutput.getPreserveBlock(System.String)">
+            <summary>
+            This function returns the preserved data with the preserve tags that corresponds to the key parameter.
+            </summary>
+            <param name="key">The key that identifies the desired code segment</param>
+            <returns>The preserved data with the preserve tags.</returns>
+        </member>
+        <member name="P:Zeus.ZeusOutput.tabLevel">
+            <summary>
+            The tabLevel property is the number of tabs that are prepended to outputted text 
+            when using the autoTab and autoTabLn methods.
+            </summary>
+        </member>
+        <member name="P:Zeus.ZeusOutput.text">
+            <summary>
+            Sets or gets the current output buffer.
+            </summary>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiComboBox">
+             <summary>
+             A ComboBox control. You can bind ArrayList, NameValueCollection, and Hashtable objects to the GuiComboBox 
+             along with IEnumerable objects with both ItemName and ItemValue properties (using reflection). You can trap 
+             the onchange event and trigger an event handler as well. 
+             </summary>
+             <remarks>
+             A ComboBox control. You can bind ArrayList, NameValueCollection, and Hashtable objects to the GuiComboBox 
+             along with IEnumerable objects with both ItemName and ItemValue properties (using reflection). You can trap 
+             the onchange event and trigger an event handler as well. 
+             </remarks>
+             <example>
+             Binding the MyMeta collection to the GuiComboBox (jscript)
+             <code>
+             var db = MyMeta.Databases.Item(sDatabaseName);
+             
+             var cmbTables = ui.AddComboBox("cmbTables", "Select tables.");
+             cmbTables.BindData(db.Tables);
+             cmbTables.AttachEvent("onchange", "cmbTables_onchange");
+             </code>
+             </example>
+             <example>
+             Binding an ArrayList the GuiComboBox (csharp). Note: The ArrayList index is bound to the item value.
+             <code>
+             GuiComboBox cmbFruit = ui.AddComboBox("cmbFruit", "Select fruit:");
+              
+             ArrayList al = new ArrayList();
+             al.Add("Apples");
+             al.Add("Oranges");
+             al.Add("Pears");
+             
+             cmbFruit.BindData(al);
+             </code>
+             </example>
+             <example>
+             Selecting an item in a GuiComboBox (jscript)
+             <code>
+             var db = MyMeta.Databases.Item(sDatabaseName);
+             
+             var cmbTables = ui.AddComboBox("cmbTables", "Select tables.");
+             cmbTables.BindData(db.Tables);
+            
+             // Selecting an item
+             cmbTables.SelectedValue = "tblStuff";
+             
+             // Another way to select an item
+             cmbTables.Select("tblItems");
+             </code>
+             </example>
+             <example>
+             Manually adding Items to the GuiComboBox (CSharp)
+             <code>
+             GuiComboBox cmbVeggies = ui.AddComboBox("cmbVeggies", "Select veggies.");
+             cmbVeggies["a"] = "Asparagus";
+             cmbVeggies["c"] = "Carrot";
+             cmbVeggies["t"] = "Tomato";
+             </code>
+             </example>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiControl">
+            <summary>
+            Each of the supported controls (GuiController, GuiTextbox, GuiComboBox, GuiLabel, GuiButton, etc) 
+            inherit from GuiControl.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiControl.AttachEvent(System.String,System.String)">
+            <summary>
+            Attaches the functionName to the eventType event.  
+            The GuiFilePicker supports the onselect event.
+            </summary>
+            <param name="eventType">The type of event to attach.</param>
+            <param name="functionName">Name of the function to be called when the event fires.
+            The functionName should have the signature in the Gui code: 
+            "eventHandlerFunctionName(GuiFilePicker control)"</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiControl.HasEventHandlers(System.String)">
+            <summary>
+            This returns true if there are any event handlers for the passed in eventType.
+            </summary>
+            <param name="eventType">The type of event to check for.</param>
+            <returns>Returns true if there are any event handlers of the given type.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiControl.GetEventHandlers(System.String)">
+            <summary>
+             This returns all of the event handler functions that have been assigned 
+             to this object for the passed in eventType. 
+            </summary>
+            <param name="eventType">The type of event to return function names for.</param>
+            <returns>All of the event handler functions that have been assigned 
+             to this object for the given eventType</returns>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.ID">
+            <summary>
+            Sets or gets the controls ID.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.IsDataControl">
+            <summary>
+            If this control stores input data, this will be true.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.ToolTip">
+            <summary>
+            Sets or gets the controls tooltip.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.Visible">
+            <summary>
+            The control is invisible if this is false.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.Enabled">
+            <summary>
+            True if enabled, false if disabled.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.ForeColor">
+            <summary>
+            Sets or gets the controls ForeColor.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.BackColor">
+            <summary>
+            Sets or gets the controls BackColor.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.Value">
+            <summary>
+            Returns the value of the control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.Width">
+            <summary>
+            Sets or gets the width of the control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.Height">
+            <summary>
+            Sets or gets the height of the control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.Top">
+            <summary>
+            Sets or gets the top coordinate of the control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.Left">
+            <summary>
+            Sets or gets the left coordinate of the control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiControl.TabStripIndex">
+            <summary>
+            The tabstrip index this tab is assigned to
+            </summary>
+        </member>
+        <member name="T:Zeus.UserInterface.IGuiListControl">
+            <summary>
+            A generic interface shared by controls that hold a collection of data that can be bound to.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.#ctor">
+            <summary>
+            Creates a new instance of a GuiComboBox control.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.IndexOf(System.String)">
+            <summary>
+            Returns the index of the given value. If it's nor found, it returns -1.
+            </summary>
+            <param name="val">An item value.</param>
+            <returns>The index of the given value. If it's nor found, it returns -1.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.GetValueAtIndex(System.Int32)">
+            <summary>
+            Gets the value at the given index
+            </summary>
+            <param name="index">The item index.</param>
+            <returns>The item value at the passed in index</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.GetTextAtIndex(System.Int32)">
+            <summary>
+            Returns the item text at the passed in index.
+            </summary>
+            <param name="index">The item index.</param>
+            <returns>The item text at the passed in index</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.Add(System.String,System.String)">
+            <summary>
+            Adds a new item to the ComboBox
+            </summary>
+            <param name="val">The item value or key</param>
+            <param name="text">The item text.</param>
+            <returns>The index at which the value was added.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.Contains(System.String)">
+            <summary>
+            Returns true if the specified value is in this control
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.IsSelectedAtIndex(System.Int32)">
+            <summary>
+            Returns true is the item at the given index is selected.
+            </summary>
+            <param name="index">The items index.</param>
+            <returns>Returns true is the item at the given index is selected.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.SelectAtIndex(System.Int32)">
+            <summary>
+            Selects the item and the given index
+            </summary>
+            <param name="index">The items index.</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.Select(System.String)">
+            <summary>
+            Selects the item with the specified value
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.Clear">
+            <summary>
+            Removes all list items from the combobox.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.BindData(System.Object)">
+            <summary>
+            Binds a DataSource (ArrayList, Hashtable, NameValueCollection) to this GuiListBox. 
+            Will also bind data from any object that implements IEnumerable and has properties
+            named "ItemName" and "ItemValue".
+            </summary>
+            <param name="dataSource">The data source object.</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.BindDataFromTable(System.Object,System.String,System.String)">
+            <summary>
+            Binds a DataTable (dataSource) to the ComboBox. The valueField 
+            will be bound the the value of each list item, and the textField 
+            will be bound to the visible text of each list item.
+            </summary>
+            <param name="dataSource">The source DataTable to bind to the GuiComboBox</param>
+            <param name="valueField">Identifies the column to pull the list items value from.</param>
+            <param name="textField">Identifies the column to pull the list items text from.</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.AttachEvent(System.String,System.String)">
+            <summary>
+            Attaches the functionName to the eventType event.  
+            The GuiComboBox supports the onchange event.
+            </summary>
+            <param name="eventType">The type of event to attach.</param>
+            <param name="functionName">Name of the function to be called when the event fires.
+            The functionName should have the signature in the Gui code: 
+            "eventHandlerFunctionName(GuiComboBox control)"</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.HasEventHandlers(System.String)">
+            <summary>
+            This returns true if there are any event handlers for the passed in eventType.
+            </summary>
+            <param name="eventType">The type of event to check for.</param>
+            <returns>Returns true if there are any event handlers of the given type.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiComboBox.GetEventHandlers(System.String)">
+            <summary>
+             This returns all of the event handler functions that have been assigned 
+             to this object for the passed in eventType. 
+            </summary>
+            <param name="eventType">The type of event to return function names for.</param>
+            <returns>All of the event handler functions that have been assigned 
+             to this object for the given eventType</returns>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiComboBox.Value">
+            <summary>
+            Returns the text of the selected value.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiComboBox.Item(System.String)">
+            <summary>
+            Returns the Text for the item with the given val.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiComboBox.Items">
+            <summary>
+            The NameValueCollection containing all of the items displayed in the GuiComboBox
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiComboBox.Sorted">
+            <summary>
+            If set to true, the combobox is sorted.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiComboBox.Count">
+            <summary>
+            The item count.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiComboBox.SelectedIndex">
+            <summary>
+            The first selected index of this list control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiComboBox.SelectedIndeces">
+            <summary>
+            The selected indeces of this list control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiComboBox.SelectedText">
+            <summary>
+            Returns the text of the selected item.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiComboBox.SelectedValue">
+            <summary>
+            Returns the text of the selected value.
+            </summary>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiGrid">
+            <summary>
+            A Grid input control for attaining a table of input from the user. 
+            </summary>
+            <remarks>
+            A Grid input control for attaining a table of input from the user. A SimpleTable class
+            can be used to bind custom data to the grid. Other classes, such as DataTables and MyMeta collections 
+            cas also be bound to the grid. In the sample code below, the default DataSource object, a SimpleTable,
+            is being populated with names and addresses. A SimpleTable object can also be instatiated by calling
+            input.CreateSimpleTable().
+            </remarks>
+            <example>
+            Adding the GuiGrid to the GuiController (jscript)
+            <code>
+            	var grid = ui.AddGrid("grid", "Enter some names and addresses!");
+            	grid.Height = 150;
+            	var table = grid.DataSource;
+            	table.Columns.Add("FirstName");
+            	table.Columns.Add("LastName");
+            	table.Columns.Add("Address");
+            	table.Rows.Item(0).Item(0) = "Justin";
+            	table.Rows.Item(0).Item(1) = "Greenwood";
+            	table.Rows.Item(0).Item(2) = "1111 Cordon Drive";
+            	var row = table.Rows.Add();
+            	row.Item("FirstName") = "Jeremy";
+            	row.Item("LastName") = "Smith";
+            	row.Item("Address") = "12345 Test Way";
+            </code>
+            </example>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiGrid.#ctor">
+            <summary>
+            Creates a new instance of a GuiGrid control.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiGrid.BindData(System.Object)">
+            <summary>
+            Binds a DataSource to this GuiGrid. Binding supports SimpleTables, DataTables, DataViews, and other IEnumerable classes.
+            </summary>
+            <param name="dataSource">The data source object to bind.</param>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiGrid.Value">
+            <summary>
+            Returns the SimpleTable that contains the grids data
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiGrid.Height">
+            <summary>
+            Sets or gets the height of the control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiGrid.DataSource">
+            <summary>
+            Returns the SimpleTable that contains the grids data
+            </summary>
+        </member>
+        <member name="T:Zeus.Data.SimpleTable">
+            <summary>
+            The SimpleTable class is a script friendly, serializable, tablular data structure that
+            is made for MyGeneration DataBinding. The GuiGrid control can bind to a SimpleTable, and 
+            because it's serializable, it can be saved into zeus project files.
+            </summary>
+        </member>
+        <member name="M:Zeus.Data.SimpleTable.#ctor">
+            <summary>
+            Creates a new SimpleTable
+            </summary>
+        </member>
+        <member name="P:Zeus.Data.SimpleTable.Rows">
+            <summary>
+            A collection of SimpleRows
+            </summary>
+        </member>
+        <member name="P:Zeus.Data.SimpleTable.Columns">
+            <summary>
+            A collection of SimpleColumns
+            </summary>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiController">
+             <summary>
+             The ui object is only available in the user interface block of the template. 
+             This object is very similar to a form object in Windows programming. Controls 
+             are added to a collection of controls and a simple auto-layout algorithm is 
+             applied. You can customize the layout of the form by editing each of the 
+             control's top, left, width, and height properties. 
+             </summary>
+             <remarks>
+             The GuiController is an object that generically describes a graphical user interface. 
+             It is used along to gather input from the user for use in the template body. For example,
+             You may want to gather a table's name and a tablespace name for the generation
+             of a data-access object or stored procedure. Below are some examples showing how the
+             GuiController can be used in the setup function of the interface code segment.
+             </remarks> 
+             <example>
+            	VBScript sample of the GuiController (ui)
+            	<code>
+             ui.Title = "Template Form Title Here"
+             ui.Width  = 330
+             ui.Height = 420
+            
+             ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+             ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+             ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+             ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+            
+             Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+             cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+             
+             ui.AddLabel "lblTables", "Select tables:", "Select tables from the listbox below."
+             Set lstTables = ui.AddListBox ("lstTables", "Select tables:")
+             lstTables.Height = 150
+             </code>
+             </example>
+             <example>
+            	JScript sample of the GuiController (ui)
+            	<code>
+             ui.Title = "Template Form Title Here"
+             ui.Width = 350;
+             ui.Height = 420;
+            
+             var lblError = ui.AddLabel("lblError", "", "");
+             lblError.ForeColor = "Red";
+            
+             ui.AddLabel("lblPath", "Select the output path:", "Select the output path in the field below.");
+             ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+             ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+             ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+            
+             var cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.");
+             cmbDatabases.AttachEvent("onchange", "cmbDatabases_onchange");
+            
+             ui.AddLabel("lblTables", "Select tables:", "Select tables from the listbox below.");
+             var lstTables = ui.AddListBox("lstTables", "Select tables.");
+             lstTables.Height = 150;
+             </code>
+             </example>
+             <example>
+            	C# sample of the GuiController (ui)
+            	<code>
+             ui.Title = "Template Form Title Here";
+             ui.Width = 340;
+             ui.Height = 420;
+            
+             GuiLabel lblError = ui.AddLabel("lblError", "", "");
+             lblError.ForeColor = "Red";
+            
+             ui.AddLabel("lblPath", "Select the output path:", "Select the output path in the field below.");
+             ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+             ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+            
+             ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+             GuiComboBox cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.");
+             cmbDatabases.AttachEvent("onchange", "cmbDatabases_onchange");
+            
+             ui.AddLabel("lblTables", "Select tables:", "Select tables from the listbox below.");
+             GuiListBox lstTables = ui.AddListBox("lstTables", "Select tables.");
+             lstTables.Height = 80;
+            
+             ui.AddLabel("lblViews", "Select view:", "Select views from the listbox below.");
+             GuiListBox lstViews = ui.AddListBox("lstViews", "Select views.");
+             lstViews.Height = 80;
+             </code>
+             </example>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.#ctor">
+            <summary>
+            Creates a new GuiController object.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddGuiControl(Zeus.UserInterface.IGuiControl)">
+            <summary>
+            Adds a GuiControl to the GuiController collection.
+            </summary>
+            <param name="control">A control to add to the form.</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddLabel(System.String,System.String,System.String)">
+            <summary>
+            Adds a GuiLabel to the GuiController collection.
+            </summary>
+            <param name="id">The id of this new control</param>
+            <param name="text">The visible text of the label</param>
+            <param name="tooltip">The mouseover tooltip of the label</param>
+            <returns>The newly created label.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddCheckBox(System.String,System.String,System.Boolean,System.String)">
+            <summary>
+            Adds a GuiCheckBox to the form control collection.
+            </summary>
+            <param name="id">The id of this control</param>
+            <param name="text">The visible text of the checkbox</param>
+            <param name="isChecked">Set to true if the checkbix is to be checked by default.</param>
+            <param name="tooltip">The mouseover text of this control</param>
+            <returns>The newly created control.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddButton(System.String,System.String,System.String)">
+            <summary>
+            Adds a GuiButton to the form control collection.
+            </summary>
+            <param name="id">The id of this control</param>
+            <param name="text">The visible text of the control</param>
+            <param name="tooltip">The mouseover text of this control</param>
+            <returns>The newly created control.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddFilePicker(System.String,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Adds a GuiFilePicker to the form control collection.
+            </summary>
+            <param name="id">The id of this control</param>
+            <param name="text">The visible text of this control</param>
+            <param name="tooltip">The mouseover text of this control</param>
+            <param name="targetcontrol">The target control (textbox) that will hold the file path.</param>
+            <param name="picksFolder">If this is true, this FilePicker will actually pick a folder. 
+            Otherwise, the FilePicker will pick a file.</param>
+            <returns>The newly created control.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddOkButtonIfNonExistant">
+            <summary>
+            Adds a GuiButton to the form control collection that will close the form if 
+            it's not already there.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddOkButton(System.String,System.String,System.String)">
+            <summary>
+            Adds a GuiButton to the form control collection that will close the form.
+            </summary>
+            <param name="id">The id of this control</param>
+            <param name="text">The visible text of this control</param>
+            <param name="tooltip">The mouseover text of this control</param>
+            <returns>The newly created control.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddTextBox(System.String,System.String,System.String)">
+            <summary>
+            Adds a GuiTextBox to the form control collection.
+            </summary>
+            <param name="id">The id of this control</param>
+            <param name="text">The visible text of this control</param>
+            <param name="tooltip">The mouseover text of this control</param>
+            <returns>The newly created control.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddComboBox(System.String,System.String)">
+            <summary>
+            Adds a GuiComboBox to the form control collection.
+            </summary>
+            <param name="id">The id of this control</param>
+            <param name="tooltip">The mouseover text of this control</param>
+            <returns>The newly created control.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddListBox(System.String,System.String)">
+            <summary>
+            Adds a GuiListBox to the form control collection.
+            </summary>
+            <param name="id">The id of this control</param>
+            <param name="tooltip">The mouseover text of this control</param>
+            <returns>The newly created control.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddGrid(System.String,System.String)">
+            <summary>
+            Adds a GuiGrid to the form control collection.
+            </summary>
+            <param name="id">The id of this control</param>
+            <param name="tooltip">The mouseover text of this control</param>
+            <returns>The newly created control.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddCheckBoxList(System.String,System.String)">
+            <summary>
+            Adds a GuiCheckBoxList to the form control collection.
+            </summary>
+            <param name="id">The id of this control</param>
+            <param name="tooltip">The mouseover text of this control</param>
+            <returns>The newly created control.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.GetEnumerator">
+            <summary>
+            Returns an enumerator for all of the controls that have been added to this object.
+            </summary>
+            <returns>Returns the enumerator for this object.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AttachEvent(System.String,System.String)">
+            <summary>
+            Attaches an event to the GuiController. The GuiController supports the onclose event.
+            </summary>
+            <param name="eventType">The name of the event (onclose)</param>
+            <param name="functionName">The event handler function that handles this 
+            event. The functionName should have the signature in the Gui code: 
+            "eventHandlerFunctionName(GuiController control)"</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.HasEventHandlers(System.String)">
+            <summary>
+            Returns true if there are any event handlers attached for this event.
+            </summary>
+            <param name="eventType">The event type to check out.</param>
+            <returns>Returns true if there are any of this type of event handler.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.GetEventHandlers(System.String)">
+            <summary>
+            Returns the event handler function names for a specific event type in a string array.
+            </summary>
+            <param name="eventType">The event type</param>
+            <returns>Returns the event handler function names</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiController.AddTab(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="tabText"></param>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.Item(System.String)">
+            <summary>
+            Returns the GuiControl that correlates to the string indexer.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.Defaults">
+            <summary>
+            This stores a set of default values for the controls to use
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.ForceDisplay">
+            <summary>
+            If this flag is set, we force the GUI to display.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.DoesOkButtonExist">
+            <summary>
+            Returns true if the OK button exists already
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.Width">
+            <summary>
+            Sets or gets the width of the form.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.Height">
+            <summary>
+            Sets or gets the height of the form.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.StartPosition">
+            <summary>
+            Sets or gets the start position of the form. Options include: Manual (default), CenterParent, CenterScreen, DefaultLocation, DefaultBounds
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.Title">
+            <summary>
+            Sets or gets the title of the form.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.Value">
+            <summary>
+            Returns the title of the form.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.TabNames">
+            <summary>
+            Returns the names of all the tabs
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.ShowGui">
+            <summary>
+            When set to true, the Gui will be displayed before redering the template. 
+            If false, it will not display the form and jump directly to the template code.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiController.IsCanceled">
+            <summary>
+            If the Gui was cancelled, (Upper right-hand red X was checked) return true.
+            </summary>
+        </member>
+        <member name="T:Zeus.ZeusInput">
+            <summary>
+            The ZeusInput object contains key/value pairs with any input provided by either the interface 
+            code segment, or the application. 
+            </summary>
+            <remarks>
+            The ZeusInput object is a data container, similar to a hashtable, that contains all of the input 
+            data for use in the template code. Along with the user supplied input, it contains application 
+            variables. The application variables MyGeneration populates before executing a template are the following:
+            <list type="table">
+            <item><term>__version</term><description>The MyGeneration Application Version.</description></item>
+            <item><term>__defaultTemplatePath</term><description>The location of templates that should be displayed in the template browser.</description></item>
+            <item><term>__defaultOutputPath</term><description>The default output path.</description></item>
+            <item><term>__dbDriver</term><description>The default database driver.</description></item>
+            <item><term>__dbConnectionString</term><description>The default database connection string.</description></item>
+            <item><term>__domainOverride</term><description>True or false based on the Domain Override setting in the default Application Settings.</description></item>
+            <item><term>__dbTarget</term><description>The selected DB Target</description></item>
+            <item><term>__dbTargetMappingFileName</term><description>The DB Targets file path.</description></item>
+            <item><term>__dbLanguageMappingFileName</term><description>The Language Mapping file path.</description></item>
+            <item><term>__language</term><description>The selected language.</description></item>
+            <item><term>__userMetaDataFileName</term><description>The User Meta-Data file path.</description></item>	/// </list>
+            The same instance of the ZeusInput object remains in the template context through both the Interface Code Segment 
+            and Template Body segment. 
+            </remarks>
+            <example>
+            VBScript:
+            <code>
+            Dim databaseName 
+            Dim tableNames
+            databaseName = input.Item("cmbDatabase")
+            Set tableNames = input.Item("lstTables")
+            </code>
+            </example>
+            <example>
+            JScript:
+            <code>
+            var databaseName = input.Item("cmbDatabase"); 
+            var tablenames = input.Item("lstTables"); 
+            </code>
+            </example>
+            <example>
+            CSharp:
+            <code>
+            string databaseName = input["cmbDatabase"].ToString(); 
+            ArrayList tablenames = input["lstTables"] as ArrayList; 
+            </code>
+            </example>
+        </member>
+        <member name="M:Zeus.ZeusInput.#ctor">
+            <summary>
+            Creates a new ZeusInput object.
+            </summary>
+        </member>
+        <member name="M:Zeus.ZeusInput.Remove(System.Object)">
+            <summary>
+            Removes the item that belongs to the passed in key.
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:Zeus.ZeusInput.Contains(System.Object)">
+            <summary>
+            Returns true if the passed in key exists.
+            </summary>
+            <param name="key"></param>
+            <returns>True if the passed in key exists.</returns>
+        </member>
+        <member name="M:Zeus.ZeusInput.AddItems(System.Object)">
+            <summary>
+            Adds all of the items from the passed in collection.
+            Supported collection types are, for example, HashTable, GuiController, and NameValueCollection
+            </summary>
+            <param name="collection"></param>
+        </member>
+        <member name="M:Zeus.ZeusInput.ContainsKeys(System.Object[])">
+            <summary>
+            Returns true if the array of keys all exist in the ZeusInput hash
+            </summary>
+        </member>
+        <member name="M:Zeus.ZeusInput.CreateSimpleTable">
+            <summary>
+            Returns a new instance of a serializable SimpleTable collection.
+            </summary>
+            <returns>A new instance of a serializable SimpleTable collection.</returns>
+        </member>
+        <member name="P:Zeus.ZeusInput.Item(System.String)">
+            <summary>
+            Sets or retrieves the item that belongs to the passed in key.
+            </summary>
+        </member>
+        <member name="P:Zeus.ZeusInput.Keys">
+            <summary>
+            Returns an ICollection of all the keys from the ZeusInput hash
+            </summary>
+        </member>
+        <member name="P:Zeus.ZeusInput.Values">
+            <summary>
+            Returns an ICollection of all the values from the ZeusInput hash
+            </summary>
+        </member>
+        <member name="P:Zeus.ZeusInput.__Variables">
+            <summary>
+            
+            </summary>
+            <exclude/>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiButton">
+            <summary>
+            A Button input control used to trigger click events on the form. 
+            </summary>
+            <remarks>
+            A Button input control used to trigger click events on the form. 
+            </remarks>
+            <example>
+            Attaching the onclick event (jscript)
+            <code>
+            var btnTest = ui.AddButton("btnTest", "Execute Test", "Execute Test Click?");
+            btnTest.AttachEvent("onclick", "btnTest_onclick");
+            </code>
+            </example>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiButton.#ctor">
+            <summary>
+            Creates a new instance of a GuiButton control.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiButton.AttachEvent(System.String,System.String)">
+            <summary>
+            Attaches the functionName to the eventType event.  
+            The GuiButton supports the onclick event.
+            </summary>
+            <param name="eventType">The type of event to attach.</param>
+            <param name="functionName">Name of the function to be called when the event fires.
+            The functionName should have the signature in the Gui code: 
+            "eventHandlerFunctionName(GuiButton control)"</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiButton.HasEventHandlers(System.String)">
+            <summary>
+            This returns true if there are any event handlers for the passed in eventType.
+            </summary>
+            <param name="eventType">The type of event to check for.</param>
+            <returns>Returns true if there are any event handlers of the given type.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiButton.GetEventHandlers(System.String)">
+            <summary>
+             This returns all of the event handler functions that have been assigned 
+             to this object for the passed in eventType. 
+            </summary>
+            <param name="eventType">The type of event to return function names for.</param>
+            <returns>All of the event handler functions that have been assigned 
+             to this object for the given eventType</returns>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiButton.Value">
+            <summary>
+            Returns the text of the control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiButton.Text">
+            <summary>
+            Returns the text of the control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiButton.Height">
+            <summary>
+            Sets or gets the height of the control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiButton.ClosesForm">
+            <summary>
+            If set to true, this button will close the input form and the template will be rendered.
+            </summary>
+        </member>
+        <member name="T:Zeus.Data.SimpleColumnCollection">
+            <summary>
+            The SimpleColumnCollection is an enumerable collection of SimpleColumns
+            </summary>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiTextBox">
+            <summary>
+            A TextBox input control for attaining textual input from the user. 
+            </summary>
+            <remarks>
+            A TextBox input control for attaining textual input from the user.
+            </remarks>
+            <example>
+            Adding the GuiTextBox to the GuiController (jscript)
+            <code>
+            var txtPath = ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+            </code>
+            </example>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiTextBox.#ctor">
+            <summary>
+            Creates a new instance of a GuiTextBox control.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiTextBox.AttachEvent(System.String,System.String)">
+            <summary>
+            Attaches the functionName to the eventType event.  
+            The GuiFilePicker supports the onselect event.
+            </summary>
+            <param name="eventType">The type of event to attach.</param>
+            <param name="functionName">Name of the function to be called when the event fires.
+            The functionName should have the signature in the Gui code: 
+            "eventHandlerFunctionName(GuiFilePicker control)"</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiTextBox.HasEventHandlers(System.String)">
+            <summary>
+            This returns true if there are any event handlers for the passed in eventType.
+            </summary>
+            <param name="eventType">The type of event to check for.</param>
+            <returns>Returns true if there are any event handlers of the given type.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiTextBox.GetEventHandlers(System.String)">
+            <summary>
+             This returns all of the event handler functions that have been assigned 
+             to this object for the passed in eventType. 
+            </summary>
+            <param name="eventType">The type of event to return function names for.</param>
+            <returns>All of the event handler functions that have been assigned 
+             to this object for the given eventType</returns>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiTextBox.Value">
+            <summary>
+            Returns the text in the textbox.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiTextBox.Text">
+            <summary>
+            Returns the text in the textbox.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiTextBox.WordWrap">
+            <summary>
+            Enables or disables wordwrap
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiTextBox.Multiline">
+            <summary>
+            Enables or disables multi-line functionality
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiTextBox.VerticalScroll">
+            <summary>
+            If it's a Multiline textbox, enable Vertical Scrolling
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiTextBox.HorizontalScroll">
+            <summary>
+            If it's a Multiline textbox, enable Horizontal Scrolling
+            </summary>
+        </member>
+        <member name="T:Zeus.Data.SimpleRowCollection">
+            <summary>
+            The SimpleRowCollection is an enumerable collection of SimpleRows
+            </summary>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiListBox">
+             <summary>
+             A ListBox control. You can bind ArrayList, NameValueCollection, and Hashtable 
+             objects to the GuiListBox along with IEnumerable objects with both ItemName 
+             and ItemValue properties (using reflection). 
+             </summary>
+             <remarks>
+             A ListBox control. You can bind ArrayList, NameValueCollection, and Hashtable 
+             objects to the GuiListBox along with IEnumerable objects with both ItemName 
+             and ItemValue properties (using reflection). 
+             </remarks>
+             <example>
+             Binding the MyMeta collection to the GuiListBox (jscript)
+             <code>
+             var db = MyMeta.Databases.Item(sDatabaseName);
+             
+             var lstTables = ui.AddListBox("lstTables", "Select tables.");
+             lstTables.Height = 150;
+             lstTables.BindData(db.Tables);
+             </code>
+             </example>
+             <example>
+             Binding an ArrayList the GuiListBox (csharp). Note: The ArrayList index is bound to the item value.
+             <code>
+             GuiListBox lstFruit = ui.AddListBox("lstFruit", "Select fruit:");
+              
+             ArrayList al = new ArrayList();
+             al.Add("Apples");
+             al.Add("Oranges");
+             al.Add("Pears");
+             
+             lstFruit.BindData(al);
+             </code>
+             </example>
+             <example>
+             Selecting items in a GuiListBox (jscript)
+             <code>
+             var db = MyMeta.Databases.Item(sDatabaseName);
+             
+             var lstTables = ui.AddListBox("lstTables", "Select tables.");
+             lstTables.Height = 150;
+             lstTables.BindData(db.Tables);
+             lstTables.IsMultiSelect = true;
+             
+             // Select all items
+             lstTables.SelectAll();
+             
+             // Clear Selections
+             lstTables.ClearSelected();
+             
+             // Select specific items
+             lstTables.Select("tblUsers");
+             lstTables.Select("tblRoles");
+            
+             // Another way to select items
+             lstTables.SelectedItems.Add("tblMaps");
+             lstTables.SelectedItems.Add("tblWeapons");
+             
+             // Clear All Items and selections
+             lstTables.Clear();
+             </code>
+             </example>
+             <example>
+             Manually adding Items to the GuiListBox (CSharp)
+             <code>
+             GuiListBox lstVeggies = ui.AddListBox("lstVeggies", "Select veggies.");
+             lstVeggies["a"] = "Asparagus";
+             lstVeggies["c"] = "Carrot";
+             lstVeggies["t"] = "Tomato";
+             </code>
+             </example>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.#ctor">
+            <summary>
+            Creates a new GuiListBox control.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.IndexOf(System.String)">
+            <summary>
+            Returns the index of the given value. If it's nor found, it returns -1.
+            </summary>
+            <param name="val">An item value.</param>
+            <returns>The index of the given value. If it's nor found, it returns -1.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.GetValueAtIndex(System.Int32)">
+            <summary>
+            Gets the value at the given index
+            </summary>
+            <param name="index">The item index.</param>
+            <returns>The item value at the passed in index</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.GetTextAtIndex(System.Int32)">
+            <summary>
+            Returns the item text at the passed in index.
+            </summary>
+            <param name="index">The item index.</param>
+            <returns>The item text at the passed in index</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.Add(System.String,System.String)">
+            <summary>
+            Adds a new item
+            </summary>
+            <param name="val">The item value or key</param>
+            <param name="text">The item text.</param>
+            <returns>The index at which the value was added.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.Clear">
+            <summary>
+            Removes all listitems from the GuiListBox.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.ClearSelected">
+            <summary>
+            Clears all selected items.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.IsSelectedAtIndex(System.Int32)">
+            <summary>
+            Returns true is the item at the given index is selected.
+            </summary>
+            <param name="index">The items index.</param>
+            <returns>Returns true is the item at the given index is selected.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.SelectAtIndex(System.Int32)">
+            <summary>
+            Selects the item and the given index
+            </summary>
+            <param name="index">The items index.</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.SelectAll">
+            <summary>
+            Selects all items in the listbox.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.Contains(System.String)">
+            <summary>
+            Returns true if the specified value is in this listbox
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.Select(System.String)">
+            <summary>
+            Selects the item with the specified value
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.BindData(System.Object)">
+            <summary>
+            Binds a DataSource (ArrayList, Hashtable, NameValueCollection) to this GuiListBox. 
+            Will also bind data from any object that implements IEnumerable and has properties
+            named "ItemName" and "ItemValue".
+            </summary>
+            <param name="dataSource">The data source object.</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.BindDataFromTable(System.Object,System.String,System.String)">
+            <summary>
+            Binds a DataTable (dataSource) to the GuiListBox. The valueField 
+            will be bound the the value of each list item, and the textField 
+            will be bound to the visible text of each list item.
+            </summary>
+            <param name="dataSource">The source DataTable to bind to the GuiListBox</param>
+            <param name="valueField">Identifies the column to pull the list items value from.</param>
+            <param name="textField">Identifies the column to pull the list items text from.</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.AttachEvent(System.String,System.String)">
+            <summary>
+            Attaches the functionName to the eventType event.  
+            The GuiListBox supports the onchange event.
+            </summary>
+            <param name="eventType">The type of event to attach.</param>
+            <param name="functionName">Name of the function to be called when the event fires.
+            The functionName should have the signature in the Gui code: 
+            "eventHandlerFunctionName(GuiListBox control)"</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.HasEventHandlers(System.String)">
+            <summary>
+            This returns true if there are any event handlers for the passed in eventType.
+            </summary>
+            <param name="eventType">The type of event to check for.</param>
+            <returns>Returns true if there are any event handlers of the given type.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiListBox.GetEventHandlers(System.String)">
+            <summary>
+             This returns all of the event handler functions that have been assigned 
+             to this object for the passed in eventType. 
+            </summary>
+            <param name="eventType">The type of event to return function names for.</param>
+            <returns>All of the event handler functions that have been assigned 
+             to this object for the given eventType</returns>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiListBox.IsMultiSelect">
+            <summary>
+            Returns true if this is a multi-select ListBox
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiListBox.Value">
+            <summary>
+            Returns an ArrayList of selected items
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiListBox.Item(System.String)">
+            <summary>
+            Returns the Text for the item with the given val.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiListBox.Sorted">
+            <summary>
+            If set to true, the listbox is sorted.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiListBox.Count">
+            <summary>
+            The item count.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiListBox.SelectedIndex">
+            <summary>
+            The first selected index of this list control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiListBox.SelectedIndeces">
+            <summary>
+            The selected indeces of this list control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiListBox.Items">
+            <summary>
+            The NameValueCollection containing all of the items displayed in the GuiListBox
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiListBox.SelectedItems">
+            <summary>
+            Returns an ArrayList of selected items.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiListBox.Height">
+            <summary>
+            Sets or gets the height of the control.
+            </summary>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiLabel">
+            <summary>
+            A label control for painting text onto the form. 
+            </summary>
+            <remarks>
+            A label control for painting text onto the form.
+            </remarks>
+            <example>
+            Adding the GuiLabel to the GuiController (jscript)
+            <code>
+            var lblPath = ui.AddLabel("lblPath", "Select the output path:", "Select the output path in the field below.");
+            </code>
+            </example>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiLabel.#ctor">
+            <summary>
+            Creates a new instance of a GuiLabel control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiLabel.Value">
+            <summary>
+            Returns the text of the label.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiLabel.Text">
+            <summary>
+            Gets or sets the text of the label.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiLabel.Bold">
+            <summary>
+            Make the label text bold.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiLabel.Underline">
+            <summary>
+            Underline the label text.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiLabel.Italic">
+            <summary>
+            Make the label text italic.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiLabel.Strikeout">
+            <summary>
+            Strikeout the label text.
+            </summary>
+        </member>
+        <member name="T:Zeus.Data.SimpleRow">
+            <summary>
+            The SimpleRow class represents a single row of a SimpleTable
+            </summary>
+        </member>
+        <member name="M:Zeus.Data.SimpleRow.ByName(System.String)">
+            <summary>
+            Returns an item from the SimpleRow by colum name
+            </summary>
+            <param name="columnName">The columnName to pull the data from</param>
+            <returns>the row data from the specified column</returns>
+        </member>
+        <member name="M:Zeus.Data.SimpleRow.ByIndex(System.Int32)">
+            <summary>
+            Returns an item from the SimpleRow by colum index
+            </summary>
+            <param name="rowIndex">The column Index to pull the data from</param>
+            <returns>the row data from the specified column</returns>
+        </member>
+        <member name="P:Zeus.Data.SimpleRow.Item(System.Object)">
+            <summary>
+            Returns an item from the SimpleRow by colum index or name
+            </summary>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiCheckBoxList">
+             <summary>
+             A CheckBox List control. You can bind ArrayList, NameValueCollection, and Hashtable 
+             objects to the GuiCheckBoxList along with IEnumerable objects with both ItemName 
+             and ItemValue properties (using reflection). 
+             </summary>
+             <remarks>
+             A CheckBox List control. You can bind ArrayList, NameValueCollection, and Hashtable 
+             objects to the GuiCheckBoxList along with IEnumerable objects with both ItemName 
+             and ItemValue properties (using reflection). 
+             </remarks>
+             <example>
+             Binding the MyMeta collection to the GuiCheckBoxList (jscript)
+             <code>
+             var db = MyMeta.Databases.Item(sDatabaseName);
+             
+             var chklstTables = ui.AddCheckBoxList("chklstTables", "Select tables.");
+             chklstTables.Height = 150;
+             chklstTables.BindData(db.Tables);
+             </code>
+             </example>
+             <example>
+             Binding an ArrayList the GuiCheckBoxList (csharp). Note: The ArrayList index is bound to the item value.
+             <code>
+             GuiCheckBoxList chklstFruit = ui.AddCheckBoxList("chklstFruit", "Select fruit:");
+              
+             ArrayList al = new ArrayList();
+             al.Add("Apples");
+             al.Add("Oranges");
+             al.Add("Pears");
+             
+             chklstFruit.BindData(al);
+             </code>
+             </example>
+             <example>
+             Selecting items in a GuiCheckBoxList (jscript)
+             <code>
+             var db = MyMeta.Databases.Item(sDatabaseName);
+             
+             var chklstTables = ui.AddCheckBoxList("chklstTables", "Select tables.");
+             lstTables.Height = 150;
+             lstTables.BindData(db.Tables);
+             lstTables.IsMultiSelect = true;
+             
+             // Select all items
+             lstTables.SelectAll();
+             
+             // Clear Selections
+             lstTables.ClearSelected();
+             
+             // Select specific items
+             lstTables.Select("tblUsers");
+             lstTables.Select("tblRoles");
+            
+             // Another way to select items
+             lstTables.SelectedItems.Add("tblMaps");
+             lstTables.SelectedItems.Add("tblWeapons");
+             
+             // Clear All Items and selections
+             lstTables.Clear();
+             </code>
+             </example>
+             <example>
+             Manually adding Items to the GuiCheckBoxList (CSharp)
+             <code>
+             GuiCheckBoxList chklstVeggies = ui.AddCheckBoxList("chklstVeggies", "Select veggies.");
+             lstVeggies["a"] = "Asparagus";
+             lstVeggies["c"] = "Carrot";
+             lstVeggies["t"] = "Tomato";
+             </code>
+             </example>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.#ctor">
+            <summary>
+            Creates a new GuiCheckBoxList control.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.IndexOf(System.String)">
+            <summary>
+            Returns the index of the given value. If it's nor found, it returns -1.
+            </summary>
+            <param name="val">An item value.</param>
+            <returns>The index of the given value. If it's nor found, it returns -1.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.GetValueAtIndex(System.Int32)">
+            <summary>
+            Gets the value at the given index
+            </summary>
+            <param name="index">The item index.</param>
+            <returns>The item value at the passed in index</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.GetTextAtIndex(System.Int32)">
+            <summary>
+            Returns the item text at the passed in index.
+            </summary>
+            <param name="index">The item index.</param>
+            <returns>The item text at the passed in index</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.Add(System.String,System.String)">
+            <summary>
+            Adds a new item
+            </summary>
+            <param name="val">The item value or key</param>
+            <param name="text">The item text.</param>
+            <returns>The index at which the value was added.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.Clear">
+            <summary>
+            Removes all listitems from the GuiCheckBoxList.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.ClearSelected">
+            <summary>
+            Clears all selected items.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.IsSelectedAtIndex(System.Int32)">
+            <summary>
+            Returns true is the item at the given index is selected.
+            </summary>
+            <param name="index">The items index.</param>
+            <returns>Returns true is the item at the given index is selected.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.SelectAtIndex(System.Int32)">
+            <summary>
+            Selects the item and the given index
+            </summary>
+            <param name="index">The items index.</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.SelectAll">
+            <summary>
+            Selects all items in the checkbox list.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.Contains(System.String)">
+            <summary>
+            Returns true if the specified value is in this checkbox list
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.Select(System.String)">
+            <summary>
+            Selects the item with the specified value
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.BindData(System.Object)">
+            <summary>
+            Binds a DataSource (ArrayList, Hashtable, NameValueCollection) to this GuiCheckBoxList. 
+            Will also bind data from any object that implements IEnumerable and has properties
+            named "ItemName" and "ItemValue".
+            </summary>
+            <param name="dataSource">The data source object.</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.BindDataFromTable(System.Object,System.String,System.String)">
+            <summary>
+            Binds a DataTable (dataSource) to the GuiCheckBoxList. The valueField 
+            will be bound the the value of each list item, and the textField 
+            will be bound to the visible text of each list item.
+            </summary>
+            <param name="dataSource">The source DataTable to bind to the GuiCheckBoxList</param>
+            <param name="valueField">Identifies the column to pull the list items value from.</param>
+            <param name="textField">Identifies the column to pull the list items text from.</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.AttachEvent(System.String,System.String)">
+            <summary>
+            Attaches the functionName to the eventType event.  
+            The GuiCheckBoxList supports the onchange event.
+            </summary>
+            <param name="eventType">The type of event to attach.</param>
+            <param name="functionName">Name of the function to be called when the event fires.
+            The functionName should have the signature in the Gui code: 
+            "eventHandlerFunctionName(GuiCheckBoxList control)"</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.HasEventHandlers(System.String)">
+            <summary>
+            This returns true if there are any event handlers for the passed in eventType.
+            </summary>
+            <param name="eventType">The type of event to check for.</param>
+            <returns>Returns true if there are any event handlers of the given type.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBoxList.GetEventHandlers(System.String)">
+            <summary>
+             This returns all of the event handler functions that have been assigned 
+             to this object for the passed in eventType. 
+            </summary>
+            <param name="eventType">The type of event to return function names for.</param>
+            <returns>All of the event handler functions that have been assigned 
+             to this object for the given eventType</returns>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBoxList.Value">
+            <summary>
+            Returns an ArrayList of selected items
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBoxList.Item(System.String)">
+            <summary>
+            Returns the Text for the item with the given val.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBoxList.Sorted">
+            <summary>
+            If set to true, the checkbox list is sorted.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBoxList.Count">
+            <summary>
+            The item count.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBoxList.SelectedIndex">
+            <summary>
+            The first selected index of this list control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBoxList.SelectedIndeces">
+            <summary>
+            The selected indeces of this list control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBoxList.Items">
+            <summary>
+            The NameValueCollection containing all of the items displayed in the GuiCheckBoxList
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBoxList.SelectedItems">
+            <summary>
+            Returns an ArrayList of selected items.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBoxList.Height">
+            <summary>
+            Sets or gets the height of the control.
+            </summary>
+        </member>
+        <member name="T:Zeus.Data.SimpleColumn">
+            <summary>
+            The SimpleColumn class represents a single column in a SimpleTable.
+            </summary>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiFilePicker">
+             <summary>
+             A button that pops up a file or folder selction dialog and outputs the selected path 
+             into a target textbox control. 
+             </summary>
+             <remarks>
+             A button that pops up a file or folder selction dialog and outputs the selected path 
+             into a target textbox control. 
+             </remarks>
+             <example>
+             Using the GuiFilePicker and attaching the onselect event (jscript)
+             <code>
+             var txtPath = ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+            
+             var btnPath = ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+             btnPath.AttachEvent("onselect", "btnPath_onselect");
+             </code>
+             </example>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiFilePicker.#ctor">
+            <summary>
+            Creates a new instance of a GuiFilePicker control.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiFilePicker.AttachEvent(System.String,System.String)">
+            <summary>
+            Attaches the functionName to the eventType event.  
+            The GuiFilePicker supports the onselect event.
+            </summary>
+            <param name="eventType">The type of event to attach.</param>
+            <param name="functionName">Name of the function to be called when the event fires.
+            The functionName should have the signature in the Gui code: 
+            "eventHandlerFunctionName(GuiFilePicker control)"</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiFilePicker.HasEventHandlers(System.String)">
+            <summary>
+            This returns true if there are any event handlers for the passed in eventType.
+            </summary>
+            <param name="eventType">The type of event to check for.</param>
+            <returns>Returns true if there are any event handlers of the given type.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiFilePicker.GetEventHandlers(System.String)">
+            <summary>
+             This returns all of the event handler functions that have been assigned 
+             to this object for the passed in eventType. 
+            </summary>
+            <param name="eventType">The type of event to return function names for.</param>
+            <returns>All of the event handler functions that have been assigned 
+             to this object for the given eventType</returns>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiFilePicker.Value">
+            <summary>
+            Returns the text on the FilePicker Button.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiFilePicker.Text">
+            <summary>
+            Returns the text on the FilePicker Button.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiFilePicker.ItemData">
+            <summary>
+            Returns the last seleted path/file
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiFilePicker.TargetControl">
+            <summary>
+            The id of the TextBox that the path should be placed in after selection.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiFilePicker.Height">
+            <summary>
+            Sets or gets the height of the control.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiFilePicker.PicksFolder">
+            <summary>
+            Set to true if you want to select a folder, set to false if you want to select a file.
+            </summary>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiDataBinder">
+            <summary>
+            The GuiDataBinder is a utility class used to bind different data types to IGuiListControl's.
+            </summary>
+            <remarks>
+            The GuiDataBinder is a utility class used to bind different data types to IGuiListControl's.
+            </remarks>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiDataBinder.#ctor">
+            <summary>
+            Creates a new instance of the GuiDataBinder.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiDataBinder.BindDataToListControl(Zeus.UserInterface.IGuiListControl,System.Object,System.String,System.String)">
+            <summary>
+            Binds a DataTable to an IGuiListControl. 
+            </summary>
+            <param name="control">The control to populate data in.</param>
+            <param name="dataSource">The datatable</param>
+            <param name="valueFieldName">The column name for the value</param>
+            <param name="textFieldName">The column name for the text</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiDataBinder.BindDataToListControl(Zeus.UserInterface.IGuiListControl,System.Object)">
+            <summary>
+            Binds a DataSource (ArrayList, Hashtable, NameValueCollection) to an IGuiListControl. 
+            Will also bind any other object that implements IEnumerable and has properties
+            named "ItemName" and "ItemValue".
+            </summary>
+            <param name="control">The control to populate data in.</param>
+            <param name="dataSource">The data source object.</param>
+        </member>
+        <member name="T:Zeus.UserInterface.GuiCheckBox">
+            <summary>
+            A CheckBox input control used to gather boolean input. 
+            </summary>
+            <remarks>
+            A CheckBox input control used to gather boolean input. 
+            </remarks>
+            <example>
+            Attaching the onclick event (jscript)
+            <code>
+            var chkBox = ui.AddCheckBox("chkBox", "Write Proc's to the Access Database", false, "Checking this will cause the stored procedures to be created in your database");
+            chkBox.AttachEvent("onclick", "chkBox_onclick");
+            </code>
+            </example>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBox.#ctor">
+            <summary>
+            Creates a new instance of a GuiCheckBox control.
+            </summary>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBox.AttachEvent(System.String,System.String)">
+            <summary>
+            Attaches the functionName to the eventType event.  
+            The GuiCheckBox supports the onclick event.
+            </summary>
+            <param name="eventType">The type of event to attach.</param>
+            <param name="functionName">Name of the function to be called when the event fires.
+            The functionName should have the signature in the Gui code: 
+            "eventHandlerFunctionName(GuiCheckBox control)"</param>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBox.HasEventHandlers(System.String)">
+            <summary>
+            This returns true if there are any event handlers for the passed in eventType.
+            </summary>
+            <param name="eventType">The type of event to check for.</param>
+            <returns>Returns true if there are any event handlers of the given type.</returns>
+        </member>
+        <member name="M:Zeus.UserInterface.GuiCheckBox.GetEventHandlers(System.String)">
+            <summary>
+             This returns all of the event handler functions that have been assigned 
+             to this object for the passed in eventType. 
+            </summary>
+            <param name="eventType">The type of event to return function names for.</param>
+            <returns>All of the event handler functions that have been assigned 
+             to this object for the given eventType</returns>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBox.Value">
+            <summary>
+            Returns the the value of the checkbox (true/false).
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBox.Text">
+            <summary>
+            Returns the text label attached to the checkbox.
+            </summary>
+        </member>
+        <member name="P:Zeus.UserInterface.GuiCheckBox.Checked">
+            <summary>
+            Returns the the value of the checkbox (true/false)
+            </summary>
+        </member>
+    </members>
+</doc>

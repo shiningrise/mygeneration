@@ -1,0 +1,571 @@
+﻿##|TYPE Template
+##|UNIQUEID CE5D3F57-26FF-475a-9DED-A09F8F883B8B
+##|TITLE Oracle Stored Procedures
+##|NAMESPACE Oracle
+##|OUTPUT_LANGUAGE Transact-SQL
+##|COMMENTS_BEGIN
+Generates LoadByKey, LoadAll, Insert, Update, and Delete Procedures for Oracle. 
+Select multiple tables and generate all your stored procedures in one click!
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstTables
+
+Sub setup()
+
+	If Not input.Contains("lstTables") Or Not input.Contains("txtPath") Then
+
+		ui.Title = "Select tables for this Template."
+		ui.Width  = 330
+		ui.Height = 400
+
+		' Grab default output path
+		Dim sOutputPath
+		sOutputPath = ""
+		If input.Contains("defaultOutputPath") Then 
+			sOutputPath = input.Item("defaultOutputPath")
+		End If
+
+		ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+		ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+		ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+
+		' List Databases in a ComboBox
+		ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+		Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+
+		' List Tables in a listbox
+		ui.AddLabel "lblTables", "Select tables:", "Select tables from the listbox below."
+		Set lstTables = ui.AddListBox ("lstTables", "Select tables:")
+		lstTables.Height = 150
+
+		' Attach the onchange event to the cmbDatabases control.
+		setupDatabaseDropdown cmbDatabases
+		cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+
+		ui.ShowGUI = true
+	Else 
+		ui.ShowGUI = false
+	End if
+
+End Sub
+
+Sub setupDatabaseDropdown(cmbDatabases)
+	cmbDatabases.BindData MyMeta.Databases
+
+	If Not MyMeta.DefaultDatabase Is Nothing Then
+		cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindTables cmbDatabases.SelectedValue
+	End If
+End Sub
+
+Sub bindTables(sDatabase)
+	Set db = MyMeta.Databases(sDatabase)
+	lstTables.BindData(db.Tables)
+End Sub
+
+' Event Handler
+Sub cmbDatabases_onchange(control)
+	Set cmbDatabases = ui.item("cmbDatabase")
+	bindTables cmbDatabases.SelectedText
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'------------------------------------------------------------------------------
+' Oracle_StoredProcs.vbgen
+' Last Update : 11/17/2004
+'
+' Be sure to rename this template if you plan to customize it, MyGeneration 
+' Software will update this sample over time.
+'------------------------------------------------------------------------------
+'
+'  This template generates 5 stored procedures
+'
+'  1) PK_<TableName> = LoadByPrimaryKey
+'  2) PL_<TableName> = LoadAll
+'  3) PU_<TableName> = Update
+'  4) PI_<TableName> = Insert
+'  5) PD_<TableName> = Delete
+'
+'  There is script in the "Interface Code" tab that pops up a dialog so you can tell this tempate
+'  where to save the files and what tables you want to generate stored procedures for.  So, the
+'  logic at a very high level looks like this:
+'
+'   For Each TableName in Select Tables
+'        objTable = database.Tables(TableName)
+' 	
+'	Generate the 5 stored procs
+'
+'   Save file
+'
+'  However, all of the script ends up in the Output tab and you can copy this right into 
+'  Sql QueryAnalyzer and execute it.  It's a pretty smart template, it knows to make
+'  Identity Columns output parameters to return them, the same holds true for computed
+'  Columns. It knows how to use PrimaryKeys in WHERE clauses and not to update them
+'  in the UpdateStored Proc, if you have a TimeStamp it will do the comparison for you and 
+'  so on.  This template alone can save you tons of time, and at anytime you can regenerate
+'  them as tables change.
+'======================================================================
+
+Dim database
+Dim objTable
+Dim objColumn
+Dim intLp
+Dim bInFirst
+Dim strProcName
+Dim bHasComputed
+Dim strWhereClause
+Dim strWhereAnd
+Dim strWhereFields
+Dim strComma
+Dim tableNames
+Dim tableName
+Dim buffer
+Dim dir
+Dim propName
+Dim props
+	
+Dim databaseName 
+databaseName  = input.Item("cmbDatabase")
+Set database = MyMeta.Databases(databaseName)
+
+Set tableNames = input.Item("lstTables")
+
+%>
+-- Create the Package if it hasn't been already
+DECLARE n VARCHAR(256);
+BEGIN
+SELECT OBJECT_NAME INTO n FROM SYS.ALL_OBJECTS WHERE OBJECT_NAME = 'MYGEN' AND OWNER = '<%= database.Name %>';
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+EXECUTE IMMEDIATE 'CREATE PACKAGE <%= database.Name %>.MYGEN IS TYPE sqlcur IS REF CURSOR; END MYGEN;';
+END;
+/
+<%
+
+' Loop through the tables the user select and generate the stored procs and save them to disk
+For intLp = 0 To tableNames.Count - 1
+
+	Set objTable = database.Tables(tablenames.item(intLp))
+	Set props = objTable.Properties
+	
+	If objTable.PrimaryKeys.Count = 0 Then
+		output.write "-- ERROR: Table '" & objTable.Name & "' must have a primary key" & vbCrLf
+		Exit For
+	End If 		
+
+'----------------------------------------------------------------------
+' LoadByPrimaryKey 
+'----------------------------------------------------------------------
+'If LBound(arrayOfPKs) > 0 Then
+strProcName =  MungeStoredProcName("PK_" & objTable.Name)
+%>
+CREATE OR REPLACE PROCEDURE "<%= objTable.Schema %>"."<%= strProcName %>"
+(
+<%
+	' list all keys as parameters
+	bInFirst = True
+	For Each objColumn in objTable.PrimaryKeys
+
+		If Not bInFirst Then 
+			output.write  "," & vbCrLf
+		End if	
+
+		bInFirst = false	
+
+		output.write "	p_" & GetParameterName(objColumn) & " IN " & objTable.Name & "." & objColumn.Name & "%type"
+	Next	
+	
+	If Not bInFirst Then 
+		output.write  "," & vbCrLf
+	End if		
+	output.write "    outCursor OUT " & database.Name & ".MYGEN.sqlcur"
+%>
+)
+IS
+BEGIN
+    OPEN outCursor FOR
+	SELECT
+<%
+	' list all fields
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+
+		If Not bInFirst Then 
+			output.write  "," & vbCrLf
+		End if	
+
+		bInFirst = false			
+
+		output.write "		" & objColumn.Name
+	Next
+
+	output.write vbCrLf
+%>	FROM <%output.write objTable.Name %>
+	WHERE
+<%
+	' compare keys with parameters
+	bInFirst = true
+	For Each objColumn in objTable.PrimaryKeys
+
+		If Not bInFirst Then 
+			output.write  " AND" & vbCrLf
+		End if	
+
+		bInFirst = false					
+
+		output.write "		" & objColumn.Name & " = p_" & GetParameterName(objColumn)
+	Next
+
+	output.write vbCrLf		
+%>;
+END <%= strProcName %>;
+/
+
+<%
+'----------------------------------------------------------------------
+' LoadAll 
+'----------------------------------------------------------------------
+strProcName =  MungeStoredProcName("PL_" & objTable.Name)
+%>
+CREATE OR REPLACE PROCEDURE "<%= objTable.Schema %>"."<%= strProcName %>"
+(
+    outCursor OUT <%=database.Name %>.MYGEN.sqlcur
+)
+IS
+BEGIN
+    OPEN outCursor FOR
+	SELECT
+<%
+	' list all fields
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+
+		If Not bInFirst Then 
+			output.write  "," & vbCrLf
+		End if	
+
+		bInFirst = false			
+
+		output.write "		" & objColumn.Name
+	Next
+	
+	output.write vbCrLf
+%>	FROM <%output.write objTable.Name %>;
+
+END <%= strProcName %>;
+/
+<% 
+'----------------------------------------------------------------------
+' Update
+'----------------------------------------------------------------------
+If Not objTable.Columns.Count = objTable.PrimaryKeys.Count Then
+strProcName =  MungeStoredProcName("PU_" & objTable.Name)
+%>
+CREATE OR REPLACE PROCEDURE "<%= objTable.Schema %>"."<%= strProcName %>"
+(
+<%
+	'------------------------------------
+	' list all parameters
+	'------------------------------------	
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+
+		If Not bInFirst Then 
+			output.write  "," & vbCrLf
+		End if
+
+		bInFirst = false
+		
+		dir = " IN "
+		If props.ContainsKey("SEQ:U:" & objColumn.Name) Then
+			dir = " IN OUT "
+		End if
+
+		output.write "	p_" & GetParameterName(objColumn) & dir & objTable.Name & "." & objColumn.Name & "%type"
+
+		If (objColumn.IsNullable Or objColumn.IsComputed) And dir = " IN " Then
+		'	output.write " default  NULL"
+		End If
+
+	Next
+%>
+)
+IS
+BEGIN
+	UPDATE <%output.write objTable.Name %>
+	SET
+<%
+		blnFirst = True
+
+	' list all fields
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+
+		If Not objColumn.IsAutoKey And Not objColumn.IsComputed  Then 				
+			If Not bInFirst Then 
+				output.write  "," & vbCrLf
+			End if	
+
+			bInFirst = False
+
+			propName = "SEQ:U:" & objColumn.Name
+			If props.ContainsKey(propName) Then		
+				output.write "		" & objColumn.Name & " = " & props(propName).Value & ".NextVal"
+			Else
+				output.write "		" & objColumn.Name & "	= p_" & GetParameterName(objColumn)
+			End If
+		End If	
+	Next
+
+	output.write vbCrLf		
+%>	WHERE
+<%
+	' compare keys with parameters
+	bInFirst = true
+	For Each objColumn in objTable.PrimaryKeys
+		If Not bInFirst Then 
+			output.write "	AND	" & objColumn.Name & " = p_" & GetParameterName(objColumn) & vbCrLf
+		Else
+			output.write "		" & objColumn.Name & " = p_" & GetParameterName(objColumn) & vbCrLf
+		End if
+		bInFirst = False
+	Next
+	
+	output.write ";" & vbCrLf
+
+	' Now set any OUT parameters
+	For Each objColumn in objTable.Columns
+		If Not objColumn.IsAutoKey And Not objColumn.IsComputed  Then 				
+			propName = "SEQ:U:" & objColumn.Name
+			If props.ContainsKey(propName) Then		
+					output.write "	SELECT " & props(propName).Value & ".CurrVal INTO p_" & objColumn.Name & " FROM DUAL;" & vbCrLf
+			End If
+		End If	
+	Next
+%>	
+	
+END <%= strProcName %>;
+/
+<% End If %>
+
+<% 
+'----------------------------------------------------------------------
+' Insert
+'----------------------------------------------------------------------
+strProcName =  MungeStoredProcName("PI_" & objTable.Name)
+%>
+CREATE OR REPLACE PROCEDURE "<%= objTable.Schema %>"."<%= strProcName %>"
+(
+<%
+	' list all fields as parameters
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+
+		If Not bInFirst Then 
+			output.write "," & vbCrLf
+		End If 
+
+		bInFirst = false
+		
+		dir = " IN "
+		If props.ContainsKey("SEQ:I:" & objColumn.Name) Then
+			dir = " OUT "
+		End if
+
+		output.write "	p_" & GetParameterName(objColumn) & dir & objTable.Name & "." & objColumn.Name & "%type"
+		
+		If (objColumn.IsNullable Or objColumn.IsComputed) And dir = " IN " Then
+		'	output.write " default  NULL"
+		End If		
+
+	Next
+%>
+)
+IS
+BEGIN
+
+<%
+		For Each objColumn in objTable.Columns
+		
+				propName = "SEQ:I:" & objColumn.Name
+				If props.ContainsKey(propName) Then		
+					output.write "	SELECT " & props(propName).Value & ".NextVal INTO p_" & objColumn.Name & " FROM DUAL;" & vbCrLf
+				End If
+		Next
+%>
+	INSERT
+	INTO <%output.write objTable.Name %>
+	(
+<%
+		' list all fields except identity (if one exists)
+		bInFirst = true
+		For Each objColumn in objTable.Columns
+
+			' check if field is not an indentity in which case we won't include it into insert list
+			If Not objColumn.IsAutoKey And Not objColumn.IsComputed And Not objColumn.DataTypeName = "timestamp" Then 			
+				If Not bInFirst Then 
+					output.write  "," & vbCrLf
+				End if	
+
+				bInFirst = False
+
+				output.write "		" & objColumn.Name
+			End If
+		Next
+
+		output.write vbCrLf 		
+%>	)
+	VALUES
+	(
+<%
+		blnFirst = True
+
+		' list all parameters except the one for indetity (if one exists)
+		bInFirst = true
+		For Each objColumn in objTable.Columns
+
+			' check if fields is not an identity
+			If Not objColumn.IsAutoKey And Not objColumn.IsComputed Then 			
+				If Not bInFirst Then 
+					output.write  "," & vbCrLf
+				End if	
+
+				bInFirst = False
+				
+				output.write "		p_" & GetParameterName(objColumn)
+			
+			End If
+		Next
+
+		output.write vbCrLf 				
+%>	);
+END <%= strProcName %>;
+/
+<% 
+'----------------------------------------------------------------------
+' Delete
+'----------------------------------------------------------------------
+strProcName =  MungeStoredProcName("PD_" & objTable.Name)
+%>
+CREATE OR REPLACE PROCEDURE "<%= objTable.Schema %>"."<%= strProcName %>"
+(
+<%
+	' list all keys as parameters
+	bInFirst = true
+	For Each objColumn in objTable.PrimaryKeys
+
+		' check if at end of keys
+		If Not bInFirst Then
+			output.write "," & vbCrLf
+		End If
+
+		bInFirst = false
+
+		output.write "	p_" & GetParameterName(objColumn) & " IN " & objTable.Name & "." & objColumn.Name & "%type"
+	Next
+%>
+)
+IS
+BEGIN
+
+	DELETE	FROM <%output.write objTable.Name %>
+	WHERE
+<%
+		' compare keys with parameters
+	bInFirst = true
+	For Each objColumn in objTable.PrimaryKeys
+
+		' continue where part with an AND
+		If Not bInFirst Then
+			output.write " AND" & vbCrLf
+		End If
+
+		bInFirst = false
+
+		output.write "		" & objColumn.Name & " = p_" & GetParameterName(objColumn)
+	Next
+%>;
+
+END <%= strProcName %>;
+/
+<% 
+	' Save the output file for this Table
+	Dim filename
+	filename = input.item("txtPath")
+
+	Dim length
+	Dim pos
+	lenth = Len(filename)
+	pos = InStrRev(filename, "\") 
+
+	If Not pos = lenth Then
+		filename = filename & "\"
+	End If
+
+	filename = filename & objTable.Name & ".sql"
+
+	output.save filename, false
+	buffer = buffer & output.text
+	output.clear
+Next '  tableName
+	
+output.write buffer
+
+filename = input.item("txtPath") 
+lenth = Len(filename) 
+pos = InStrRev(filename, "\") 
+
+If Not pos = lenth Then 
+  filename = filename & "\" 
+End If 
+
+filename = filename & "Oracle_ALL.SQL" 
+output.save filename, false 
+
+' END OF TEMPLATE	
+ %>
+
+<%
+
+Function GetParameterName(objColumn)
+	Dim name
+	name = TrimSpaces(objColumn.Name)
+	GetParameterName = name
+End Function
+
+Function MungeStoredProcName(str)
+	MungeStoredProcName = Left(str, 30)
+End Function
+
+Function TrimSpaces(str)
+
+	Dim tname
+	Dim name
+	Dim char
+	Dim l
+
+	name = ""
+	tname = str
+	l = Len(tname)
+
+	For j = 1 To l
+		char = Mid(tname, j, 1)
+		If Not char = " " Then
+			name = name & char
+		End If
+	Next
+
+	TrimSpaces = name
+End Function
+
+%>
+##|BODY_END

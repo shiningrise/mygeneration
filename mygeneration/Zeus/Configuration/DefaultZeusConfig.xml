@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <CompilerParams version="v4.0" />
+  <ProjectRoot path="%ZEUSHOME%\Projects" />
+	<TemplateRoot path="%ZEUSHOME%\Templates" />
+	<WebUpdate url="http://www.mygenerationsoftware.com/webupdate/" />
+	<IntrinsicObject assembly="%ZEUSHOME%\Zeus.dll" classpath="Zeus.UserInterface.GuiController" varname="ui" />
+	<IntrinsicObject assembly="%ZEUSHOME%\MyMeta.dll" classpath="MyMeta.dbRoot" varname="MyMeta" />
+	<IntrinsicObject assembly="%ZEUSHOME%\Dnp.Utils.dll" classpath="Dnp.Utils.Utils" varname="DnpUtils" />
+</configuration>

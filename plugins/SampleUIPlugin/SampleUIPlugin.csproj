@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1C2D540C-1E20-4499-9F52-3592FBCA556E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SampleUIPlugin</RootNamespace>
+    <AssemblyName>MyGeneration.UI.Plugins.Sample</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <HintPath>..\..\lib\thirdparty\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SampleSimplePluginManager.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SampleContent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SampleContent.Designer.cs">
+      <DependentUpon>SampleContent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SampleContentManager.cs" />
+    <Compile Include="SampleDialogContent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SampleDialogContent.Designer.cs">
+      <DependentUpon>SampleDialogContent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SampleEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SampleEditor.Designer.cs">
+      <DependentUpon>SampleEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SampleEditorManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SampleContent.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SampleContent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SampleDialogContent.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SampleDialogContent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SampleEditor.resx">
+      <DependentUpon>SampleEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\mygeneration\EngineInterface\PluginInterfaces.csproj">
+      <Project>{61B369D1-95DD-4158-9F30-2E051CEB9D50}</Project>
+      <Name>PluginInterfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\newImage.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\toolbar_save.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SampleContent.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bgb.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\puter.bmp" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

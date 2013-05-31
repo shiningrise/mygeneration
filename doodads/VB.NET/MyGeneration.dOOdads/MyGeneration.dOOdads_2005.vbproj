@@ -1,0 +1,184 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D8DFD338-036C-4472-8611-59566F4E37FB}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>MyGeneration.dOOdads</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyMode>None</AssemblyOriginatorKeyMode>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <OptionCompare>Binary</OptionCompare>
+    <OptionExplicit>On</OptionExplicit>
+    <OptionStrict>On</OptionStrict>
+    <RootNamespace>
+    </RootNamespace>
+    <StartupObject>
+    </StartupObject>
+    <MyType>Windows</MyType>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>MyGeneration.dOOdads.xml</DocumentationFile>
+    <BaseAddress>285212672</BaseAddress>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>VS2005</DefineConstants>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>1</WarningLevel>
+    <NoWarn>42016,42017,42018,42019,42032</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>MyGeneration.dOOdads.xml</DocumentationFile>
+    <BaseAddress>285212672</BaseAddress>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>VS2005</DefineConstants>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>1</WarningLevel>
+    <NoWarn>42016,42017,42018,42019,42032</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FirebirdSql.Data.Firebird">
+      <Name>FirebirdSql.Data.Firebird</Name>
+      <HintPath>..\..\..\..\..\Program Files\MyGeneration\FirebirdSql.Data.Firebird.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Data.OracleClient">
+      <Name>System.Data.OracleClient</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+    <Reference Include="VistaDB.NET20, Version=3.20.1.20, Culture=neutral, PublicKeyToken=dfc935afe2125461, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AggregateParameter.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AssemblyInfo.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BusinessEntity.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <None Include="DbAdapters\FirebirdSqlDynamicQuery.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\FirebirdSqlEntity.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\OleDbDynamicQuery.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\OleDbEntity.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\OracleClientDynamicQuery.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\OracleClientEntity.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\PostgreSqlDynamicQuery.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\PostgreSqlEntity.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\SqlClientDynamicQuery.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\SqlClientEntity.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\VistaDBDynamicQuery.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\VistaDbEntity.vb">
+      <SubType>Code</SubType>
+    </None>
+    <Compile Include="DynamicQuery.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="My Project\Application1.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="TransactionMgr.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WhereParameter.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <Content Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application1.Designer.vb</LastGenOutput>
+    </Content>
+    <Content Include="README.TXT" />
+    <None Include="DbAdapters\MySql4DynamicQuery.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\MySql4Entity.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\SQLiteDynamicQuery.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\SQLiteEntity.vb">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="My Project\Settings.settings" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="My Project\Resources.resx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

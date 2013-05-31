@@ -1,0 +1,839 @@
+﻿##|TYPE Template
+##|UNIQUEID 16d6437e-447f-4f9f-906d-17fa3dbb2e58
+##|TITLE Firebird Stored Procedures
+##|NAMESPACE Firebird.StoredProcedures
+##|OUTPUT_LANGUAGE Transact-SQL
+##|COMMENTS_BEGIN
+Use this for SQL dOOdads or other business entities. Select multiple tables and generate all your stored procedures 
+in one click!
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstTables
+
+Sub setup()
+
+	If Not input.Contains("lstTables") Or Not input.Contains("txtPath") Then
+
+		ui.Title = "Firebird Stored Procedures."
+		ui.Width  = 330
+		ui.Height = 450
+
+		' Grab default output path
+		Dim sOutputPath
+		sOutputPath = ""
+		If input.Contains("defaultOutputPath") Then 
+			sOutputPath = input.Item("defaultOutputPath")
+		End If
+
+		ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+		ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+		ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+		
+		' List Databases in a ComboBox
+		ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+		Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+
+		' List Tables in a listbox
+		ui.AddLabel "lblTables", "Select tables:", "Select tables from the listbox below."
+		Set lstTables = ui.AddListBox ("lstTables", "Select tables:")
+		lstTables.Height = 150
+
+		' Attach the onchange event to the cmbDatabases control.
+		setupDatabaseDropdown cmbDatabases
+		cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+
+		ui.AddCheckBox "chkBox", "ALTER PROCEDURE", false, "Check this to ALTER existing stored procedures, good for preserving permissions"
+		ui.AddCheckBox "ckDialect3", "DIALECT 3", false, "If checked, the stored procedure will use dialect 3 syntax"		
+		
+		
+		ui.ShowGUI = true
+	Else 
+		ui.ShowGUI = false
+	End if
+
+End Sub
+
+Sub setupDatabaseDropdown(cmbDatabases)
+	cmbDatabases.BindData MyMeta.Databases
+
+	If Not MyMeta.DefaultDatabase Is Nothing Then
+		cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindTables cmbDatabases.SelectedValue
+	End If
+End Sub
+
+Sub bindTables(sDatabase)
+	Set db = MyMeta.Databases(sDatabase)
+	lstTables.BindData(db.Tables)
+End Sub
+
+' Event Handler
+Sub cmbDatabases_onchange(control)
+	Set cmbDatabases = ui.item("cmbDatabase")
+	bindTables cmbDatabases.SelectedText
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'------------------------------------------------------------------------------
+' Copyright 2004, 2005 by MyGeneration Software
+' All Rights Reserved 
+'
+' Permission to use, copy, modify, and distribute this software and its 
+' documentation for any purpose and without fee is hereby granted, 
+' provided that the above copyright notice appear in all copies and that 
+' both that copyright notice and this permission notice appear in 
+' supporting documentation. 
+'
+' MYGENERATION SOFTWARE DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS 
+' SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY 
+' AND FITNESS, IN NO EVENT SHALL MYGENERATION SOFTWARE BE LIABLE FOR ANY 
+' SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES 
+' WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, 
+' WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER 
+' TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE 
+' OR PERFORMANCE OF THIS SOFTWARE. 
+'------------------------------------------------------------------------------
+' FirebirdStoredProcs.vbgen
+' Last Update : 03/04/2005
+'------------------------------------------------------------------------------
+' Be sure to rename this template if you plan to customize it, MyGeneration 
+' Software will update this sample over time.
+'------------------------------------------------------------------------------
+'  This template generates 5 stored procedures
+'
+'  1) PK_[TableName]   	= LoadByPrimaryKey
+'  2) PL_[TableName]	= LoadAll
+'  3) PU_[TableName]	= Update
+'  4) PI_[TableName]	= Insert  
+'  5) PD_[TableName]	= Delete
+'
+'
+'  Firebird Generator Support
+'  -------------------------------
+'  You indicate that you want Generator support by placing key/value pairs 
+'  into the "User Meta Data". User Meta Data is available by click on the "L"
+'  button on the toolbar. NOTE: You enter this key/value pairs at the Table 
+'  level not the column level.
+'
+'  Here's how it works: 
+'
+'  Key   = GEN:{I:U}[:T]:{column name}
+'  Value = The name of the Generator
+'
+'  Examples ...
+'
+'  Key                  Value
+'  GEN:I:ID_Table       GEN_NO  = Increment and use the Generator on the Insert
+'  GEN:I:T:ID_Table     GEN_NO  = A Trigger generates the value on the Insert
+'
+'  GEN:U:ID_Table       GEN_NO  = Increment and use the Generator on the Update
+'  GEN:U:T:ID_Table     GEN_NO  = A Trigger generates the value on the Update
+'  
+'======================================================================
+Dim database
+Dim objTable
+Dim objColumn
+Dim intLp
+Dim bInFirst
+Dim strProcName
+Dim bHasComputed
+Dim strWhereClause
+Dim strWhereAnd
+Dim strWhereFields
+Dim strComma
+Dim tableNames
+Dim tableName
+Dim buffer
+Dim props
+Dim propName
+Dim dialect
+
+dialect = 1
+If input.Item("ckDialect3") Then
+	dialect = 3
+End If
+
+
+Dim databaseName 
+databaseName  = input.Item("cmbDatabase")
+Set database = MyMeta.Databases(databaseName)
+
+Set tableNames = input.Item("lstTables")
+
+' Do we do ALTER or CREATE
+alterStatement = input.Item("chkBox")
+If alterStatement then
+	statement = "ALTER PROCEDURE ["
+Else
+	statement = "CREATE PROCEDURE ["
+End If
+
+' Loop through the tables the user select and generate the stored procs and save them to disk
+For intLp = 0 To tableNames.Count - 1
+
+	Set objTable = database.Tables(tablenames.item(intLp))
+	Set props = objTable.Properties	
+	
+	If objTable.PrimaryKeys.Count = 0 Then
+		output.write "-- ERROR: Table '" & objTable.Name & "' must have a primary key" & vbCrLf
+		Exit For
+	End If 		
+
+'----------------------------------------------------------------------
+' LoadByPrimaryKey 
+'----------------------------------------------------------------------
+strProcName = D("PK_" & objTable.Name)
+%>
+COMMIT WORK;
+SET AUTODDL OFF;
+SET TERM ^ ;
+
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	output.tabLevel = 1
+	' list all keys as parameters
+	bInFirst = True
+	For Each objColumn in objTable.PrimaryKeys
+
+			If Not bInFirst Then 
+				output.write "," & vbCrLf
+			End If 
+			
+			bInFirst = false
+			output.autoTab D("I$" & objColumn.Name) & " " & objColumn.DataTypeNameComplete
+	Next
+%>
+)
+RETURNS
+(
+<%
+	output.tabLevel = 1
+	' list all fields as parameters
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+		If Not bInFirst Then 
+			output.write "," & vbCrLf
+		End If 
+		
+		bInFirst = false
+		output.autoTab D(objColumn.Name) & " " & objColumn.DataTypeNameComplete
+	Next
+%>
+)
+AS
+BEGIN
+
+	FOR SELECT
+<%
+	output.tabLevel = 2
+	' list all fields
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+
+		If Not bInFirst Then 
+			output.write  "," & vbCrLf
+		End if	
+
+		bInFirst = false			
+
+		output.autoTab D(objColumn.Name)
+	Next
+
+	output.write vbCrLf
+%>	FROM <% output.write D(objTable.Name) %>
+	WHERE
+<%
+	output.tabLevel = 2
+	' compare keys with parameters
+	bInFirst = true
+	For Each objColumn in objTable.PrimaryKeys
+
+		If Not bInFirst Then 
+			output.write  " AND" & vbCrLf
+		End if	
+
+		bInFirst = false					
+
+		output.autoTab D(objColumn.Name) & " = :" & D("I$" & objColumn.Name) 
+	Next
+%>
+	INTO
+<%
+	' compare keys with parameters
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+		If Not bInFirst Then 
+			output.write  ","  & vbCrLf
+		End if	
+
+		bInFirst = false					
+
+		output.autoTab ":" & D(objColumn.Name)
+	Next
+%>
+	DO
+		SUSPEND;
+
+END
+ ^
+ 
+SET TERM ; ^
+COMMIT WORK;
+SET AUTODDL ON;
+
+<%
+'----------------------------------------------------------------------
+' LoadAll 
+'----------------------------------------------------------------------
+strProcName = D("PL_" & objTable.Name)	
+%>
+COMMIT WORK;
+SET AUTODDL OFF;
+SET TERM ^ ;
+
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+RETURNS
+(
+<%
+	output.tabLevel = 1
+	' list all fields as parameters
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+		If Not bInFirst Then 
+			output.write "," & vbCrLf
+		End If 
+		
+		bInFirst = false
+		output.autoTab D(objColumn.Name) & " " & objColumn.DataTypeNameComplete
+	Next
+%>
+)
+AS
+BEGIN
+
+	FOR SELECT
+<%
+	output.tabLevel = 2
+	' list all fields
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+
+		If Not bInFirst Then 
+			output.write  "," & vbCrLf
+		End if	
+
+		bInFirst = false			
+
+		output.autoTab D(objColumn.Name)
+	Next
+
+	output.write vbCrLf
+%>	FROM <%output.write D(objTable.Name) %>
+	INTO
+<%
+	' compare keys with parameters
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+		If Not bInFirst Then 
+			output.write  ","  & vbCrLf
+		End if	
+
+		bInFirst = false					
+
+		output.autoTab ":" & D(objColumn.Name)
+	Next
+%>
+  DO BEGIN
+       SUSPEND;
+     END
+END
+ ^
+ 
+SET TERM ; ^
+COMMIT WORK;
+SET AUTODDL ON;
+
+<% 
+'----------------------------------------------------------------------
+' Update
+'----------------------------------------------------------------------
+If Not objTable.Columns.Count = objTable.PrimaryKeys.Count Then
+strProcName = D("PU_" & objTable.Name)		
+%>
+COMMIT WORK;
+SET AUTODDL OFF;
+SET TERM ^ ;
+
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	output.tabLevel = 1
+	' list all fields as parameters
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+
+		' No need to pass in computed columns or Generator values
+		If Not bInFirst Then 
+			output.write "," & vbCrLf
+		End If 
+		
+		bInFirst = false
+		output.autoTab D("I$" & objColumn.Name) & " " & objColumn.DataTypeNameComplete
+			
+	Next
+%>
+)
+<%
+	output.tabLevel = 1
+	' list all RETURN parameters
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+		If objColumn.IsComputed _
+			Or props.ContainsKey("GEN:U:" & objColumn.Name) _
+			Or props.ContainsKey("GEN:U:T:" & objColumn.Name) Then
+		
+			If Not bInFirst Then 
+				output.write "," & vbCrLf
+			End If 
+			
+			If bInFirst Then
+				output.write "RETURNS" & vbCrLf
+				output.write "(" & vbCrLf
+			End If
+			
+			bInFirst = false
+			output.autoTab D(objColumn.Name) & " " & objColumn.DataTypeNameComplete
+		End If
+	Next		
+	
+	If Not bInFirst Then 
+		output.write vbCrLf		
+		output.write ")" & vbCrLf
+	End If 		
+%>
+AS
+BEGIN
+
+<%
+	For Each objColumn in objTable.Columns
+		propName = "GEN:U:" & objColumn.Name
+		If props.ContainsKey(propName) Then	
+			output.autoTabLn D("I$" + objColumn.Name) + " = GEN_ID(" + D(props(propName).Value) + ", 1);"
+		End If	
+	Next
+%>
+	UPDATE <%output.write D(objTable.Name) %>
+	SET
+<%
+		output.tabLevel = 2
+		' list all fields except identity (if one exists)
+		bInFirst = true
+		For Each objColumn in objTable.Columns
+
+			' check if field is not an indentity in which case we won't include it into insert list
+			If Not objColumn.IsAutoKey And Not objColumn.IsComputed And Not objColumn.IsInPrimaryKey Then 			
+				If Not bInFirst Then 
+					output.write  "," & vbCrLf
+				End if	
+
+				bInFirst = False
+
+				output.autoTab D(objColumn.Name) & " = :" & D("I$" & objColumn.Name)
+			End If
+		Next
+
+		output.write vbCrLf 		
+%>	WHERE
+<%
+	' compare keys with parameters
+	bInFirst = true
+	For Each objColumn in objTable.PrimaryKeys
+		If Not bInFirst Then 
+			output.write vbCrLf
+			output.autoTab "AND	" & D(objColumn.Name) & " = :" & D("I$" & objColumn.Name)
+		Else
+			output.autoTab D(objColumn.Name) & " = :" & D("I$" & objColumn.Name)
+		End if
+		bInFirst = False
+	Next
+	output.writeLn ";" & vbCRLF
+
+	'-------------------------------------------------------
+	' Add the Logic to return computed columns if necessary 
+	'-------------------------------------------------------	
+	bHasComputed = false
+	strWhereClause = ""
+	strWhereAnd = ""
+	strWhereFields = ""
+	strComma = ""
+	strInfoFields = ""
+
+	output.tabLevel = 1
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+		If objColumn.IsInPrimaryKey Then
+			strWhereClause = strWhereClause & strWhereAnd & D(objColumn.Name) & " = :" & D("I$" & objColumn.Name)
+			strWhereAnd	= " AND "				
+		End If
+		
+		If objColumn.IsComputed Then
+			bHasComputed = true
+			strWhereFields = strWhereFields & strComma & D(objColumn.Name)
+			strInfoFields = strInfoFields  & strComma & ":" & D(objColumn.Name)
+			strComma =  ", "			
+		End If
+		
+		propName = "GEN:U:" & objColumn.Name
+		If props.ContainsKey(propName) Then	
+			output.autoTabLn D(objColumn.Name) + " = :" + D("I$" + objColumn.Name) + ";" 
+		End If		
+		
+		propName = "GEN:U:T:" & objColumn.Name
+		If props.ContainsKey(propName) Then	
+			output.autoTabLn D("I$" + objColumn.Name) + " = GEN_ID(" + D(props(propName).Value) + ", 0);"
+			output.autoTabLn D(objColumn.Name) + " = " & D("I$" + objColumn.Name) + ";" 
+		End If			
+	Next
+
+	If bHasComputed Then
+		output.write vbCrLf
+		output.write "    SELECT "
+		output.write strWhereFields
+		output.write vbCrLf & "       FROM " & D(objTable.Name)
+		output.write vbCrLf & "     WHERE " & strWhereClause		
+		output.write vbCrLf & "     INTO " & strInfoFields & ";" & vbCrLf				
+	End if	
+%>
+END
+ ^
+ 
+SET TERM ; ^
+COMMIT WORK;
+SET AUTODDL ON;
+
+<% End If %>
+
+<% 
+'----------------------------------------------------------------------
+' Insert
+'----------------------------------------------------------------------
+strProcName = D("PI_" & objTable.Name)
+%>
+COMMIT WORK;
+SET AUTODDL OFF;
+SET TERM ^ ;
+
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	output.tabLevel = 1
+	' list all fields as parameters
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+
+		If Not bInFirst Then 
+			output.write "," & vbCrLf
+		End If 
+			
+		bInFirst = false
+		output.autoTab D("I$" & objColumn.Name) & " " & objColumn.DataTypeNameComplete
+
+	Next
+%>
+)
+<%
+	' list all RETURN parameters
+	output.tabLevel = 1
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+		If objColumn.IsComputed Or objColumn.IsAutoKey _
+			Or props.ContainsKey("GEN:I:" & objColumn.Name) _
+			Or props.ContainsKey("GEN:I:T:" & objColumn.Name) Then
+		
+			If Not bInFirst Then 
+				output.write "," & vbCrLf
+			End If 
+			
+			If bInFirst Then
+				output.write "RETURNS" & vbCrLf
+				output.write "(" & vbCrLf
+			End If
+			
+			bInFirst = false
+			output.autoTab D(objColumn.Name) & " " & objColumn.DataTypeNameComplete
+		End If
+	Next		
+	
+	If Not bInFirst Then 
+		output.write vbCrLf		
+		output.write ")" & vbCrLf
+	End If 
+%>
+AS
+BEGIN
+
+<%
+	For Each objColumn in objTable.Columns
+		propName = "GEN:I:" & objColumn.Name
+		If props.ContainsKey(propName) Then	
+			output.autoTabLn D("I$" + objColumn.Name) + " = GEN_ID(" + D(props(propName).Value) + ", 1);"
+		End If	
+	Next
+%>
+	INSERT INTO <%output.write D(objTable.Name) %>
+	(
+<%
+		output.tabLevel = 2
+		' list all fields except identity (if one exists)
+		bInFirst = true
+		For Each objColumn in objTable.Columns
+
+			' check if field is not an indentity in which case we won't include it into insert list
+			If Not objColumn.IsComputed Then
+				If Not bInFirst Then 
+					output.write  "," & vbCrLf
+				End if	
+
+				bInFirst = False
+				
+				output.autoTab D(objColumn.Name)
+			End If
+		Next
+
+		output.write vbCrLf 		
+%>	)
+	VALUES
+	(
+<%
+		blnFirst = True
+
+		' list all parameters except the one for indetity (if one exists)
+		bInFirst = true
+		For Each objColumn in objTable.Columns
+
+			' check if fields is not an identity
+			If Not objColumn.IsComputed Then 			
+				If Not bInFirst Then 
+					output.write  "," & vbCrLf
+				End if	
+
+				bInFirst = False
+
+				output.autoTab ":" & D("I$" & objColumn.Name)
+			End If
+		Next
+
+		output.write vbCrLf 				
+%>	);
+
+<%
+	'-------------------------------------------------------
+	' Add the Logic to return computed columns if necessary 
+	'-------------------------------------------------------	
+	bHasComputed = false
+	strWhereClause = ""
+	strWhereAnd = ""
+	strWhereFields = ""
+	strComma = ""
+	strInfoFields = ""
+
+	output.tabLevel = 1
+	bInFirst = true
+	For Each objColumn in objTable.Columns
+		If objColumn.IsInPrimaryKey Then
+			strWhereClause = strWhereClause & strWhereAnd & D(objColumn.Name) & " = :" & D("I$" & objColumn.Name)
+			strWhereAnd	= " AND "				
+		End If
+		
+		If objColumn.IsComputed Then
+			bHasComputed = true
+			strWhereFields = strWhereFields & strComma & D(objColumn.Name)
+			strInfoFields = strInfoFields  & strComma & ":" & D(objColumn.Name)
+			strComma =  ", "			
+		End If
+		
+		propName = "GEN:I:" & objColumn.Name
+		If props.ContainsKey(propName) Then	
+			output.autoTabLn D(objColumn.Name) + " = :" + D("I$" + objColumn.Name) + ";" 
+		End If		
+		
+		propName = "GEN:I:T:" & objColumn.Name
+		If props.ContainsKey(propName) Then	
+			output.autoTabLn D("I$" + objColumn.Name) + " = GEN_ID(" + D(props(propName).Value) + ", 0);"
+			output.autoTabLn D(objColumn.Name) + " = " & D("I$" + objColumn.Name) + ";" 
+		End If			
+	Next
+
+	If bHasComputed Then
+		output.write vbCrLf
+		output.write "    SELECT "
+		output.write strWhereFields
+		output.write vbCrLf & "       FROM " & D(objTable.Name)
+		output.write vbCrLf & "     WHERE " & strWhereClause		
+		output.write vbCrLf & "     INTO " & strInfoFields & ";" & vbCrLf				
+	End if			
+%>
+END
+ ^
+ 
+SET TERM ; ^
+COMMIT WORK;
+SET AUTODDL ON;
+
+<% 
+'----------------------------------------------------------------------
+' Delete
+'----------------------------------------------------------------------
+strProcName = D("PD_" & objTable.Name)
+%>
+COMMIT WORK;
+SET AUTODDL OFF;
+SET TERM ^ ;
+
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	output.tabLevel = 1
+	' list all keys as parameters
+	bInFirst = true
+	For Each objColumn in objTable.PrimaryKeys
+
+		' check if at end of keys
+		If Not bInFirst Then
+			output.write "," & vbCrLf
+		End If
+
+		bInFirst = false
+
+		output.autoTab D(objColumn.Name) & " " & objColumn.DataTypeNameComplete
+	Next
+%>
+)
+AS
+BEGIN
+	
+	DELETE
+	FROM <%output.write D(objTable.Name) %>
+	WHERE <% output.writeLn ""
+	output.tabLevel = 1	
+	' compare keys with parameters
+	bInFirst = true
+	For Each objColumn in objTable.PrimaryKeys
+
+		' continue where part with an AND
+		If Not bInFirst Then
+			output.write " AND" & vbCrLf
+		End If
+
+		bInFirst = false
+
+		output.autoTab D(objColumn.Name) & " = :" & D(objColumn.Name)
+	Next
+	output.writeLn ";"
+%>
+	  
+END
+ ^
+ 
+SET TERM ; ^
+COMMIT WORK;
+SET AUTODDL ON;
+
+<% 
+	' Save the output file for this Table
+	Dim filename
+	filename = input.item("txtPath")
+
+	Dim length
+	Dim pos
+	lenth = Len(filename)
+	pos = InStrRev(filename, "\") 
+
+	If Not pos = lenth Then
+		filename = filename & "\"
+	End If
+
+	filename = filename & objTable.Name & ".sql"
+
+	output.save filename, false
+	buffer = buffer & output.text
+	output.clear
+Next '  tableName
+	
+output.write buffer
+
+filename = input.item("txtPath") 
+lenth = Len(filename) 
+pos = InStrRev(filename, "\") 
+
+If Not pos = lenth Then 
+  filename = filename & "\" 
+End If 
+
+filename = filename & "Firebird_ALL.SQL" 
+output.save filename, false 
+
+' END OF TEMPLATE
+ %>
+
+<%
+
+Function BuildCreateAlterStatement(strProcName, alterStatement)
+
+	Dim statement
+	statement = ""
+	
+	If Not alterStatement Then 
+		statement = statement & "CREATE PROCEDURE " & UCase(strProcName)
+	Else
+		statement = statement & "ALTER PROCEDURE " & UCase(strProcName)
+	End If 
+
+	BuildCreateAlterStatement = statement
+
+End Function
+
+'=======================================
+' This function accounts for Dialects
+'=======================================
+Function D(strText)
+    If dialect = 3 Then
+		D = """" + strText + """"
+	Else
+		D = strText
+	End If
+End Function
+
+Function TrimSpaces(str)
+
+	Dim tname
+	Dim name
+	Dim char
+	Dim l
+
+	name = ""
+	tname = str
+	l = Len(tname)
+
+	For j = 1 To l
+		char = Mid(tname, j, 1)
+		If Not char = " " Then
+			name = name & char
+		End If
+	Next
+
+	TrimSpaces = name
+End Function
+
+%>
+##|BODY_END

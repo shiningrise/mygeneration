@@ -1,0 +1,97 @@
+<Project name="UnitTests" standardNamespace="UnitTests" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#">
+  <Contents>
+    <File name=".\Access" subtype="Directory" buildaction="Compile" dependson="" data="" />
+    <File name=".\FireBird" subtype="Directory" buildaction="Compile" dependson="" data="" />
+    <File name=".\MySql4" subtype="Directory" buildaction="Compile" dependson="" data="" />
+    <File name=".\Oracle" subtype="Directory" buildaction="Compile" dependson="" data="" />
+    <File name=".\PostgreSql" subtype="Directory" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQL" subtype="Directory" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLite" subtype="Directory" buildaction="Compile" dependson="" data="" />
+    <File name=".\VistaDb" subtype="Directory" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQL\AggregateTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQL\_AggregateTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQL\SqlAggregateFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\App.config" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\SQL\SqlGroupByFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLite\AggregateTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLite\_AggregateTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLite\SQLiteGroupByFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLite\SQLiteAggregateFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\MySql4\MySqlGroupByFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\MySql4\_aggregatetest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\MySql4\aggregatetest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\MySql4\MySqlAggregateFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Access\AggregateTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Access\_AggregateTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Access\AccessAggregateFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Access\AccessGroupByFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQL\SqlBase.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Access\AccessBase.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\MySql4\MySqlBase.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLite\SQLiteBase.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQL\SqlViewAggregateFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQL\SqlViewGroupByFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLite\SQLiteViewGroupByFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLite\SQLiteViewAggregateFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQL\FullNameView.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQL\_FullNameView.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLite\_FullNameView.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Access\AccessViewGroupByFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Access\FullNameView.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Access\_FullNameView.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Access\AccessViewAggregateFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQLite\FullNameView.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\SQL\SqlEOFFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Advantage" subtype="Directory" buildaction="Compile" dependson="" data="" />
+    <File name=".\Advantage\AggregateTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Advantage\_AggregateTest.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Advantage\AdsBase.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Advantage\AdsAggregateFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Advantage\AdsGroupByFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\FireBird\FirebirdGroupByFixture.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\FireBird\_AggregateTest.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\FireBird\AggregateTest.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\FireBird\FirebirdAggregateFixture.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\FireBird\FirebirdBase.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\Oracle\OracleGroupByFixture.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\Oracle\_AGGREGATETEST.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\Oracle\AggregateTest.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\Oracle\OracleAggregateFixture.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\PostgreSql\PostgreSQLGroupByFixture.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\PostgreSql\_AggregateTest.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\PostgreSql\AggregateTest.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\PostgreSql\PostgreSQLAggregateFixture.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\PostgreSql\PostgreSQLBase.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\VistaDb\VistaDBGroupByFixture.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\VistaDb\_AggregateTest.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\VistaDb\AggregateTest.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\VistaDb\VistaDBAggregateFixture.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\VistaDb\VistaDBBase.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\SQL\SqlXmlFixture.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+  </Contents>
+  <References>
+    <Reference type="Project" refto="MyGeneration.dOOdads" localcopy="True" />
+    <Reference type="Gac" refto="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\..\..\..\Program Files\MyGeneration\SQLite.NET.dll" localcopy="True" />
+    <Reference type="Gac" refto="MySql.Data, Version=1.0.5.13785, Culture=neutral, PublicKeyToken=c5687fc88969c44d" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\..\..\..\Program Files\Extended Systems\Advantage\ADO.NET\Advantage.Data.Provider.dll" localcopy="True" />
+  </References>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="True" name="Debug">
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+    <Execution commandlineparameters="" consolepause="True" />
+    <Output directory=".\bin\Debug" assembly="UnitTests" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory=".\bin\Debug" assembly="UnitTests" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory=".\bin\Release" assembly="UnitTests" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>

@@ -1,0 +1,423 @@
+﻿##|TYPE Template
+##|UNIQUEID 92ad6dc8-08d6-46d0-a35e-2d7076f2d7d6
+##|TITLE Script Insert/Update/Delete Procedures for SQL Server
+##|NAMESPACE Microsoft SQL Server
+##|OUTPUT_LANGUAGE Transact-SQL
+##|COMMENTS_BEGIN
+Generates Insert/Update/Delete Procedures for SQL Server. Select multiple tables and 
+generate all your stored procedures in one click!
+
+Justin Greenwood
+MyGeneration Software
+justin.greenwood@mygenerationsoftware.com
+http://www.mygenerationsoftware.com/
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE JScript
+##|GUI_BEGIN
+function setup()
+{
+	if ( !input.Contains("lstTables") || !input.Contains("txtPath") )
+	{
+		ui.Title = "SQL Stored Procedures - Insert/Update/Delete";
+		ui.Width = 350;
+		ui.Height = 430;
+
+		// Grab default output path
+		var sOutputPath = "";
+		if (input.Contains("defaultOutputPath")) 
+		{
+			sOutputPath = input.Item("defaultOutputPath");
+		}
+
+		// Display and errors here
+		var lblError = ui.AddLabel("lblError", "", "");
+		lblError.ForeColor = "Red";
+
+		// Setup Folder selection input control.
+		var lblPath = ui.AddLabel("lblPath", "Select the output path:", "Select the output path in the field below.");
+		var outpath = ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+		var btnSelectPath = ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+
+		// Setup Database selection combobox.
+		var label_d = ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+		var cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.");
+
+		// Setup Tables selection multi-select listbox.
+		var label_t = ui.AddLabel("lblTables", "Select tables:", "Select tables from the listbox below.");
+		var lstTables = ui.AddListBox("lstTables", "Select tables.");
+		lstTables.Height = 150;
+
+		// Attach the onchange event to the cmbDatabases control.
+		setupDatabaseDropdown(cmbDatabases, lblError);
+		cmbDatabases.AttachEvent("onchange", "cmbDatabases_onchange");
+
+		
+		ui.ShowGUI = true;
+	}
+	else 
+	{
+		ui.ShowGUI = false;
+	}
+}
+
+function setupDatabaseDropdown(cmbDatabases, lblError)
+{
+	try 
+	{	
+		if (MyMeta.IsConnected) 
+		{
+			cmbDatabases.BindData(MyMeta.Databases);
+			if (MyMeta.DefaultDatabase != null) 
+			{
+				cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name;
+				bindTables(cmbDatabases.SelectedValue);
+			}
+
+			lblError.Text = "";
+		}
+		else
+		{
+			lblError.Text = "Please set up your database connection in the Default Settings dialog.";
+		}
+	}
+	catch (error) 
+	{
+		lblError.Text = "" + error + ", " + error.number + ", " + error.description;
+	}
+}
+
+function bindTables(sDatabase)
+{
+	var lblError = ui.item("lblError");
+	var count = 0
+
+	var lstTables = ui.item("lstTables");
+	
+	try 
+	{	
+		var db = MyMeta.Databases.Item(sDatabase);
+		lstTables.BindData(db.Tables);
+
+		lblError.Text = "";
+	}
+	catch (error) 
+	{
+		lblError.Text = "" + error + ", " + error.number + ", " + error.description;
+	}
+}
+
+function cmbDatabases_onchange(control)
+{
+	var lblError = ui.item("lblError");
+	var count = 0
+
+	var cmbDatabases = ui.item("cmbDatabase");
+
+	bindTables(cmbDatabases.SelectedText);
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE JScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<% 
+//------------------------------------------------------------------------------
+// SQL_StoredProcs.jgen
+// Last Update : 2/21/2004
+//
+// Be sure to rename this template if you plan to customize it, MyGeneration 
+// Software will update this sample over time.
+//------------------------------------------------------------------------------
+//
+//  This template generates 3 stored procedures
+//
+//  1) [TableName]Update
+//  2) [TableName]Insert
+//  3) [TableName]Delete
+//
+//  There is script in the "Interface Code" tab that pops up a dialog so you can tell this tempate
+//  where to save the files and what tables you want to generate stored procedures for.  So, the
+//  logic at a very high level looks like this:
+//
+//   For Each TableName in Select Tables
+//       objTable = database.Tables.Item(TableName)
+//       Generate the 3 stored procs for objTable
+//       Save file
+//  Next
+//
+//  However, all of the script ends up in the Output tab and you can copy this right into 
+//  Sql QueryAnalyzer and execute it.  It's a pretty smart template, it knows to make
+//  Identity Columns output parameters to return them, the same holds true for computed
+//  Columns. It knows how to use PrimaryKeys in WHERE clauses and not to update them
+//  in the UpdateStored Proc, if you have a TimeStamp it will do the comparison for you and 
+//  so on.  This template alone can save you tons of time, and at anytime you can regenerate
+//  them as tables change.
+//------------------------------------------------------------------------------
+//  Justin Greenwood
+//  MyGeneration Software
+//  justin.greenwood@mygenerationsoftware.com
+//  http://www.mygenerationsoftware.com/
+//------------------------------------------------------------------------------
+
+// collect needed data/objects and put them in local variables
+var databaseName = input.Item("cmbDatabase"); 
+var tablenames = input.Item("lstTables"); 
+var database = MyMeta.Databases.Item(databaseName);
+
+// Filename info
+var filepath = input.item("txtPath");
+if (filepath.charAt(filepath.length - 1) != '\\') filepath += "\\";
+
+// The buffer that will hold all the output for rendering.
+var buffer = "";
+
+for (var i = 0; i < tablenames.Count; i++)
+{
+	var tablename = tablenames.item(i);
+	var tableMeta = database.Tables.Item(tablename);
+
+	// Build the filename
+	var filename = filepath + "sql_procs_" + tablename + ".sql"
+
+	var insertProcName = tablename + "Insert";
+	var insertParams = "";
+	var insertFields = "";
+	var insertValues = "";
+	var insertAutoKeyCode = "";
+	var insertComputedCode = "";
+
+	var updateProcName = tablename + "Update";
+	var updateParams = "";
+	var updateSet = "";
+	var updateWhere = "";
+
+	var deleteProcName = tablename + "Delete";
+	var deleteParams = "";
+	var deleteWhere = "";
+
+	var paramName = "";
+
+	var hasComputedFields = false;
+	var hasTimestamp = false;
+
+	// Loop through all the columns of the table 
+	for (var j = 0; j < tableMeta.Columns.Count; j++) 
+	{
+		column = tableMeta.Columns.Item(j);
+		paramName = column.Name.split(' ').join('')
+
+		// If the datatype is not a timestamp, add it to the insert statement
+		if (column.DataTypeName == "timestamp")
+		{
+			hasTimestamp = true;
+		}
+		else if (!column.IsComputed)
+		{
+			if (insertParams != "")
+			{
+				insertParams += ",\r\n";
+			}
+			if (insertFields != "")
+			{
+				insertFields += ",\r\n";
+				insertValues += ",\r\n";
+			}
+
+			insertParams += "\t@" + paramName + " " + column.DataTypeNameComplete;
+			
+			if ((column.DataTypeName == "uniqueidentifier") && (column.IsInPrimaryKey) && (tableMeta.PrimaryKeys.Count == 1))
+			{
+				insertParams += " = NEWID() OUTPUT";
+			}
+			else if (column.IsNullable || column.IsAutoKey || column.IsComputed)
+			{
+				insertParams += " = NULL";
+	
+				if (column.IsAutoKey || column.IsComputed)
+				{
+					insertParams += " OUTPUT";
+				}
+			}
+
+			if (!column.IsAutoKey && !column.IsComputed)
+			{
+				insertFields += "\t\t[" + column.Name + "]";
+				insertValues += "\t\t@" + paramName;
+			}
+		}
+
+		if (column.IsAutoKey)
+		{
+			insertAutoKeyCode += "\tSELECT @" + paramName + " = SCOPE_IDENTITY();\r\n";
+		}
+
+		if (column.IsComputed)
+		{
+			if (insertComputedCode == "") 
+			{
+				hasComputedFields = true;
+				insertComputedCode += "\tSELECT ";
+			}
+			else
+			{
+				insertComputedCode += ", \r\n";
+			}
+			insertComputedCode += "\t\t@" & paramName & " = [" &  column.Name & "]" 
+		}
+
+		if (!column.IsComputed)
+		{
+			if (updateParams != "")
+			{
+				updateParams += ",\r\n";
+			}
+	
+			updateParams += "\t@" + paramName + " " + column.DataTypeNameComplete;
+			if (column.IsNullable || column.IsComputed || column.DataTypeName == "timestamp")
+			{
+				updateParams += " = NULL";
+	
+				if (column.IsComputed)
+				{
+					updateParams += " output";
+				}
+			}
+			
+	
+			if (column.IsInPrimaryKey || column.DataTypeName == "timestamp")
+			{
+				if (updateWhere != "")
+				{
+					updateWhere += " AND\r\n";
+				}
+	
+				if (column.DataTypeName == "timestamp") 
+				{
+					updateWhere += "\t\tTSEQUAL(" + column.Name + ", @" + paramName + ")";
+				}
+				else
+				{
+					updateWhere += "\t\t[" + column.Name + "] = @" + paramName;
+				}
+			}
+			
+			if (!column.IsComputed && !column.IsAutoKey && column.DataTypeName != "timestamp")
+			{
+				if (updateSet != "")
+				{
+					updateSet += ",\r\n";
+				}
+	
+				updateSet += "\t\t[" + column.Name + "] = @" + paramName;
+			}
+	
+			if (column.IsInPrimaryKey)
+			{
+				if (deleteParams != "")
+				{
+					deleteParams += ",\r\n";
+					deleteWhere += " AND\r\n";
+				}
+				deleteParams += "\t@" + column.Name + " " + column.DataTypeNameComplete;
+				deleteWhere += "\t\t[" + column.Name + "] = @" + paramName;
+			}
+		}
+
+	}
+%>USE [<%= database.Name %>]
+GO
+
+--|--------------------------------------------------------------------------------
+--| [<%= insertProcName %>] - Insert Procedure Script for <%= tablename %>
+--|--------------------------------------------------------------------------------
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id (N'[dbo].[<%= insertProcName %>]') AND OBJECTPROPERTY(id, N'IsProcedure') = 1) DROP PROCEDURE [dbo].[<%= insertProcName %>]
+GO
+
+CREATE PROCEDURE [dbo].[<%= insertProcName %>]
+(
+<%= insertParams %>
+)
+AS
+	SET NOCOUNT ON
+
+	INSERT INTO [<%= tablename %>]
+	(
+<%= insertFields %>
+	)
+	VALUES
+	(
+<%= insertValues %>
+	)
+<%= (insertAutoKeyCode == "" ? "" : "\r\n" + insertAutoKeyCode) %><%
+
+if (hasComputedFields) 
+{
+	insertComputedCode += "\r\n\tFROM [" + tablename + "]\r\n";
+	insertComputedCode += "\tWHERE " + deleteWhere + ";\r\n";
+}
+
+%>
+	RETURN @@Error
+GO
+
+--|--------------------------------------------------------------------------------
+--| [<%= updateProcName %>] - Update Procedure Script for <%= tablename %>
+--|--------------------------------------------------------------------------------
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id (N'[dbo].[<%= updateProcName %>]') AND OBJECTPROPERTY(id, N'IsProcedure') = 1) DROP PROCEDURE [dbo].[<%= updateProcName %>]
+GO
+
+CREATE PROCEDURE [dbo].[<%= updateProcName %>]
+(
+<%= updateParams %>
+)
+AS
+	SET NOCOUNT ON
+	
+	UPDATE [<%= tablename %>]
+	SET
+<%= updateSet %>
+	WHERE 
+<%= updateWhere %>
+<% if (hasTimestamp) { %>
+	IF @@ERROR > 0
+	BEGIN
+		RAISERROR('Concurrency Error',16,1)
+	END
+<% } %>
+	RETURN @@Error
+GO
+
+--|--------------------------------------------------------------------------------
+--| [<%= deleteProcName %>] - Update Procedure Script for <%= tablename %>
+--|--------------------------------------------------------------------------------
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = object_id (N'[dbo].[<%= deleteProcName %>]') AND OBJECTPROPERTY(id, N'IsProcedure') = 1) DROP PROCEDURE [dbo].[<%= deleteProcName %>]
+GO
+
+CREATE PROCEDURE [dbo].[<%= deleteProcName %>]
+(
+<%= deleteParams %>
+)
+AS
+	SET NOCOUNT ON
+
+	DELETE 
+	FROM   [<%= tablename %>]
+	WHERE  
+<%= deleteWhere %>
+
+	RETURN @@Error
+GO
+
+<%
+	// Save this set of procedures to disk
+	output.save(filename, false);
+	buffer += output.text;
+	output.clear();
+}
+
+output.write(buffer);
+%>
+##|BODY_END

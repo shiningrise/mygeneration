@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.0.0.2970
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGenSharpDev30", "./MyGenSharpDev/MyGenSharpDev30.csproj", "{93FB3C2A-2101-47E2-B5A3-7D64BA911CB8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{93FB3C2A-2101-47E2-B5A3-7D64BA911CB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93FB3C2A-2101-47E2-B5A3-7D64BA911CB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93FB3C2A-2101-47E2-B5A3-7D64BA911CB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93FB3C2A-2101-47E2-B5A3-7D64BA911CB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

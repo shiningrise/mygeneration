@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DefaultSettings Version="0.9.41.0" FirstTime="false">
+  <Setting Name="DbDriver" value="FIREBIRD" />
+  <Setting Name="ConnectionString" value="Database=C:\firebird\EMPLOYEE.GDB;User=SYSDBA;Password=MyGen;Dialect=3;Server=localhost&quot;;" />
+  <Setting Name="Language" value="C#" />
+  <Setting Name="DbTarget" value="FirebirdSQL" />
+  <Setting Name="EnableLineNumbering" value="False" />
+  <Setting Name="EnableClipboard" value="True" />
+  <Setting Name="Tabs" value="4" />
+  <Setting Name="ScriptTimeout" value="-1" />
+  <Setting Name="CheckForNewBuild" value="False" />
+  <SavedSettings 
+	name="My Connection" 
+	driver="FIREBIRD" 
+	connstr="Database=C:\firebird\EMPLOYEE.GDB;User=SYSDBA;Password=MyGen;Dialect=3;Server=localhost&quot;;"
+	dbtargetpath="C:\Program Files\MyGeneration\Settings\DbTargets.xml"
+	languagepath="C:\Program Files\MyGeneration\Settings\Languages.xml"
+	usermetapath="C:\Program Files\MyGeneration\Settings\UserMetaData.xml"
+	/>
+</DefaultSettings>

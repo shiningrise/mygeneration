@@ -1,0 +1,129 @@
+<html>
+	<head>
+		<title>CodeSmith-2-MyGeneration Converter</title>
+	</head>
+	<body>
+		<h1>CodeSmith-2-MyGeneration Converter</h1>
+		
+		<h2>Required Files:</h2>
+		<a href="http://download.mygenerationsoftware.com/cst2mygen.exe">CodeSmith-2-MyGeneration Converter</a>
+		<br><a href="http://www.codesmithtools.com/download/codesmith_26.zip">CodeSmith Freeware</a>
+		<br><a href="http://www.download.com/MyGeneration/3000-10252-10343918.html?part=dl-MyGenerat&subj=dl&tag=button">Latest Version of MyGeneration</a>
+	
+		<h2>Overview:</h2>
+		CodeSmith-2-MyGeneration is an extensible application that will partially convert a CodeSmith template 
+		into a MyGeneration template, giving the MyGeneration template developer a good starting point for thier
+		migration to MyGeneration from CodeSmith. 
+		
+		<h2>Extensibility:</h2>
+		There are 2 ways to add functionality to the CodeSmith-2-MyGeneration converter. First, by adding 
+		entries to the Xml Mapping files found in the application folder. Second, by adding plugin class files 
+		in the Plugins folder in the application folder. 
+		
+		<h4>Xml Mapping Files:</h4>
+		The xml mapping files are very simple. Two of them exist by default:
+		<i>Default.csmap</i> and <i>Default.vbmap</i>. You can add to there or add your own with the ".csmap" 
+		or ".vbmap" extension. Below is a sample of how these files must look:
+		<pre style="color=darkgreen;">
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;maps&gt;
+	&lt;map source="Response.WriteLine()" target="output.writeln(&amp;quot;&amp;quot;)" isregexp="False"/&gt;
+	&lt;map source="Response.WriteLine(" target="output.writeln(" isregexp="False"/&gt;
+	&lt;map source=".cst" target=".zeus" isregexp="False"/&gt;
+&lt;/maps&gt;
+		</pre>
+		<h4>Dynamically Compiled Plugins:</h4>
+		The dynamic plugins are simply C# (.plugin.cs) or VB.Net (.plugin.vb) classes that implement an interface
+		located in the <i>MyGeneration.CodeSmithConversion.dll</i> assembly. You can create these files in VisualStudio.Net
+		by just referencing that DLL, or just write them in a text editor. These plugins are compiled Dynamically and added to a
+		Plug-in collection in memory. Each Plug-in implements the method "Process(CstTemplate template, ILog log)", which 
+		allows the plugin developer to change information in the CodeSmith template object (API mappings, etc) before the 
+		template is converted to the MyGeneration format. You can also write to the log any information you wish to send to 
+		the Console. If you do use visual studio to create the plugin (I highly recommend it), you will have auto-complete which will
+		help you with the API. It's a simple API and most experienced programmers will quickly catch on.
+		<pre style="color=darkgreen;">
+using System;
+using System.IO;
+using System.Collections;
+using System.Text;
+using System.Reflection;
+
+using MyGeneration.CodeSmithConversion;
+using MyGeneration.CodeSmithConversion.Plugins;
+using MyGeneration.CodeSmithConversion.Template;
+
+/*
+The DLLs Referenced are:
+	System.dll
+	System.Xml.dll
+	System.Data.dll
+	System.Drawing.dll
+	System.Windows.Forms.dll
+	MyGeneration.CodeSmithConversion.dll
+*/
+namespace MyGeneration.CodeSmithConversion
+{
+	/// &lt;summary&gt;
+	/// A Sample Plugin for customizing the CodeSmith conversion.
+	/// &lt;/summary&gt;
+	public class SamplePlugin : ICstProcessor
+	{
+		/// &lt;summary&gt;
+		/// You must have a constructor with 0 parameters.
+		/// &lt;/summary&gt;
+		public SamplePlugin() {}
+
+		/// &lt;summary&gt;
+		/// This is the method where you have the ability to change the parsed CST 
+		/// Template object before the translation completes.
+		/// &lt;/summary&gt;
+		/// &lt;param name="template"&gt;&lt;/param&gt;
+		public void Process(CstTemplate template, ILog log)
+		{
+			foreach (CstToken token in template.Tokens) 
+			{
+				// I put this break here just to save on performance because this sample plugin does nothing.
+				break;
+
+				// If the token is a template code token, then do the replacements.
+				if ((token.TokenType == CstTokenType.Code) ||
+					(token.TokenType == CstTokenType.ResponseWriteShortcutCode) ||
+					(token.TokenType == CstTokenType.RunAtServerCode)) 
+				{
+					if (template.Language == CstTemplate.LANGUAGE_CSHARP) 
+					{
+						token.Text = token.Text.Replace("Response.WriteLine()", "output.writeln(\"\")");
+					}
+
+					if (template.Language == CstTemplate.LANGUAGE_VBNET) 
+					{
+						token.Text = token.Text.Replace("Response.WriteLine", "output.writeln \"\")");
+					}
+				}
+
+				log.AddEntry("Ran Special Plugin Conversion.");
+			}
+		}
+
+		/// &lt;summary&gt;
+		/// Authors name
+		/// &lt;/summary&gt;
+		public string Author
+		{
+			get { return "Justin Greenwood"; }
+		}
+
+		/// &lt;summary&gt;
+		/// Plugin Description/Name
+		/// &lt;/summary&gt;
+		public string Name
+		{
+			get { return "Sample Plugin"; }
+		}
+
+	}
+}
+
+		</pre>
+	</body>
+</html>

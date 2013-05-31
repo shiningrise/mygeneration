@@ -1,0 +1,180 @@
+2011.01.02 - MyGeneration 1.3.1.1
+- Added MyMeta support for Effiproz DB
+- Adding Compiler Version options for suiden@gmail.com. You can now set the compiler version in the ZeusConfig. You can also add additional namespaces there that will always be included in all template compilations.
+- Added the ability to set the compiler version in the template with the tag: <%#VERSION 3.5%>
+- Fixed MDAC check in the installer for windows 7.
+- Updated drivers for Npgsql, MySql, Firebird, and SQLite
+- Updated Scintilla and WinFormsUI dlls.
+
+2008.12.05 - MyGeneration 1.3.0.10
+- *Almost* complete MyMeta Sybase ASE Support
+- Basic MyMeta Sybase ASA Support (Thanks to Tim Moriarty)
+- Basic MyMeta FoxPro Support (Thanks again Tim Moriarty)
+- New DefaultSetting for loading only the default database into MyMeta.
+- Fixed up the ScintillaNet indentation guide to match the interface definition file. 
+- Fixed a find and replace hanging error in the template editor.
+- Created a new MyMeta testing tool. It will test a provider and report any errors!
+
+2008.09.06 - MyGeneration 1.3.0.9
+- Basic MyMeta Sybase ASE Support
+- Ingres2006 MyMeta Support (Thanks Julian Maughan - http://www.codeplex.com/MyMetaPlugins)
+- Dynamic ResultColumns working pretty well for MS database (Access and SQLServer)
+- Added a common interface between Tables and Views called ITabularEntity.
+
+2008.09.12 - MyGeneration 1.3.0.8
+- More Firebird fixes (Blob, IsAutoKey support and FK fix)
+- While templates are executing in a background process, we have a little progress arrow that shows up. If you choose, in the default settings you can choose to watch all of the output spit through the console.
+- Huge GUI api enhancement that allows one line Table, View, Proc dropdowns/listboxes. Looks like:
+	Finished up the generated files form and also added a great feature to the GuiController - sample code below:
+	ui.AddDatabaseSelector("dbSelection", "Pick a database", null);
+	ui.AddTableMultiSelector("tableSelection", "Pick a table", "dbSelection");
+	ui.AddViewSelector("viewSelection", "Pick a view", "dbSelection");
+	ui.AddProcedureSelector("procSelection", "Pick a procedure", "dbSelection");
+- Added a "Recently Generated Files" window.
+
+2008.09.01 - MyGeneration 1.3.0.7
+- Added Application Updates dialog that hits sourceforge. Lists all builds available, current as yellow, older than current as gray. It's multithreaded so that things can be canced.
+- Removed 5 second sleep from MyMeta browser (was there for thread testing - oops, left it in)
+
+2008.08.29 - MyGeneration 1.3.0.6
+- Fixed Indexes and FKs in MyMeta for Firebird
+- Fixed bugs in Project files with cached data, user setting overrides, etc.
+- Fixed UI bugs in Projects
+- Fixed disconnect between MyMeta Tree and MyMeta info windows.
+
+2008.08.14 - MyGeneration 1.3.0.5
+- Added multithreading for the template browser and Project browser. Each template/project is executed in a seperate thread through a queue. 
+- Fixed up the Visual Studio Plugin a bit. Seems to work prettty well in VS 2005.
+- Added a setting to enable/disable multithreading fromt he template browser.
+- Fixed a couple of minor bugs/refactored.
+
+2008.08.08 - MyGeneration 1.3.0.4
+- Added command line support for merging User Meta-Data files with other people (much needed when you arn't able to use the same user meta-data file) Usage is: ZeusCmd.exe -mumd umd1.xml Northwind umd2.xml Northwind22 out.xml
+- Adding features to allow Databases with different names to share the same user meta data. I'm doing this for myself regardless of how useful it is to anyone else. In my dev team there are many developers with different connection strings and different meta data files. ;)
+- Updated DLLs/Drivers/References - SQLite.Data, SciLexer, ScintillaNet, Postgres, MySQL, VistaDB, Firebird.
+- MyMeta change for SQLServer - Added sp_refreshView - thanks Mike (mr_lasseter@users.sourceforge.net)
+- Changed multithreading in MyMeta browser to speed up launch and also make the pain of a hung connection more bearable.
+- Added a command line flag for launching MyGeneration with a different DefaultSettings file. An example would be: "MyGeneration.exe -configfile ./DefaultSettingsSpecial.xml"
+
+2007.12.16 - MyGeneration 1.3.0.3
+- Workaround fix in MyMeta for datadapter bug in SQLite .net provider.
+
+2007.12.15 - MyGeneration 1.3.0.2
+- Updated MySql, SQLite, Postgresql, and Firebird providers. MySQL provider is now included in the installer 
+  because MyGen is Open Source. YAY! It was loaded by reflection in the past because of licensing issues.
+- Fixed bugs in Saving User Meta Data
+- Finished the new project file code to override variable values at runtime, and 
+  store user specific project data in a ".user" type file (we put .zprjusr as the extention)- Template 
+  browser behavioral bugs on double click, right click, etc
+
+2007.12.06 - MyGeneration 1.3.0.1
+- Fixed bugs in Template editor settings panel
+- Fixed bugs when switching databases in the SQL tool
+- Hid confusing toolbar items that are unneeded.
+- Template browser behavioral bugs on double click, right click, etc
+
+2007.11.27 - MyGeneration 1.3 RC1
+- Fixed bugs in MyMeta resultsets
+- Added SQLTool to standard install
+- Installer now skips MDAC for vista installs automatically.
+- moved project browser and template browser into usercontrols so they could be put into a 
+  VS2005 plugins. note that the addin will be released after 1.3.
+
+2007.11.06 - MyGeneration 1.3 beta9
+- Fixed bugs in AutoComplete: crash and ctrl-space
+- Added better autcomplete to VB.Net (supporting Dim'd variables)
+- Added "this" and "Me" to autocomplete to thier respective languages
+- Fix tooltip on error window button.
+- Fix Default Settings Confusion. Either add a Save/OK button in there or make it modal.
+- Enhanced results grid of SqlTool Plugin. - supports multiple result sets now.
+- Can now execute sql from template output by clicking on the plugin toolbar icon.
+
+2007.11.04 - MyGeneration 1.3 beta8
+- Fixed bugs in the SQLTool plugin
+    - Added select database/execute only selection featues.
+    - fixed dead connection issue
+- fixed MyMeta issue with (MAX) data types in sql 2005
+- save button on settings saves the settings 
+
+2007.11.03 - MyGeneration 1.3 beta7
+- Added the SQLTool Plugin
+- Fixed the application repositioning bug
+- Tryed to organize the development environments/project structure a little.
+- Fixed a few other minor thingies.
+2007.11.01 (k3b) MyGenXsd3b Versionnumber 0.9.0.116
+- MyGenXsd3b plugin code complete
+- MyGenXsd3b.chm added uml stuff and new MyGeneration-Gui-Details to chm
+- wiki on sourceforge http://mygeneration.wiki.sourceforge.net/ as onlineupdate for MyGenXsd3b.chm
+    - topics SupportedTools, XSL and XSD3b
+- new template xml/Modelfile2XSD3b.csgen to overcome performanceproblems with big uml-files
+
+2007.11.01 - MyGeneration 1.3 beta6
+- Made small changes to the Plugin interfaces
+- Created a codesmith converter plugin with the source to the old converter app.
+
+2007.10.31 - MyGeneration 1.3 beta5c
+- Fixed registry mixup in the installer.
+
+2007.10.30 - MyGeneration 1.3 beta5
+- Made it a side by side installer (different folder)
+- Changed identity of MyMeta with new SNK file and new COM Guids - NO MORE REGISTRATION ISSUES! YAY! 
+  (you can have both versions running at the same time)
+- Fixed COM OLEDB modal popup
+
+2007.10.30 - MyGeneration 1.3 beta4d
+- Fixed MyMeta/Default settings bug. (found in testing)
+- Updated SVN and got k3b's changes (oops)
+
+2007.10.29 - MyGeneration 1.3 beta 4
+- Bugfix: Fixed MyMeta registration issues on install/uninstall
+- Fixed missing icon issue
+- Move scripting/preprocessor/typeconverter plugins into the Zeus assembly. (got rid of 5 DLLs and the need 
+  to reflect them) It still supports plugins, just should load faster without the dynamic crap.
+- Fixed bugs in Error list. Template errors clear once executed again to reveal a fresh list of errors.
+- Fixed bugs in Console. Read only and scrolls correctly to the end of the console as it writes.
+- fixed shutdown methods to be smarter - will always close immediately if closed by task manager.
+- renamed modules to be called "Project Folders".
+
+2007.10.25 - MyGeneration 1.3 beta 3
+- Bugfix: Goto dialog didn't work.
+- Bugfix: Fixed form closing issues
+- Bugfix: Add drag and drop back into the app
+- Bugfix: Add Help file support again
+- Enhancement: Improved autocomplete/intellisense.
+- Enhancement: Clean up errors grid. Add more useful info and resize grid when form resizes.
+2007.10.23 (k3b)
+- Bugfix: MyMeta.Plugins.Xsd3b.dll was not added to installer and therefore not available in MyGenerateion
+- Bugfix in xsd3b provider: Foreignkeys had only parent-child relation. Added child-parent relations
+- Added support for uml1.3 import from "Enterprise Architect 2.5"
+
+2007.10.21 - MyGeneration 1.3 beta 2
+- Added MyGeneration Intellesense features. Ctrl-Space, autocomplete on ".", and calltip on "(" for 
+  methods work for the intrinsic objects. There is a lot of potential here for the future. This is just 
+  something I've implemented in C# and JScript to learn how scintilla works in this area.
+
+2007.10.19 - MyGeneration 1.3 beta 1
+- Upgraded DockPanel Suite
+- Upgraded to my own custom branch of the Scintilla.Net project
+- Complete rewrite of MDI Interface forms.
+- Moved current controls/forms to seperate assembly so that they can e used in IDE plugins if needed
+- Added a new Errors form that tracks application & template errors/exceptions. It can be saved to disk, emailed or cleared.
+- Added a new console form that tracks activity in the application. It can be saved to disk or cleared.
+- Using new toolbars and menus from 2.0. 
+- Added toolbar merging for document type dockable windows.
+- Added 3 types of plugins:
+    - Document plugin: This allows the plugin author to tie into our file menu and toolbars and open specified file 
+      type into a custom dockable document window.
+    - Content plugin: Allows a dockable window like a control bar or file browser that is not an editable/savable 
+      document, but provides some useful content/functionality to the user. The MyMeta browser and template broswer 
+      are good examples.
+    - Simple Execute plugin: This is a menu item/toolbar icon plugin that executes some code in the plugin. It 
+      doesn't tie into the dockpanel suite, but could potentially launch a modal window.
+- Added queries to proc-parameter descriptions in MyMeta for SQL Server.
+- Fixed a couple Postgresql MyMeta performance issues thanks to Michael McKean
+- Added ability to execute SQL in the current active document by clicking on the execute button in the MyMeta browser.
+- Error handling is more controlled now. We can more accurately determine if an error happened within a template 
+  or the application.
+- Xsd3b Plugin fixes/enhancements by k3b
+    - Bugfiexs xsd export with numeric(10,2) adn function as default-value
+    - Added more errorhandling with unique-constraints
+

@@ -1,0 +1,17 @@
+Copyright=Copyright 2004-2007 © MyGeneration Software. All Rights Reserved.
+ProductName=MyGeneration Plugin Interfaces
+AssemblyDir=C:\projects\mygeneration\trunk\documentation\help\zeus\ZeusClassReference\bin\Debug
+OutputDir=C:\projects\mygeneration\trunk\documentation\help\zeus\ChmBuildFolder
+DocDir=
+Namespaces=MyGeneration;Zeus;Zeus.UserInterface
+Logo=C:\projects\mygeneration\trunk\mygeneration\MyGeneration\Resources\mygenlogo.gif
+MSDNLinks=true
+OutputType=chm
+CodeHighlighting=false
+FriendlyFilenames=false
+Template=vs2005
+Internals=false
+TOC=false
+CSSyntaxDeclaration=true
+VBSyntaxDeclaration=true
+CPPSyntaxDeclaration=false

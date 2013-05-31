@@ -1,0 +1,135 @@
+﻿##|TYPE Template
+##|UNIQUEID 58320fd3-7e13-4bbb-b040-27cd0ce98da0
+##|TITLE Delete All Data
+##|NAMESPACE Microsoft SQL Server.Data
+##|OUTPUT_LANGUAGE Transact-SQL
+##|COMMENTS_BEGIN
+Generates a script that will clean all data out of a database. This demonstrates the 
+ability of MyGeneration to order tables by dependancies.
+
+Justin Greenwood
+MyGeneration Software
+justin.greenwood@mygenerationsoftware.com
+http://www.mygenerationsoftware.com/
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE JScript
+##|GUI_BEGIN
+function setup()
+{
+	ui.Title = "SQL Delete All Data";
+	ui.Width = 350;
+	ui.Height = 260;
+
+	// Grab default output path
+	var sOutputPath = "";
+	if (input.Contains("defaultOutputPath")) 
+	{
+		sOutputPath = input.Item("defaultOutputPath");
+	}
+
+	// Display and errors here
+	var lblError = ui.AddLabel("lblError", "", "");
+	lblError.ForeColor = "Red";
+
+	// Setup Folder selection input control.
+	var lblPath = ui.AddLabel("lblPath", "Select the output path:", "Select the output path in the field below.");
+	var outpath = ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+	var btnSelectPath = ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+
+	// Setup Database selection combobox.
+	var label_d = ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+	var cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.");
+
+	// Attach the onchange event to the cmbDatabases control.
+	setupDatabaseDropdown(cmbDatabases, lblError);
+	
+	ui.ShowGUI = true;
+}
+
+function setupDatabaseDropdown(cmbDatabases, lblError)
+{
+	try 
+	{	
+		if (MyMeta.IsConnected) 
+		{
+			cmbDatabases.BindData(MyMeta.Databases);
+			if (MyMeta.DefaultDatabase != null) 
+			{
+				cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name;
+			}
+
+			lblError.Text = "";
+		}
+		else
+		{
+			lblError.Text = "Please set up your database connection in the Default Settings dialog.";
+		}
+	}
+	catch (error) 
+	{
+		lblError.Text = "" + error + ", " + error.number + ", " + error.description;
+	}
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE JScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%#SCRIPT sql_library.js%><%
+//------------------------------------------------------------------------------
+// SQL_DeleteAllData.jgen
+// Last Update : 03/03/2004
+//
+// Be sure to rename this template if you plan to customize it, MyGeneration 
+// Software will update this sample over time.
+//------------------------------------------------------------------------------
+//  This template generates a delete statement for every table in the selected 
+//	database. The delete statements are ordered by table dependancy so none of
+//  the constraints cause errors during deletion.
+//
+//  There is script in the "Interface Code" tab that pops up a dialog so you can tell this tempate
+//  where to save the files and what tables you want to generate insert statements for. This
+//  template was developed to display the ability to not only use database meta-data, but also
+//  the data itself to generate code.
+//------------------------------------------------------------------------------
+//  Justin Greenwood
+//  MyGeneration Software
+//  justin.greenwood@mygenerationsoftware.com
+//  http://www.mygenerationsoftware.com/
+//------------------------------------------------------------------------------
+
+// collect needed data/objects and put them in local variables
+var databaseName = input.Item("cmbDatabase"); 
+var database = MyMeta.Databases.Item(databaseName);
+%>--|--------------------------------------------------------------------------------
+--| Deletes all data in the database: [<%= databaseName %>]
+--|--------------------------------------------------------------------------------
+BEGIN TRANSACTION
+<%
+// Filename info
+var filepath = input.item("txtPath");
+if (filepath.charAt(filepath.length - 1) != '\\') filepath += "\\";
+
+// Build the filename
+var filename = filepath + "sql_deleteall_" + databaseName + ".sql"
+	
+var tmp = getTableDep(database, true);
+for (var j = 0; j < tmp.length; j++)
+{
+	output.writeln("\tDELETE FROM [" + tmp[j] + "];");
+}
+%>IF @@ERROR <> 0 ROLLBACK TRANSACTION;
+ELSE 
+BEGIN
+	PRINT 'Transaction Successfully Committed: All data in database <%= databaseName %> deleted!';
+	COMMIT TRANSACTION;
+END
+
+GO<%
+// Save this set of insert statements to disk
+output.save(filename, false);
+%>
+##|BODY_END

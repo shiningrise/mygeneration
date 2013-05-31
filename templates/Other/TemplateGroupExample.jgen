@@ -1,0 +1,123 @@
+﻿##|TYPE Group
+##|UNIQUEID 4c5e4446-29d0-4df1-b8c5-acd22b3a9868
+##|TITLE Template Group Example
+##|NAMESPACE Samples.Other
+##|OUTPUT_LANGUAGE None
+##|COMMENTS_BEGIN
+This is an example of a Template Group. 
+Instead of a template body, a Template Group
+has links to other templates. Each template
+in the group will be generated using the input
+recieved from the Template Group's Input code 
+block.
+
+Justin Greenwood
+MyGeneration Software
+justin.greenwood@mygenerationsoftware.com
+http://www.mygenerationsoftware.com/
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE JScript
+##|GUI_BEGIN
+function setup()
+{
+	ui.Title = "Generate Multiple Templates";
+	ui.Width = 350;
+	ui.Height = 430;
+
+	// Grab default output path
+	var sOutputPath = "";
+	if (input.Contains("defaultOutputPath")) 
+	{
+		sOutputPath = input.Item("defaultOutputPath");
+	}
+
+	// Display and errors here
+	var lblError = ui.AddLabel("lblError", "", "");
+	lblError.ForeColor = "Red";
+
+	// Setup Folder selection input control.
+	var lblPath = ui.AddLabel("lblPath", "Select the output path:", "Select the output path in the field below.");
+	var outpath = ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+	var btnSelectPath = ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+
+	// Setup Database selection combobox.
+	var label_d = ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+	var cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.");
+
+	// Setup Tables selection multi-select listbox.
+	var label_t = ui.AddLabel("lblTables", "Select tables:", "Select tables from the listbox below.");
+	var lstTables = ui.AddListBox("lstTables", "Select tables.");
+	lstTables.Height = 150;
+
+	// Attach the onchange event to the cmbDatabases control.
+	setupDatabaseDropdown(cmbDatabases, lblError);
+	cmbDatabases.AttachEvent("onchange", "cmbDatabases_onchange");
+
+		
+	ui.ShowGUI = true;
+}
+
+function setupDatabaseDropdown(cmbDatabases, lblError)
+{
+	try 
+	{	
+		if (MyMeta.IsConnected) 
+		{
+			cmbDatabases.BindData(MyMeta.Databases);
+			if (MyMeta.DefaultDatabase != null) 
+			{
+				cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name;
+				bindTables(cmbDatabases.SelectedValue);
+			}
+
+			lblError.Text = "";
+		}
+		else
+		{
+			lblError.Text = "Please set up your database connection in the Default Settings dialog.";
+		}
+	}
+	catch (error) 
+	{
+		lblError.Text = "" + error + ", " + error.number + ", " + error.description;
+	}
+}
+
+function bindTables(sDatabase)
+{
+	var lblError = ui.item("lblError");
+	var count = 0
+
+	var lstTables = ui.item("lstTables");
+	
+	try 
+	{	
+		var db = MyMeta.Databases.Item(sDatabase);
+		lstTables.BindData(db.Tables);
+
+		lblError.Text = "";
+	}
+	catch (error) 
+	{
+		lblError.Text = "" + error + ", " + error.number + ", " + error.description;
+	}
+}
+
+function cmbDatabases_onchange(control)
+{
+	var lblError = ui.item("lblError");
+	var count = 0
+
+	var cmbDatabases = ui.item("cmbDatabase");
+
+	bindTables(cmbDatabases.SelectedText);
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE JScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|TEMPLATE_INCLUDE ..\Microsoft_SQL_Server\SQL_StoredProcs.jgen
+##|TEMPLATE_INCLUDE ..\PHP\PHP_BusinessObject.jgen

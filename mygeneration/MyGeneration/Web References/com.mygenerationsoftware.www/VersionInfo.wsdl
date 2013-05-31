@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.mygenerationsoftware.com/VersionInfo/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://www.mygenerationsoftware.com/VersionInfo/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.mygenerationsoftware.com/VersionInfo/">
+      <s:element name="GetVersion">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetVersionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetVersionResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetUpdateText">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetUpdateTextResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetUpdateTextResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="string" nillable="true" type="s:string" />
+    </s:schema>
+  </types>
+  <message name="GetVersionSoapIn">
+    <part name="parameters" element="s0:GetVersion" />
+  </message>
+  <message name="GetVersionSoapOut">
+    <part name="parameters" element="s0:GetVersionResponse" />
+  </message>
+  <message name="GetUpdateTextSoapIn">
+    <part name="parameters" element="s0:GetUpdateText" />
+  </message>
+  <message name="GetUpdateTextSoapOut">
+    <part name="parameters" element="s0:GetUpdateTextResponse" />
+  </message>
+  <message name="GetVersionHttpGetIn" />
+  <message name="GetVersionHttpGetOut">
+    <part name="Body" element="s0:string" />
+  </message>
+  <message name="GetUpdateTextHttpGetIn" />
+  <message name="GetUpdateTextHttpGetOut">
+    <part name="Body" element="s0:string" />
+  </message>
+  <message name="GetVersionHttpPostIn" />
+  <message name="GetVersionHttpPostOut">
+    <part name="Body" element="s0:string" />
+  </message>
+  <message name="GetUpdateTextHttpPostIn" />
+  <message name="GetUpdateTextHttpPostOut">
+    <part name="Body" element="s0:string" />
+  </message>
+  <portType name="VersionInfoSoap">
+    <operation name="GetVersion">
+      <input message="s0:GetVersionSoapIn" />
+      <output message="s0:GetVersionSoapOut" />
+    </operation>
+    <operation name="GetUpdateText">
+      <input message="s0:GetUpdateTextSoapIn" />
+      <output message="s0:GetUpdateTextSoapOut" />
+    </operation>
+  </portType>
+  <portType name="VersionInfoHttpGet">
+    <operation name="GetVersion">
+      <input message="s0:GetVersionHttpGetIn" />
+      <output message="s0:GetVersionHttpGetOut" />
+    </operation>
+    <operation name="GetUpdateText">
+      <input message="s0:GetUpdateTextHttpGetIn" />
+      <output message="s0:GetUpdateTextHttpGetOut" />
+    </operation>
+  </portType>
+  <portType name="VersionInfoHttpPost">
+    <operation name="GetVersion">
+      <input message="s0:GetVersionHttpPostIn" />
+      <output message="s0:GetVersionHttpPostOut" />
+    </operation>
+    <operation name="GetUpdateText">
+      <input message="s0:GetUpdateTextHttpPostIn" />
+      <output message="s0:GetUpdateTextHttpPostOut" />
+    </operation>
+  </portType>
+  <binding name="VersionInfoSoap" type="s0:VersionInfoSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <operation name="GetVersion">
+      <soap:operation soapAction="http://www.mygenerationsoftware.com/VersionInfo/GetVersion" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetUpdateText">
+      <soap:operation soapAction="http://www.mygenerationsoftware.com/VersionInfo/GetUpdateText" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <binding name="VersionInfoHttpGet" type="s0:VersionInfoHttpGet">
+    <http:binding verb="GET" />
+    <operation name="GetVersion">
+      <http:operation location="/GetVersion" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetUpdateText">
+      <http:operation location="/GetUpdateText" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+  </binding>
+  <binding name="VersionInfoHttpPost" type="s0:VersionInfoHttpPost">
+    <http:binding verb="POST" />
+    <operation name="GetVersion">
+      <http:operation location="/GetVersion" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetUpdateText">
+      <http:operation location="/GetUpdateText" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+  </binding>
+  <service name="VersionInfo">
+    <port name="VersionInfoSoap" binding="s0:VersionInfoSoap">
+      <soap:address location="http://www.mygenerationsoftware.com/WebServices/VersionInfo.asmx" />
+    </port>
+    <port name="VersionInfoHttpGet" binding="s0:VersionInfoHttpGet">
+      <http:address location="http://www.mygenerationsoftware.com/WebServices/VersionInfo.asmx" />
+    </port>
+    <port name="VersionInfoHttpPost" binding="s0:VersionInfoHttpPost">
+      <http:address location="http://www.mygenerationsoftware.com/WebServices/VersionInfo.asmx" />
+    </port>
+  </service>
+</definitions>

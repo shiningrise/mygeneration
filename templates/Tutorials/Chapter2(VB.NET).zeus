@@ -1,0 +1,223 @@
+﻿##|TYPE Template
+##|UNIQUEID 9048662b-8783-4f0a-bb63-853652218937
+##|TITLE Chapter 2 - Column Properties (VB.NET)
+##|NAMESPACE Tutorials.VBNET.Chapter 2
+##|OUTPUT_LANGUAGE None
+##|GUI_ENGINE .Net Script
+##|GUI_LANGUAGE VB.Net
+##|GUI_BEGIN
+<%#REFERENCE System.Windows.Forms.dll, System.Drawing.dll %>
+<%#NAMESPACE System.Windows.Forms, System.Drawing %>
+
+Public Class GeneratedGui
+			Inherits DotNetScriptGui
+
+	Public Sub New(context As ZeusContext)
+		MyBase.New(context)
+	End Sub
+
+	Public Overrides Sub Setup
+	
+		Dim form as MyForm = New MyForm()
+		form.Meta  = MyMeta
+		form.Input = input
+		
+		If Not form.ShowDialog() = DialogResult.OK Then 
+			ui.IsCanceled = True
+		End If	
+	
+	End Sub
+
+End Class
+
+Public Class MyForm
+    Inherits System.Windows.Forms.Form
+	
+	Public Dim Meta as dbRoot
+	Public Dim Input as IZeusInput	
+
+#Region " Windows Form Designer generated code "
+
+    Public Sub New()
+        MyBase.New()
+
+        'This call is required by the Windows Form Designer.
+        InitializeComponent()
+
+        'Add any initialization after the InitializeComponent() call
+
+    End Sub
+	
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+	
+		Me.cboxDatabases.DataSource    = Me.Meta.Databases
+		Me.cboxDatabases.DisplayMember = "Name"	
+		
+		If Not Me.Meta.DefaultDatabase Is Nothing Then
+			Me.cboxDatabases.SelectedIndex = Me.cboxDatabases.FindStringExact(Me.Meta.DefaultDatabase.Name)
+		End If
+
+		If Not Me.Meta.DefaultDatabase Is Nothing Then
+			Me.lboxTables.DataSource = Me.Meta.DefaultDatabase.Tables
+			Me.lboxTables.DisplayMember = "Name"
+		End If	
+		
+    End Sub
+	
+    Private Sub cboxDatabases_SelectionChangeCommitted(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cboxDatabases.SelectionChangeCommitted
+	
+		Dim database As IDatabase = CType(Me.cboxDatabases.SelectedValue, IDatabase)
+
+		If Not database Is Nothing Then
+			Me.lboxTables.DataSource = database.Tables
+			Me.lboxTables.DisplayMember = "Name"
+		End If
+		
+    End Sub	
+	
+    Private Sub btnOkay_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnOkay.Click
+	
+		if cboxDatabases.SelectedIndex >= 0 And lboxTables.SelectedIndex >= 0 Then
+		
+			Dim database As IDatabase = CType(Me.cboxDatabases.SelectedValue, IDatabase)
+			Dim table As ITable = CType(Me.lboxTables.SelectedValue, ITable)			
+			
+			Me.Input("databaseName") = database.Name
+			Me.Input("tableName")    = table.Name
+			
+			Me.DialogResult = DialogResult.OK
+			Me.Close()
+		Else 
+			MessageBox.Show("Please choose a Table")
+		End If
+    End Sub
+
+    'Form overrides dispose to clean up the component list.
+    Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+        If disposing Then
+            If Not (components Is Nothing) Then
+                components.Dispose()
+            End If
+        End If
+        MyBase.Dispose(disposing)
+    End Sub
+
+    'Required by the Windows Form Designer
+    Private components As System.ComponentModel.IContainer
+
+    'NOTE: The following procedure is required by the Windows Form Designer
+    'It can be modified using the Windows Form Designer.  
+    'Do not modify it using the code editor.
+    Friend WithEvents lblDatabases As System.Windows.Forms.Label
+    Friend WithEvents cboxDatabases As System.Windows.Forms.ComboBox
+    Friend WithEvents lblTables As System.Windows.Forms.Label
+    Friend WithEvents lboxTables As System.Windows.Forms.ListBox
+    Friend WithEvents btnOkay As System.Windows.Forms.Button
+    <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+        Me.lblDatabases = New System.Windows.Forms.Label
+        Me.cboxDatabases = New System.Windows.Forms.ComboBox
+        Me.lblTables = New System.Windows.Forms.Label
+        Me.lboxTables = New System.Windows.Forms.ListBox
+        Me.btnOkay = New System.Windows.Forms.Button
+        Me.SuspendLayout()
+        '
+        'lblDatabases
+        '
+        Me.lblDatabases.Location = New System.Drawing.Point(16, 8)
+        Me.lblDatabases.Name = "lblDatabases"
+        Me.lblDatabases.TabIndex = 0
+        Me.lblDatabases.Text = "Select a database:"
+        '
+        'cboxDatabases
+        '
+        Me.cboxDatabases.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.cboxDatabases.Location = New System.Drawing.Point(16, 32)
+        Me.cboxDatabases.Name = "cboxDatabases"
+        Me.cboxDatabases.Size = New System.Drawing.Size(256, 21)
+        Me.cboxDatabases.TabIndex = 1
+        '
+        'lblTables
+        '
+        Me.lblTables.Location = New System.Drawing.Point(16, 64)
+        Me.lblTables.Name = "lblTables"
+        Me.lblTables.TabIndex = 0
+        Me.lblTables.Text = "Select a table:"
+        '
+        'lboxTables
+        '
+        Me.lboxTables.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.lboxTables.Location = New System.Drawing.Point(16, 96)
+        Me.lboxTables.Name = "lboxTables"
+        Me.lboxTables.Size = New System.Drawing.Size(256, 121)
+        Me.lboxTables.TabIndex = 2
+        '
+        'btnOkay
+        '
+        Me.btnOkay.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnOkay.Location = New System.Drawing.Point(16, 232)
+        Me.btnOkay.Name = "btnOkay"
+        Me.btnOkay.Size = New System.Drawing.Size(256, 23)
+        Me.btnOkay.TabIndex = 3
+        Me.btnOkay.Text = "OK"
+        '
+        'Form1
+        '
+        Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+        Me.ClientSize = New System.Drawing.Size(292, 266)
+        Me.Controls.Add(Me.btnOkay)
+        Me.Controls.Add(Me.lboxTables)
+        Me.Controls.Add(Me.cboxDatabases)
+        Me.Controls.Add(Me.lblDatabases)
+        Me.Controls.Add(Me.lblTables)
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
+        Me.Name = "Form1"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
+        Me.Text = "Chapter 2"
+        Me.ResumeLayout(False)
+
+    End Sub
+
+#End Region
+
+End Class
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE .Net Script
+##|BODY_LANGUAGE VB.Net
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+Public Class GeneratedTemplate
+			Inherits DotNetScriptTemplate
+
+	Public Sub New(context As ZeusContext)
+		MyBase.New(context)
+	End Sub
+
+	Public Overrides Sub Render
+	
+		Dim databaseName as String = input("databaseName").ToString()
+		Dim tableName as String    = input("tableName").ToString()
+		
+		Dim database as IDatabase = MyMeta.Databases(databaseName)
+		Dim table as ITable       = database.Tables(tableName)
+		
+		output.writeln("Columns for Table '" + table.Name + "'")
+		output.writeln("")
+		
+		Dim column as IColumn
+		
+		For Each column in table.Columns
+			output.writeln(column.Name + " : " + column.DataTypeName)
+		Next	
+
+	End Sub
+
+End Class
+%>
+##|BODY_END

@@ -1,0 +1,110 @@
+﻿##|TYPE Template
+##|UNIQUEID 9145deae-aa87-4a8f-a860-743fdaa8834a
+##|TITLE Winform Demo
+##|NAMESPACE Samples
+##|OUTPUT_LANGUAGE None
+##|GUI_ENGINE .Net Script
+##|GUI_LANGUAGE VB.Net
+##|GUI_BEGIN
+<%#REFERENCE System.Windows.Forms.dll, MyWinformUI.dll %>
+<%#NAMESPACE System.Text, Zeus, Zeus.UserInterface, Zeus.Templates.DotNetScript, MyWinformUI %>
+
+Public Class GeneratedGui
+			Inherits DotNetScriptGui
+
+	Public Sub New(context As ZeusGuiContext)
+		MyBase.New(context)
+	End Sub
+
+	Public Overrides Sub Setup
+	
+		' Launch our Windows.Forms class library passing in the MyMeta object
+		Dim ui as MyWinformUI.MyUI = new MyWinformUI.MyUI(MyMeta)
+		
+		' Display it
+		ui.ShowDialog()
+		
+		' Pull the data out of the dialog and stuff it in the input collection
+		' for the template body to use
+		input("Data") =  ui.Data
+		
+	End Sub
+
+End Class
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE .Net Script
+##|BODY_LANGUAGE VB.Net
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%#NAMESPACE System.Text, Zeus, Zeus.Templates.DotNetScript %><%
+'------------------------------------------------------------------------------
+' Copyright 2004 by MyGeneration Software
+' All Rights Reserved 
+'
+' Permission to use, copy, modify, and distribute this software and its 
+' documentation for any purpose and without fee is hereby granted, 
+' provided that the above copyright notice appear in all copies and that 
+' both that copyright notice and this permission notice appear in 
+' supporting documentation. 
+'
+' MYGENERATION SOFTWARE DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS 
+' SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY 
+' AND FITNESS, IN NO EVENT SHALL MYGENERATION SOFTWARE BE LIABLE FOR ANY 
+' SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES 
+' WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, 
+' WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER 
+' TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE 
+' OR PERFORMANCE OF THIS SOFTWARE. 
+'------------------------------------------------------------------------------
+' WinformDemo.vbgen
+' Last Update : 04/08/2004
+'------------------------------------------------------------------------------
+'
+' This sample is a VB.NET DotNetScript template, the Interface Code section use
+' a VB.NET class library called WinformUI, the WinformUI.dll must be in the same
+' directory as the MyGenration.exe file (or registered in the gac). I wouldn't
+' register it in the gac however.
+'
+' The Interface Code section creates the SampleForm dialog passing in the MyMeta
+' object.  The native windows form then uses MyMeta to populate some controls
+' with data, allowing the user to select one or more tables, which are stored
+' in an Arraylist in the SampleFormData class, which is stuffed into the input
+' data to be later used by this very template body (see below) to loop through
+' and list out the selected tables, thereby passing the user selected data back
+' to the template body via a native VB.NET class.
+'
+
+Public Class GeneratedTemplate
+			Inherits DotNetScriptTemplate
+
+	Public Sub New(context As ZeusTemplateContext)
+		MyBase.New(context)
+	End Sub
+
+	Public Overrides Sub Render
+%>
+BEING - literal content
+
+<%
+    Dim data as ArrayList
+    Dim table as ITable
+	
+	' input("Data") is our SampleFormData class, then .SelectedTables access the property returning the ArrayList
+	data =  input("Data").SelectedTables
+	
+    For Each table in data
+		output.writeLn( table.Name )
+	Next
+%>
+
+END - literal content
+<%
+	End Sub
+
+End Class
+' We have now popped up our own ui, used MyMeta in that ui, and returned the user selected data back to the 
+' template body without reloading it
+%>
+##|BODY_END

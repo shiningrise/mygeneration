@@ -1,0 +1,28 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dOOdad_QueryTester", "dOOdad_QueryTester.csproj", "{A8C8FD6B-5BAC-42C8-BD0B-7AB18AAF510F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGeneration.dOOdads", "..\MyGeneration.dOOdads\MyGeneration.dOOdads.csproj", "{04C2E8E6-CD2C-4D7A-85A5-54CB71DDFEA2}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{A8C8FD6B-5BAC-42C8-BD0B-7AB18AAF510F}.Debug.ActiveCfg = Debug|.NET
+		{A8C8FD6B-5BAC-42C8-BD0B-7AB18AAF510F}.Debug.Build.0 = Debug|.NET
+		{A8C8FD6B-5BAC-42C8-BD0B-7AB18AAF510F}.Release.ActiveCfg = Release|.NET
+		{A8C8FD6B-5BAC-42C8-BD0B-7AB18AAF510F}.Release.Build.0 = Release|.NET
+		{04C2E8E6-CD2C-4D7A-85A5-54CB71DDFEA2}.Debug.ActiveCfg = Debug|.NET
+		{04C2E8E6-CD2C-4D7A-85A5-54CB71DDFEA2}.Debug.Build.0 = Debug|.NET
+		{04C2E8E6-CD2C-4D7A-85A5-54CB71DDFEA2}.Release.ActiveCfg = Release|.NET
+		{04C2E8E6-CD2C-4D7A-85A5-54CB71DDFEA2}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

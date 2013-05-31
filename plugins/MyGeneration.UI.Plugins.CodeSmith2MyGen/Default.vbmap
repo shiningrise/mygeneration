@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<maps>
+	<map source="Response.WriteLine &quot;" target="output.writeln &quot;"/>
+	<map source="Response.WriteLine" target="output.writeln &quot;&quot;"/>
+	<map source="Response.Write" target="output.write"/>
+	<map source=".cst" target=".zeus"/>
+</maps>

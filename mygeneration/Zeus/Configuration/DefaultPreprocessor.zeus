@@ -1,0 +1,51 @@
+##|TYPE Preprocessor
+##|UNIQUEID 92ad6dc8-08d6-46d0-a35e-2d7076f2d7d6
+##|TITLE Default Preprocessor
+##|NAMESPACE Preprocessors
+##|OUTPUT_LANGUAGE None
+##|COMMENTS_BEGIN
+The default Preprocessor
+
+Justin Greenwood
+MyGeneration Software
+justin.greenwood@mygenerationsoftware.com
+http://www.mygenerationsoftware.com/
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE JScript
+##|GUI_BEGIN
+try 
+{
+	// Try to connect to the DB with MyMeta (using default connection info)
+	MyMeta.Connect(input.item("__dbDriver"), input.item("__dbConnectionString"));
+	
+	MyMeta.DomainOverride = input.item("__domainOverride");
+
+	if (input.contains("__dbTarget"))				
+		MyMeta.DbTarget	= input.item("__dbTarget");
+
+	if (input.contains("__dbTargetMappingFileName"))	
+		MyMeta.DbTargetMappingFileName = input.item("__dbTargetMappingFileName");
+
+	if (input.contains("__languageMappingFileName"))	
+		MyMeta.LanguageMappingFileName = input.item("__languageMappingFileName");
+
+	if (input.contains("__dbTarget"))	
+		MyMeta.DbTarget	= input.item("__dbTarget");
+
+	if (input.contains("__language"))	
+		MyMeta.Language = input.item("__language");
+
+	if (input.contains("__userMetaDataFileName"))	
+		MyMeta.UserMetaDataFileName = input.item("__userMetaDataFileName");
+}
+catch (error) 
+{
+	input.item("__error") = error;
+}
+##|GUI_END
+##|BODY_MODE Pure
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE JScript
+##|BODY_BEGIN
+##|BODY_END

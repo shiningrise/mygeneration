@@ -1,0 +1,514 @@
+﻿##|TYPE Template
+##|UNIQUEID 2eaad537-d03c-43b5-a82f-cbfcb74c113b
+##|TITLE PostgreSQL Stored Procedures
+##|NAMESPACE PostgreSQL
+##|OUTPUT_LANGUAGE SQL
+##|COMMENTS_BEGIN
+Use this for PostgreSQL dOOdads or other business entities. Select multiple tables and generate all your stored procedures in one click!
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstTables
+
+Sub setup()
+
+	Dim sOutputPath
+
+	If Not input.Contains("lstTables") Or Not input.Contains("txtPath") Then
+
+		ui.Title = "Select tables for this Template."
+		ui.Width  = 330
+		ui.Height = 460
+
+		' Grab default output path
+		sOutputPath = ""
+		If input.Contains("defaultOutputPath") Then 
+			sOutputPath = input.Item("defaultOutputPath")
+		End If
+
+		ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+		ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+		ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+
+		' List Databases in a ComboBox
+		ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+		Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+
+		' List Tables in a listbox
+		ui.AddLabel "lblTables", "Select tables:", "Select tables from the listbox below."
+		Set lstTables = ui.AddListBox ("lstTables", "Select tables:")
+		lstTables.Height = 150
+
+		' Attach the onchange event to the cmbDatabases control.
+		setupDatabaseDropdown cmbDatabases
+		cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+
+		ui.ShowGUI = True
+	Else 
+		ui.ShowGUI = False
+	End if
+
+End Sub
+
+Sub setupDatabaseDropdown(cmbDatabases)
+	cmbDatabases.BindData MyMeta.Databases
+
+	If Not MyMeta.DefaultDatabase Is Nothing Then
+		cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindTables cmbDatabases.SelectedValue
+	End If
+End Sub
+
+Sub bindTables(sDatabase)
+	Set db = MyMeta.Databases(sDatabase)
+	lstTables.BindData(db.Tables)
+End Sub
+
+' Event Handler
+Sub cmbDatabases_onchange(control)
+	Set cmbDatabases = ui.item("cmbDatabase")
+	bindTables cmbDatabases.SelectedText
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'------------------------------------------------------------------------------
+' PostgreSQL_StoredProcs.vbgen
+' Last Update : 03/04/2005
+'
+' Be sure to rename this template if you plan to customize it, MyGeneration 
+' Software will update this sample over time.
+'------------------------------------------------------------------------------
+'
+'  This template generates 5 stored procedures
+'
+'  1) [TableName]_load_by_primarykey
+'  2) [TableName]_load_all
+'  3) [TableName]_update
+'  4) [TableName]_insert
+'  5) [TableName]_delete
+'
+'  There is script in the "Interface Code" tab that pops up a dialog so you can tell this tempate
+'  where to save the files and what tables you want to generate stored procedures for.  So, the
+'  logic at a very high level looks like this:
+'
+'   For Each TableName in Select Tables
+'        objTable = database.Tables(TableName)
+' 	
+'	Generate the 5 stored procs
+'
+'   Save file
+'
+'  However, all of the script ends up in the Output tab and you can copy this right into 
+'  psql or pgAdmin and execute it.  It's a pretty smart template, it knows how to make
+'  use of serial columns. It knows how to use PrimaryKeys in WHERE clauses and not to update them
+'  in the Update Stored Proc. 
+'  This template alone can save you tons of time, and at anytime you can regenerate
+'  them as tables change.
+'======================================================================
+Dim objDatabase
+Dim objTable
+Dim objColumn
+Dim intLp
+Dim blnFirst
+Dim strProcName
+Dim strWhereClause
+Dim strWhereAnd
+Dim strWhereFields
+Dim strComma
+Dim colTableNames
+Dim strBuffer
+Dim strDatabaseName 
+Dim strFilename
+Dim strFilenameBase
+Dim intLen
+Dim intPos
+Dim intParamPos
+Dim strReturnType
+Dim strAutoCol
+
+strDatabaseName  = input.Item("cmbDatabase")
+Set objDatabase = MyMeta.Databases(strDatabaseName)
+
+Set colTableNames = input.Item("lstTables")
+
+' Save the output file for this Table
+strFilenameBase = input.Item("txtPath")
+
+intLen = Len(strFilenameBase)
+intPos = InStrRev(strFilenameBase, "\") 
+
+If Not intPos = intLen Then
+	strFilenameBase = strFilenameBase & "\"
+End If
+
+' Loop through the tables the user select and generate the stored procs and save them to disk
+For intLp = 0 To colTableNames.Count - 1
+
+	Set objTable = objDatabase.Tables(colTableNames.item(intLp))
+	
+	If objTable.PrimaryKeys.Count = 0 Then
+		output.write "-- ERROR: Table '" & objTable.Name & "' must have a primary key" & vbCrLf
+		Exit For
+	End If 	
+
+'----------------------------------------------------------------------
+' load_by_primarykey 
+'----------------------------------------------------------------------
+strProcName = objTable.Name & "_load_by_primarykey"	
+%>
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	' List all keys as parameters
+	blnFirst = True
+	For Each objColumn In objTable.PrimaryKeys
+
+		If Not blnFirst Then 
+			output.write  "," & vbCrLf
+		End if
+		blnFirst = False	
+		
+		output.write " " & objColumn.DataTypeNameComplete
+	Next
+%>
+)
+RETURNS "<%= objTable.Name %>" AS '
+	SELECT
+<%
+	' List all fields
+	blnFirst = True
+	For Each objColumn In objTable.Columns
+
+		If Not blnFirst Then 
+			output.write  "," & vbCrLf
+		End if	
+
+		blnFirst = False			
+		
+		output.write "		""" & objColumn.Name & """ "
+	Next
+
+	output.write vbCrLf
+%>	FROM "<%= objTable.Name %>"
+	WHERE
+<%
+	' Compare keys with parameters
+	intParamPos = 1
+	blnFirst = True
+	For Each objColumn In objTable.PrimaryKeys
+
+		If Not blnFirst Then 
+			output.write  " AND" & vbCrLf
+		End if	
+
+		blnFirst = False					
+
+		output.write "		 """ & objColumn.Name & """ = $" & intParamPos
+		intParamPos = intParamPos + 1
+	Next
+	output.write ";"
+%>
+' LANGUAGE 'SQL' STABLE;
+
+<%
+
+'----------------------------------------------------------------------
+' load_all 
+'----------------------------------------------------------------------
+strProcName = objTable.Name & "_load_all"
+%>
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>()
+RETURNS SETOF "<%output.write objTable.Name %>" AS '
+	SELECT
+<%
+		' List all fields
+		blnFirst = True
+		For Each objColumn In objTable.Columns
+			If Not blnFirst Then 
+				output.write  "," & vbCrLf
+			End if
+
+			blnFirst = False	
+
+			output.write "		""" & objColumn.Name & """"
+		Next
+%>
+	FROM "<%= objTable.Name %>";
+' LANGUAGE 'SQL' STABLE;
+
+<%
+
+'----------------------------------------------------------------------
+' update
+'----------------------------------------------------------------------
+If objTable.Columns.Count = objTable.PrimaryKeys.Count Then
+	output.writeLn ""
+	output.writeLn "-------------------------------------------"
+	output.writeLn "-- NO UPDATE Stored Procedure Generated    "
+	output.writeLn "-- All Columns are part of the Primary key "
+	output.writeLn "-------------------------------------------"
+	output.writeLn ""	
+Else
+strProcName = objTable.Name & "_update"			
+%>
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	blnFirst = True
+	For Each objColumn In objTable.Columns
+
+		If Not blnFirst Then 
+			output.write  "," & vbCrLf
+		End if
+
+		blnFirst = False
+
+		output.write "	" & objColumn.DataTypeNameComplete
+	Next
+%>
+)
+RETURNS void AS '
+	UPDATE "<%output.write objTable.Name %>"
+	SET
+<%
+	blnFirst = True
+	intParamPos = 1
+	
+	For Each objColumn In objTable.Columns
+	
+		If Not objColumn.IsInPrimaryKey And Not objColumn.IsAutoKey Then
+		   
+			If Not blnFirst Then 
+				output.write  "," & vbCrLf
+			End if	
+
+			blnFirst = False
+			output.write "		""" & objColumn.Name & """ = $" & intParamPos 
+		End If	
+		intParamPos = intParamPos + 1
+	Next
+	
+	output.write vbCrLf		
+%>	
+	WHERE
+<%
+	blnFirst = True
+	intParamPos = 1
+	
+	For Each objColumn In objTable.Columns
+	
+		If objColumn.IsInPrimaryKey Then
+		
+			If Not blnFirst Then  
+				output.write " AND " & vbCrLf
+			End If
+			blnFirst = False
+			
+			output.write "		""" & objColumn.Name & """ = $" & intParamPos
+		End If	
+		intParamPos = intParamPos + 1
+	Next
+	output.write ";"
+%>
+' LANGUAGE 'SQL' VOLATILE;
+<% End If ' objTable.Columns.Count = objTable.PrimaryKeys.Count %>
+<%
+
+'----------------------------------------------------------------------
+' Insert
+'----------------------------------------------------------------------
+strProcName = objTable.Name & "_insert"
+strAutoCol = ""
+strReturnType = "void"
+
+%>
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	blnFirst = True
+	For Each objColumn In objTable.Columns
+
+		If Not blnFirst Then 
+			output.write "," & vbCrLf
+		End If 
+		
+		If Not objColumn.IsAutoKey Then
+			output.write "	" & objColumn.DataTypeNameComplete
+			blnFirst = False
+		Else
+			strAutoCol = objColumn.Name
+			strReturnType = objTable.Name
+		End If
+		
+	Next
+%>
+)
+RETURNS "<% output.write strReturnType %>" AS '
+	INSERT INTO "<%output.write objTable.Name %>"
+	(
+<%
+		blnFirst = True
+		For Each objColumn In objTable.Columns
+		
+			If Not objColumn.IsAutoKey Then 			
+				If Not blnFirst Then 
+					output.write  "," & vbCrLf
+				End if	
+
+				blnFirst = False
+
+				output.write "		""" & objColumn.Name & """" 
+			End If
+		Next
+		output.write vbCrLf 		
+%>	)
+	VALUES
+	(
+<%
+		intParamPos = 1
+		blnFirst = True
+		For Each objColumn In objTable.Columns
+
+			If Not objColumn.IsAutoKey Then 			
+				If Not blnFirst Then 
+					output.write  "," & vbCrLf
+				End if	
+
+				blnFirst = False
+
+				output.write "		$" & intParamPos
+				intParamPos = intParamPos + 1
+			End If
+		Next
+		output.write vbCrLf 				
+%>	);
+<%
+	'Return currval from sequence if any is used
+	If Not strReturnType = "void" And Not strAutoCol = "" Then
+		For Each objColumn In objTable.Columns
+			If objColumn.IsAutoKey Then 
+			    Dim default
+				default	= Replace(objColumn.Default, "'", "''")
+				output.write "	SELECT * FROM """ & objTable.Name & """ " 
+				output.write "WHERE """ & objColumn.Name & """ = " & Replace(default, "nextval", "currval") & ";"
+			End If
+		Next
+	End If
+%>
+' LANGUAGE 'SQL' VOLATILE;
+
+<%
+'----------------------------------------------------------------------
+' Delete
+'----------------------------------------------------------------------
+strProcName = objTable.Name & "_delete"		
+%>
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	blnFirst = True
+	For Each objColumn In objTable.PrimaryKeys
+
+		If Not blnFirst Then
+			output.write "," & vbCrLf
+		End If
+		blnFirst = False
+
+		output.write "	" & objColumn.DataTypeNameComplete
+	Next
+%>
+)
+RETURNS void AS '
+	DELETE FROM "<%= objTable.Name %>"
+	WHERE
+<%
+	' Compare keys with parameters
+	intParamPos = 1
+	blnFirst = True
+	For Each objColumn In objTable.PrimaryKeys
+
+		If Not blnFirst Then 
+			output.write  " AND" & vbCrLf
+		End if	
+		blnFirst = False					
+
+		output.write "		""" & objColumn.Name & """ = $" & intParamPos
+		intParamPos = intParamPos + 1
+	Next
+	output.write ";"
+%>
+' LANGUAGE 'SQL' VOLATILE;
+
+<%
+	' Save the output file for this Table
+	strFilename = strFilenameBase & objTable.Name & ".sql"
+
+	output.save strFilename, False
+	strBuffer = strBuffer & output.text
+	output.clear
+Next '  tableName
+	
+output.write strBuffer
+
+filename = input.item("txtPath") 
+lenth = Len(filename) 
+pos = InStrRev(filename, "\") 
+
+If Not pos = lenth Then 
+  filename = filename & "\" 
+End If 
+
+filename = filename & "PostgreSQL_ALL.SQL" 
+output.save filename, false 
+
+' END OF TEMPLATE	
+ %>
+
+<%
+Function BuildCreateAlterStatement(strProcName, blnAlterStatement)
+
+	Dim strStatement
+	strStatement = ""
+	
+	strStatement = strStatement & "CREATE OR REPLACE FUNCTION " & strProcName 
+	BuildCreateAlterStatement = strStatement 
+
+End Function
+
+Function GetParameterName(objColumn)
+	Dim strName
+	strName = TrimSpaces(objColumn.Name)
+	GetParameterName = strName
+End Function
+
+Function TrimSpaces(str)
+
+	Dim strTName
+	Dim strMame
+	Dim strChar
+	Dim intLen
+	Dim intLp
+
+	strName = ""
+	strTName = str
+	intLen = Len(strTName)
+
+	For intLp = 1 To intLen
+		strChar = Mid(strTName, intLp, 1)
+		If Not strChar = " " Then
+			strName = strName & strChar
+		End If
+	Next
+
+	TrimSpaces = strName
+End Function
+%>
+##|BODY_END

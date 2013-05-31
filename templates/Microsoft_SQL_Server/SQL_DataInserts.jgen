@@ -1,0 +1,276 @@
+﻿##|TYPE Template
+##|UNIQUEID 2272a97a-ed65-4b6f-998c-a43d2b99bdd1
+##|TITLE Builds Inserts from Table
+##|NAMESPACE Microsoft SQL Server.Data
+##|OUTPUT_LANGUAGE Transact-SQL
+##|COMMENTS_BEGIN
+Backs up all the data from a table into a SQL script.
+
+Justin Greenwood
+MyGeneration Software
+justin.greenwood@mygenerationsoftware.com
+http://www.mygenerationsoftware.com/
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE JScript
+##|GUI_BEGIN
+function setup()
+{
+	if ( !input.Contains("lstTables") || !input.Contains("txtPath") )
+	{
+		ui.Title = "SQL Inserts";
+		ui.Width = 350;
+		ui.Height = 460;
+
+		// Grab default output path
+		var sOutputPath = "";
+		if (input.Contains("defaultOutputPath")) 
+		{
+			sOutputPath = input.Item("defaultOutputPath");
+		}
+
+		// Display and errors here
+		var lblError = ui.AddLabel("lblError", "", "");
+		lblError.ForeColor = "Red";
+
+		// Setup Folder selection input control.
+		var lblPath = ui.AddLabel("lblPath", "Select the output path:", "Select the output path in the field below.");
+		var outpath = ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+		var btnSelectPath = ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+
+		// Ask if they want to preserve the autokeys?
+		var chkAutoKey = ui.AddCheckbox("chkAutoKey", "Do you want to preserve auto-increment keys?", true, "Do you want to preserve auto-increment keys?");
+
+		// Setup Database selection combobox.
+		var label_d = ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+		var cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.");
+
+		// Setup Tables selection multi-select listbox.
+		var label_t = ui.AddLabel("lblTables", "Select tables:", "Select tables from the listbox below.");
+		var lstTables = ui.AddListBox("lstTables", "Select tables.");
+		lstTables.Height = 150;
+
+		// Attach the onchange event to the cmbDatabases control.
+		setupDatabaseDropdown(cmbDatabases, lblError);
+		cmbDatabases.AttachEvent("onchange", "cmbDatabases_onchange");
+
+		
+		ui.ShowGUI = true;
+	}
+	else 
+	{
+		ui.ShowGUI = false;
+	}
+}
+
+function setupDatabaseDropdown(cmbDatabases, lblError)
+{
+	try 
+	{	
+		if (MyMeta.IsConnected) 
+		{
+			cmbDatabases.BindData(MyMeta.Databases);
+			if (MyMeta.DefaultDatabase != null) 
+			{
+				cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name;
+				bindTables(cmbDatabases.SelectedValue);
+			}
+
+			lblError.Text = "";
+		}
+		else
+		{
+			lblError.Text = "Please set up your database connection in the Default Settings dialog.";
+		}
+	}
+	catch (error) 
+	{
+		lblError.Text = "" + error + ", " + error.number + ", " + error.description;
+	}
+}
+
+function bindTables(sDatabase)
+{
+	var lblError = ui.item("lblError");
+	var count = 0
+
+	var lstTables = ui.item("lstTables");
+	
+	try 
+	{	
+		var db = MyMeta.Databases.Item(sDatabase);
+		lstTables.BindData(db.Tables);
+
+		lblError.Text = "";
+	}
+	catch (error) 
+	{
+		lblError.Text = "" + error + ", " + error.number + ", " + error.description;
+	}
+}
+
+function cmbDatabases_onchange(control)
+{
+	var lblError = ui.item("lblError");
+	var count = 0
+
+	var cmbDatabases = ui.item("cmbDatabase");
+
+	bindTables(cmbDatabases.SelectedText);
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE JScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%#SCRIPT sql_library.js%><%
+//------------------------------------------------------------------------------
+// SQL_DataInserts.jgen
+// Last Update : 12/12/2004
+//
+// Be sure to create a new uniqueid for this template if you plan to customize it,  
+// MyGeneration Software will update this sample over time.
+//
+// Also, be sure to have the sql_library.js file in the same folder as the template.
+//------------------------------------------------------------------------------
+//  This template generates insert statements for all data in each table selected.
+//
+//  There is script in the "Interface Code" tab that pops up a dialog so you can tell this tempate
+//  where to save the files and what tables you want to generate insert statements for. This
+//  template was developed to display the ability to not only use database meta-data, but also
+//  the data itself to generate code.
+//------------------------------------------------------------------------------
+//  Justin Greenwood
+//  MyGeneration Software
+//  justin.greenwood@mygenerationsoftware.com
+//  http://www.mygenerationsoftware.com/
+//------------------------------------------------------------------------------
+
+// collect needed data/objects and put them in local variables
+var databaseName = input.Item("cmbDatabase"); 
+var tablenames = input.Item("lstTables"); 
+var preserveAutokeys = input.Item("chkAutoKey"); 
+var database = MyMeta.Databases.Item(databaseName);
+
+// Filename info
+var filepath = input.item("txtPath");
+if (filepath.charAt(filepath.length - 1) != '\\') filepath += "\\";
+
+// The buffer that will hold all the output for rendering.
+var buffer = "";
+
+for (var i = 0; i < tablenames.Count; i++)
+{
+	var tablename = tablenames.item(i);
+	var tableMeta = database.Tables.Item(tablename);
+
+	// Build the filename
+	var filename = filepath + "sql_inserts_" + tablename + ".sql"
+	
+	// Query the the table for all records
+	var sql = "SELECT * FROM [" + tablename + "];";
+	var rs = database.ExecuteSQL(sql);
+	var hasAutoKeyField = false;
+
+	for (var j = 0; j < tableMeta.Columns.Count; j++) 
+	{
+		column = tableMeta.Columns.Item(j);
+		if (column.IsAutoKey) 
+		{
+			hasAutoKeyField = true;
+			break;
+		}
+	}
+%>
+--|--------------------------------------------------------------------------------
+--| [<%= tablename %>] - Backs up all the data from a table into a SQL script.
+--|--------------------------------------------------------------------------------
+BEGIN TRANSACTION
+<%
+	if (hasAutoKeyField && preserveAutokeys)
+	{
+%>	SET IDENTITY_INSERT [<%= tablename %>] ON
+<%
+	}
+
+	var column, celldata, names, values;
+	
+	// Loop through the recordset and write out all the data into the sproc.
+	if (rs != null)
+	{
+		while (!rs.Eof)
+		{
+			names = "";
+			values = "";
+		
+			// Loop through all the columns of the table and build the names and values for the insert statement
+			for (var j = 0; j < tableMeta.Columns.Count; j++) 
+			{
+				column = tableMeta.Columns.Item(j);
+		
+				// If the datatype is not a timestamp, add it to the insert statement
+				if (column.DataTypeName != "timestamp" && !column.IsComputed && (!column.IsAutoKey || preserveAutokeys))
+				{
+					// add a comma before each item except the first
+					if ( (names != "") )
+					{
+						names += ", [";
+						values += ", ";
+					}
+					else
+					{
+						names += "[";
+					}
+				
+					names += column.Name;
+					names += "]";
+		
+					// escape the data and append it.
+					celldata = "" + rs(column.Name).Value;
+
+					if (rs(column.Name).Value == null)
+					{
+						values += "NULL";
+					}
+					else
+					{
+						values += escapeDataItem(MyMeta.DriverString, column.DataTypeName, celldata);
+					}
+
+				}
+			}
+%>
+	INSERT INTO [<%= tablename %>]
+	(<%= names %>)
+	VALUES
+	(<%= values %>);
+<%
+			rs.MoveNext();
+		}
+	
+		rs = null;
+	}
+
+	if (hasAutoKeyField && preserveAutokeys)
+	{
+%>	SET IDENTITY_INSERT [<%= tablename %>] OFF
+<%
+	}
+%>
+IF @@ERROR <> 0 ROLLBACK TRANSACTION;
+ELSE COMMIT TRANSACTION;
+GO
+--|--------------------------------------------------------------------------------
+<%
+	// Save this set of insert statements to disk
+	output.save(filename, false);
+	buffer += output.text;
+	output.clear();
+}
+
+// write the buffer to the screen
+output.write(buffer);
+%>
+##|BODY_END

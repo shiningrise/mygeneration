@@ -1,0 +1,153 @@
+﻿##|TYPE Template
+##|UNIQUEID 264dbdb4-2ef8-4f75-8eb8-03112e8a1cbe
+##|TITLE GUI Control Test Template
+##|NAMESPACE Samples
+##|SOURCE_TYPE Source
+##|OUTPUT_LANGUAGE None
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE JScript
+##|GUI_BEGIN
+function setup()
+{
+	ui.Title = "SQL Inserts";
+	ui.Width = 460;
+	ui.Height = 700;
+
+
+	//==============================
+	// File Picker
+	//==============================
+	// Grab default output path
+	var sOutputPath = "";
+	if (input.Contains("defaultOutputPath")) 
+		sOutputPath = input.Item("defaultOutputPath");
+	var outpath = ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+	var btnSelectPath = ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+
+	//==============================
+	// Label
+	//==============================
+	var lbl1 = ui.AddLabel("lbl1", "Label Test", "Label Test");
+	
+	//==============================
+	// Checkboxes
+	//==============================
+	var chk1 = ui.AddCheckbox("chk1", "Test 1", true, "Test 1");
+	var chk2 = ui.AddCheckbox("chk2", "Test 2", false, "Test 2");
+	var chk3 = ui.AddCheckbox("chk3", "Test 3", true, "Test 3");
+	
+	// Add onclick Event handlers
+	chk1.AttachEvent("onclick", "chk1_onclick");
+	chk2.AttachEvent("onclick", "chk2_onclick");
+	chk3.AttachEvent("onclick", "chk3_onclick");
+	
+	//==============================
+	// Grid
+	//==============================
+	var grid = ui.AddGrid("grid", "Enter some crap in this grid!");
+	grid.Height = 150;
+	var table = grid.DataSource;
+	table.Columns.Add("FirstName");
+	table.Columns.Add("LastName");
+	table.Columns.Add("Address");
+	table.Rows.Item(0).Item(0) = "Justin";
+	table.Rows.Item(0).Item(1) = "Greenwood";
+	table.Rows.Item(0).Item(2) = "11833 Corbin Drive";
+	var row = table.Rows.Add();
+	row.Item("FirstName") = "Jeremy";
+	row.Item("LastName") = "Smith";
+	row.Item("Address") = "12345 Test Way";
+	
+	//==============================
+	// Grid
+	//==============================
+	var grid2 = ui.AddGrid("grid2", "Enter some crap in this grid!");
+	grid2.Height = 150;
+	grid2.BindData(MyMeta.DefaultDatabase.Tables);
+	
+	var lblTest = ui.AddLabel("lblTest", "Test New Events", "new events");
+	var txtTest = ui.AddTextBox("txtTest", "", "Sample Text");
+	txtTest.AttachEvent("onkeypress", "txtTest_onkeypress");
+	txtTest.AttachEvent("onfocus", "txtTest_onfocus");
+	txtTest.AttachEvent("onblur", "txtTest_onblur");
+	
+
+	ui.ShowGUI = true;
+}
+
+function txtTest_onkeypress(control)
+{
+	control.BackColor = (control.BackColor == "Red" ? "Blue" : "Red");
+}
+
+function txtTest_onfocus(control)
+{
+	control.ForeColor = "White";
+}
+
+function txtTest_onblur(control)
+{
+	control.ForeColor = "Black";
+}
+
+function chk1_onclick(control)
+{
+	var chk3 = ui.item("chk3");
+	var lbl1 = ui.item("lbl1");
+	chk3.Checked = !chk3.Checked;
+	
+	lbl1.Text = "This Rocks! First ChkBox Value: " + control.Checked;
+}
+
+function chk2_onclick(control)
+{
+	var chk1 = ui.item("chk1");
+	var chk3 = ui.item("chk3");
+	
+	chk1.Enabled = control.Checked;
+	chk3.Enabled = control.Checked;
+}
+
+function chk3_onclick(control)
+{
+	var chk2 = ui.item("chk2");
+	chk2.Checked = control.Checked;
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE JScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+var t1 = input.Item("grid"); 
+var t2 = input.Item("grid2"); 
+
+printTable(t1);
+printTable(t2);
+
+output.save("c:\\testthingy.txt", false);
+
+function printTable(table) 
+{
+	for (var j=0; j < table.Columns.Count; j++)
+	{
+		var col = table.Columns.Item(j);
+%><%= (j > 0 ? ", " : "" ) + col.Name %><%
+	}
+%>
+<%
+	for (var i=0; i < table.Rows.Count; i++)
+	{
+		var row = table.Rows.Item(i);
+		for (var j=0; j < table.Columns.Count; j++)
+		{
+%><%= (j > 0 ? ", " : "" ) + row.Item(j) %><%
+		}
+	%>
+<%
+	}
+}
+%>
+##|BODY_END

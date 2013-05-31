@@ -1,0 +1,389 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F9B6DABD-BBC1-4638-8CE6-A5C9506BFDCB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Scintilla</RootNamespace>
+    <AssemblyName>ScintillaNET</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>ScintillaNet.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>http://localhost/ScintillaNET/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Debug\ScintillaNET.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\Interfaces\ILanguageConfigCollection.cs" />
+    <Compile Include="Configuration\Interfaces\ILanguageConfig.cs" />
+    <Compile Include="Configuration\Interfaces\ILexerConfig.cs" />
+    <Compile Include="Configuration\Interfaces\ILexerConfigCollection.cs" />
+    <Compile Include="Configuration\Interfaces\ILexerStyle.cs" />
+    <Compile Include="Configuration\Interfaces\IMenuItemConfig.cs" />
+    <Compile Include="Configuration\Interfaces\IScintillaConfig.cs" />
+    <Compile Include="Configuration\Interfaces\IScintillaConfigProvider.cs" />
+    <Compile Include="Configuration\LanguageConfig.cs" />
+    <Compile Include="Configuration\LanguageConfigCollection.cs" />
+    <Compile Include="Configuration\Legacy\configfile.cs" />
+    <Compile Include="Configuration\Legacy\configitem.cs" />
+    <Compile Include="Configuration\Legacy\configurationutility.cs" />
+    <Compile Include="Configuration\Legacy\Include.cs" />
+    <Compile Include="Configuration\Legacy\KeywordClass.cs" />
+    <Compile Include="Configuration\Legacy\Language.cs" />
+    <Compile Include="Configuration\Legacy\Lexer.cs" />
+    <Compile Include="Configuration\Legacy\Scintilla.cs" />
+    <Compile Include="Configuration\Legacy\StyleClass.cs" />
+    <Compile Include="Configuration\Legacy\UseKeyword.cs" />
+    <Compile Include="Configuration\Legacy\UseStyle.cs" />
+    <Compile Include="Configuration\Legacy\Value.cs" />
+    <Compile Include="Configuration\LexerConfig.cs" />
+    <Compile Include="Configuration\LexerConfigCollection.cs" />
+    <Compile Include="Configuration\LexerStyle.cs" />
+    <Compile Include="Configuration\MenuItemConfig.cs" />
+    <Compile Include="Configuration\PropertiesReader.cs" />
+    <Compile Include="Configuration\ScintillaConfig.cs" />
+    <Compile Include="Configuration\ScintillaConfigProvider.cs" />
+    <Compile Include="Configuration\ScintillaPropertiesHelper.cs" />
+    <Compile Include="Configuration\SciTE\SciTEProperties.cs" />
+    <Compile Include="Enums.generated.cs" />
+    <Compile Include="EventArgs.cs" />
+    <Compile Include="Forms\Configuration\ColorHandler.cs" />
+    <Compile Include="Forms\Configuration\ColorWheel.cs" />
+    <Compile Include="Forms\Configuration\FontBrowser.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\Configuration\FontBrowser.Designer.cs">
+      <DependentUpon>FontBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Configuration\StyleConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\Configuration\StyleConfigControl.Designer.cs">
+      <DependentUpon>StyleConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FindReplace\FindControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\FindReplace\FindControl.Designer.cs">
+      <DependentUpon>FindControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FindReplace\FindForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FindReplace\FindForm.Designer.cs">
+      <DependentUpon>FindForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FindReplace\ReplaceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FindReplace\ReplaceForm.Designer.cs">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FindReplace\SearchCriteria.cs" />
+    <Compile Include="Forms\FindReplace\ReplaceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\FindReplace\ReplaceControl.Designer.cs">
+      <DependentUpon>ReplaceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FindReplace\SearchHelper.cs" />
+    <Compile Include="Forms\GoToLine\GoToLineDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GoToLine\GoToLineDialog.Designer.cs">
+      <DependentUpon>GoToLineDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Indexer.cs" />
+    <Compile Include="Lexers.generated.cs" />
+    <Compile Include="Printing\PageInformation.cs" />
+    <Compile Include="Range.cs" />
+    <Compile Include="ScintillaControl.generated.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\PageSettings.cs" />
+    <Compile Include="Printing\PrintDocument.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Structures.cs" />
+    <Compile Include="ScintillaControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ScintillaControl.Designer.cs">
+      <DependentUpon>ScintillaControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="XpmAdapter.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\FindReplace\FindControl.resx">
+      <DependentUpon>FindControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FindReplace\FindForm.resx">
+      <DependentUpon>FindForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FindReplace\ReplaceControl.resx">
+      <DependentUpon>ReplaceControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FindReplace\ReplaceForm.resx">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GoToLine\GoToLineDialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GoToLineDialog.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configuration\ConfigFiles\global_properties">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\ConfigFiles\lang_cs_properties">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\ConfigFiles\lang_html_properties">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\ConfigFiles\lex_cpp_properties">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\ConfigFiles\lex_hypertext_properties">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\ConfigFiles\lex_xml_properties">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Configuration\StyleConfigControl.resx">
+      <DependentUpon>StyleConfigControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configuration\Samples\ada" />
+    <EmbeddedResource Include="Configuration\Samples\asm" />
+    <EmbeddedResource Include="Configuration\Samples\asp" />
+    <EmbeddedResource Include="Configuration\Samples\bash" />
+    <EmbeddedResource Include="Configuration\Samples\batch" />
+    <EmbeddedResource Include="Configuration\Samples\conf" />
+    <EmbeddedResource Include="Configuration\Samples\cpp" />
+    <EmbeddedResource Include="Configuration\Samples\cs" />
+    <EmbeddedResource Include="Configuration\Samples\css" />
+    <EmbeddedResource Include="Configuration\Samples\d" />
+    <EmbeddedResource Include="Configuration\Samples\diff" />
+    <EmbeddedResource Include="Configuration\Samples\docbook" />
+    <EmbeddedResource Include="Configuration\Samples\eiffel" />
+    <EmbeddedResource Include="Configuration\Samples\erlang" />
+    <EmbeddedResource Include="Configuration\Samples\errorlist" />
+    <EmbeddedResource Include="Configuration\Samples\escript" />
+    <EmbeddedResource Include="Configuration\Samples\f77" />
+    <EmbeddedResource Include="Configuration\Samples\f95" />
+    <EmbeddedResource Include="Configuration\Samples\forth" />
+    <EmbeddedResource Include="Configuration\Samples\html" />
+    <EmbeddedResource Include="Configuration\Samples\idl" />
+    <EmbeddedResource Include="Configuration\Samples\java" />
+    <EmbeddedResource Include="Configuration\Samples\javascript" />
+    <EmbeddedResource Include="Configuration\Samples\latex" />
+    <EmbeddedResource Include="Configuration\Samples\lisp" />
+    <EmbeddedResource Include="Configuration\Samples\lout" />
+    <EmbeddedResource Include="Configuration\Samples\lua" />
+    <EmbeddedResource Include="Configuration\Samples\make" />
+    <EmbeddedResource Include="Configuration\Samples\matlab" />
+    <EmbeddedResource Include="Configuration\Samples\metapost" />
+    <EmbeddedResource Include="Configuration\Samples\mmixal" />
+    <EmbeddedResource Include="Configuration\Samples\mssql" />
+    <EmbeddedResource Include="Configuration\Samples\nncrontab" />
+    <EmbeddedResource Include="Configuration\Samples\nsis" />
+    <EmbeddedResource Include="Configuration\Samples\octave" />
+    <EmbeddedResource Include="Configuration\Samples\pascal" />
+    <EmbeddedResource Include="Configuration\Samples\perl" />
+    <EmbeddedResource Include="Configuration\Samples\php" />
+    <EmbeddedResource Include="Configuration\Samples\plsql" />
+    <EmbeddedResource Include="Configuration\Samples\pov" />
+    <EmbeddedResource Include="Configuration\Samples\props" />
+    <EmbeddedResource Include="Configuration\Samples\ps" />
+    <EmbeddedResource Include="Configuration\Samples\python" />
+    <EmbeddedResource Include="Configuration\Samples\rc" />
+    <EmbeddedResource Include="Configuration\Samples\ruby" />
+    <EmbeddedResource Include="Configuration\Samples\scheme" />
+    <EmbeddedResource Include="Configuration\Samples\scriptol" />
+    <EmbeddedResource Include="Configuration\Samples\sql" />
+    <EmbeddedResource Include="Configuration\Samples\tcl" />
+    <EmbeddedResource Include="Configuration\Samples\tex" />
+    <EmbeddedResource Include="Configuration\Samples\vb" />
+    <EmbeddedResource Include="Configuration\Samples\vbscript" />
+    <EmbeddedResource Include="Configuration\Samples\verilog" />
+    <EmbeddedResource Include="Configuration\Samples\vxml" />
+    <EmbeddedResource Include="Configuration\Samples\xml" />
+    <EmbeddedResource Include="Configuration\Samples\yaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configuration\ConfigFiles\lex_sql_properties" />
+    <EmbeddedResource Include="Configuration\ConfigFiles\lang_sql_properties" />
+    <None Include="languages.iface" />
+    <None Include="Scintilla.iface" />
+    <None Include="ScintillaNet.snk" />
+    <None Include="SciTEConfigFiles\abbrev.properties" />
+    <None Include="SciTEConfigFiles\ada.properties" />
+    <None Include="SciTEConfigFiles\asm.properties" />
+    <None Include="SciTEConfigFiles\asn1.properties" />
+    <None Include="SciTEConfigFiles\au3.properties" />
+    <None Include="SciTEConfigFiles\ave.properties" />
+    <None Include="SciTEConfigFiles\baan.properties" />
+    <None Include="SciTEConfigFiles\blitzbasic.properties" />
+    <None Include="SciTEConfigFiles\bullant.properties" />
+    <None Include="SciTEConfigFiles\caml.properties" />
+    <None Include="SciTEConfigFiles\cmake.properties" />
+    <None Include="SciTEConfigFiles\conf.properties" />
+    <None Include="SciTEConfigFiles\cpp.properties" />
+    <None Include="SciTEConfigFiles\csound.properties" />
+    <None Include="SciTEConfigFiles\css.properties" />
+    <None Include="SciTEConfigFiles\d.properties" />
+    <None Include="SciTEConfigFiles\eiffel.properties" />
+    <None Include="SciTEConfigFiles\erlang.properties" />
+    <None Include="SciTEConfigFiles\escript.properties" />
+    <None Include="SciTEConfigFiles\flagship.properties" />
+    <None Include="SciTEConfigFiles\forth.properties" />
+    <None Include="SciTEConfigFiles\fortran.properties" />
+    <None Include="SciTEConfigFiles\freebasic.properties" />
+    <None Include="SciTEConfigFiles\global.properties" />
+    <None Include="SciTEConfigFiles\html.properties" />
+    <None Include="SciTEConfigFiles\inno.properties" />
+    <None Include="SciTEConfigFiles\kix.properties" />
+    <None Include="SciTEConfigFiles\latex.properties" />
+    <None Include="SciTEConfigFiles\lisp.properties" />
+    <None Include="SciTEConfigFiles\lot.properties" />
+    <None Include="SciTEConfigFiles\lout.properties" />
+    <None Include="SciTEConfigFiles\lua.properties" />
+    <None Include="SciTEConfigFiles\matlab.properties" />
+    <None Include="SciTEConfigFiles\metapost.properties" />
+    <None Include="SciTEConfigFiles\mmixal.properties" />
+    <None Include="SciTEConfigFiles\nncrontab.properties" />
+    <None Include="SciTEConfigFiles\nsis.properties" />
+    <None Include="SciTEConfigFiles\opal.properties" />
+    <None Include="SciTEConfigFiles\others.properties" />
+    <None Include="SciTEConfigFiles\pascal.properties" />
+    <None Include="SciTEConfigFiles\perl.properties" />
+    <None Include="SciTEConfigFiles\pov.properties" />
+    <None Include="SciTEConfigFiles\ps.properties" />
+    <None Include="SciTEConfigFiles\purebasic.properties" />
+    <None Include="SciTEConfigFiles\python.properties" />
+    <None Include="SciTEConfigFiles\rebol.properties" />
+    <None Include="SciTEConfigFiles\ruby.properties" />
+    <None Include="SciTEConfigFiles\SciTE.properties" />
+    <None Include="SciTEConfigFiles\SciTEGlobal.properties" />
+    <None Include="SciTEConfigFiles\scriptol.properties" />
+    <None Include="SciTEConfigFiles\smalltalk.properties" />
+    <None Include="SciTEConfigFiles\specman.properties" />
+    <None Include="SciTEConfigFiles\spice.properties" />
+    <None Include="SciTEConfigFiles\sql.properties" />
+    <None Include="SciTEConfigFiles\tcl.properties" />
+    <None Include="SciTEConfigFiles\tex.properties" />
+    <None Include="SciTEConfigFiles\vb.properties" />
+    <None Include="SciTEConfigFiles\verilog.properties" />
+    <None Include="SciTEConfigFiles\vhdl.properties" />
+    <None Include="SciTEConfigFiles\yaml.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SciLexer.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Forms\Printing\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+</Project>

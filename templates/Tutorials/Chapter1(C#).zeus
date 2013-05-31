@@ -1,0 +1,112 @@
+﻿##|TYPE Template
+##|UNIQUEID 2ff525db-d9f9-47c8-ad84-8487bd2941c7
+##|TITLE Chapter 1 - Input / Output (C#)
+##|NAMESPACE Tutorials.C#.Chapter 1
+##|OUTPUT_LANGUAGE None
+##|GUI_ENGINE .Net Script
+##|GUI_LANGUAGE C#
+##|GUI_BEGIN
+public class GeneratedGui : DotNetScriptGui
+{
+	public GeneratedGui(ZeusContext context) : base(context) {}
+
+	public override void Setup()
+	{
+	
+	}
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE .Net Script
+##|BODY_LANGUAGE C#
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<% 
+public class GeneratedTemplate : DotNetScriptTemplate
+{
+	public GeneratedTemplate(ZeusContext context) : base(context) {}
+
+	public override void Render()
+	{
+		//*********************************************
+		//* OUTPUT 
+		//*********************************************
+		
+		// Write doesn't add a carriage return / line feed
+		output.write("Write");
+		output.writeln("");
+		
+		// WriteLn does as a a carriage return / line feed
+		output.writeln("WriteLn");
+		
+		//------------------------------------------
+		// Tabs - How to handle in your templates
+		//------------------------------------------
+		output.writeln("");
+		output.writeln(" -- Tabs --");
+		output.writeln("");
+		
+		// Poor mans way ...
+		output.writeln("No Tab");
+		output.writeln("	One Tab");
+		output.writeln("		Two Tabs");
+		output.writeln("");
+		
+		// Better way ...
+		output.autoTabLn("No Tab");
+		output.tabLevel++;
+		output.autoTabLn("One Tab");
+		output.tabLevel++;
+		output.autoTabLn("Two Tab");
+		output.writeln("");
+		output.tabLevel = 0;
+		
+		// Another way
+		output.autoTabLn("No Tab");
+		output.incTab(); 
+		output.autoTabLn("One Tab");
+		output.incTab(); 
+		output.autoTabLn("Two Tab");
+		output.writeln("");
+		output.decTab();
+		output.decTab();
+		%>
+		
+		Let's add some literal content ....
+		
+		<%
+		// We don't recommend adding output this way ...
+		output.text += "This is not recommended";
+		output.writeln("");
+		output.writeln("");
+		
+		//****************************************************
+		//* INPUT (populated via the default settings dialog)
+		//****************************************************
+		output.writeln("Input Variables");
+		output.writeln("");
+		
+		output.writeln("__defaultOutputPath => " + input["__defaultOutputPath"]);
+		output.writeln("__dbDriver => " + input["__dbDriver"]);
+		output.writeln("__dbTarget => " + input["__dbTarget"]);
+		output.writeln("__language => " + input["__language"]);
+		output.writeln("__dbTargetMappingFileName => " + input["__dbTargetMappingFileName"]);
+		output.writeln("__dbLanguageMappingFileName => " + input["__dbLanguageMappingFileName"]);
+		output.writeln("__userMetaDataFileName => " + input["__userMetaDataFileName"]);
+		
+		
+		//****************************************************
+		//* Now lets save all of this output all to disk
+		//****************************************************
+		string path = input["__defaultOutputPath"] as string;
+		path += "\\Chapter1.txt";
+		
+		output.save(path, false);
+		
+		output.writeln("");
+		output.writeln("All of this text was just saved to '" + path + "'");
+	}
+}
+%>
+##|BODY_END

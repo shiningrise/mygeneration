@@ -1,0 +1,16 @@
+<Combine fileversion="1.0" name="MyGeneration.dOOdads" description="">
+  <StartMode startupentry="MyGeneration.dOOdads" single="True">
+    <Execute entry="MyGeneration.dOOdads" type="None" />
+  </StartMode>
+  <Entries>
+    <Entry filename=".\MyGeneration.dOOdads.prjx" />
+  </Entries>
+  <Configurations active="Debug">
+    <Configuration name="Release">
+      <Entry name="MyGeneration.dOOdads" configurationname="Debug" build="False" />
+    </Configuration>
+    <Configuration name="Debug">
+      <Entry name="MyGeneration.dOOdads" configurationname="Debug" build="False" />
+    </Configuration>
+  </Configurations>
+</Combine>

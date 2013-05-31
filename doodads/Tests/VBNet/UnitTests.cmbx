@@ -1,0 +1,20 @@
+<Combine fileversion="1.0" name="UnitTests" description="">
+  <StartMode startupentry="UnitTests" single="True">
+    <Execute entry="UnitTests" type="None" />
+    <Execute entry="MyGeneration.dOOdads" type="None" />
+  </StartMode>
+  <Entries>
+    <Entry filename=".\UnitTests.prjx" />
+    <Entry filename="..\..\VB.NET\MyGeneration.dOOdads\MyGeneration.dOOdads.prjx" />
+  </Entries>
+  <Configurations active="Debug">
+    <Configuration name="Release">
+      <Entry name="UnitTests" configurationname="Debug" build="False" />
+      <Entry name="MyGeneration.dOOdads" configurationname="Debug" build="False" />
+    </Configuration>
+    <Configuration name="Debug">
+      <Entry name="UnitTests" configurationname="Debug" build="False" />
+      <Entry name="MyGeneration.dOOdads" configurationname="Debug" build="False" />
+    </Configuration>
+  </Configurations>
+</Combine>

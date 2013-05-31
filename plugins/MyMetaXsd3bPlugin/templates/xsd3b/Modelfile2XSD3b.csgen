@@ -1,0 +1,190 @@
+﻿##|TYPE Template
+##|UNIQUEID f5280d56-1742-47ac-b390-70b993bd8e29
+##|TITLE Modelfile2XSD3b  (*.xsd3b)
+##|NAMESPACE xml
+##|SOURCE_TYPE Source
+##|OUTPUT_LANGUAGE None
+##|COMMENTS_BEGIN
+Converts a Modellfile to *.xsd3b.xml file
+##|COMMENTS_END
+##|GUI_ENGINE .Net Script
+##|GUI_LANGUAGE C#
+##|GUI_BEGIN
+<%#REFERENCE System.Windows.Forms.dll, System.Data.dll, System.Xml.dll, Dl3bak.Xsd3b.dll, MyMeta.Plugins.Xsd3b.dll %>
+<%#NAMESPACE System, System.Windows.Forms, System.Text, System.Collections, Zeus, Zeus.UserInterface, Zeus.DotNetScript, Dl3bak.Data.Xsd3b, MyMeta.Plugins.Xsd3b, Dl3bak.Data.Xsd3b.Plugin, Dl3bak.WinForms %>
+
+public class GeneratedGui : DotNetScriptGui
+{
+	public GeneratedGui(ZeusContext context) : base(context) {}
+
+	//-----------------------------------------
+	// The User Interface Entry Point
+	//-----------------------------------------
+	public override void Setup()
+	{
+		if ( !input.Contains("srcConnection") || !input.Contains("destConnection") )
+		{
+			String conSrc = askForXsd3bSource(input["srcConnection"] as String);
+			String conDest = null;
+
+			if (conSrc != null)
+			{
+				conDest = askForXsd3bDest(input["destConnection"] as String);
+				input["srcConnection"] = conSrc;
+			}
+			input["destConnection"] = conDest;
+			if (conDest == null)
+				ui.IsCanceled = true; // do not execute render
+
+		}
+	}
+	
+	private String askForXsd3bSource(String connectionstring)
+	{
+		OpenFileDialog dlg = new OpenFileDialog();
+		dlg.CheckFileExists = true;
+		dlg.CheckPathExists = true;
+		dlg.DereferenceLinks = true;
+		
+		string allDatamodellTypes = ""
+			+ GetXsd3bFileTypes()
+			+ PlugInSupport.GetSupportedImportFileTypes();
+		string dataModellExtensions = getSupportedFilter(allDatamodellTypes);
+		dlg.Filter = ""
+			+ allDatamodellTypes
+			+ "Datamodell ("
+			+ getShortFilter(dataModellExtensions)
+			+ ")|" + dataModellExtensions + "|"
+			+ "All files (*.*)|*.*";
+
+		dlg.AddExtension = true;
+		if (connectionstring == null)
+			connectionstring = "filetype=Datamodell;";
+		PlugInSupport.SetSelection(dlg, connectionstring);
+		dlg.Title = "Xsd3b: Open Datamodell";
+
+
+		if (dlg.ShowDialog() != DialogResult.OK) 
+		{
+			return null;
+		} else {
+			return PlugInSupport.GetConnectionString(dlg);
+		}
+	}
+
+	private String askForXsd3bDest(String connectionstring)
+	{
+		SaveFileDialog dlg = new SaveFileDialog();
+		dlg.DereferenceLinks = true;
+		dlg.OverwritePrompt = true;
+
+		string allDatamodellTypes = ""
+			+ GetXsd3bFileTypes()
+			+ PlugInSupport.GetSupportedExportFileTypes();
+		string dataModellExtensions = getSupportedFilter(allDatamodellTypes);
+		dlg.Filter = ""
+			+ allDatamodellTypes
+			+"All files (*.*)|*.*";
+
+		dlg.AddExtension = true;
+		if (connectionstring == null)
+			connectionstring = "";
+		PlugInSupport.SetSelection(dlg, connectionstring);
+		dlg.Title = "Xsd3b: Save Datamodell AS";
+        dlg.AddExtension = false;
+
+		if (dlg.ShowDialog() != DialogResult.OK)
+		{
+			return null;
+		}
+		else
+		{
+			try
+			{
+				dlg.FileName = FileDialogUtil.GetPathFilenameWithSelectedExtension(dlg);
+
+			}
+			catch (Exception)
+			{
+			}
+
+			return PlugInSupport.GetConnectionString(dlg);
+		}
+	}
+
+
+	private static string GetXsd3bFileTypes()
+	{
+		return string.Format("Extendet Schema (*{0};*{1})|*{0};*{1}|"
+			,SchemaXsd3bEx.XSD3B_EXT_XML, SchemaXsd3bEx.XSD3B_EXT);
+	}
+
+	private string getSupportedFilter(string allDatamodellTypes)
+	{
+		string[] types = allDatamodellTypes.Split('|');
+		StringBuilder res = new StringBuilder(types[1]);
+		for (int i = 3; i < types.Length; i += 2)
+			res.Append(";").Append(types[i]);
+		return res.ToString();
+	}
+
+	private string getShortFilter(string dataModellExtensions)
+	{
+		StringBuilder res = new StringBuilder();
+		string[] types = dataModellExtensions.Split(';');
+		foreach (string name in types)
+			if (!name.ToLower().EndsWith(".xml"))
+				res.Append(name).Append(";");
+		res.Append("*.xml");
+		return res.ToString();
+	}
+
+
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE .Net Script
+##|BODY_LANGUAGE C#
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%#NAMESPACE System, System.IO, System.Text,System.Data , System.Collections, Zeus, Zeus.UserInterface, Zeus.DotNetScript, Dl3bak.Data.Xsd3b, MyMeta.Plugins.Xsd3b %><%#REFERENCE System.Windows.Forms.dll, System.Data.dll, System.Xml.dll, Dl3bak.Xsd3b.dll, MyMeta.Plugins.Xsd3b.dll %><%
+
+/* -----------------------------------------------------------------------------
+' Modelfile2XSD3bFile.csgen
+' Last Update: 01.11.2007
+' Author: Klaus Evers (dl3bak)
+'
+' Converts a Modellfile to *.xsd3b.xml file
+' Requires MyMeta.Plugins.Xsd3b.dll, Dl3bak.Xsd3b.dll,Dl3bak.Xsd3b.xsd.dll  in MyGeneration folder.
+'
+'
+' v 0.1 (01.11.2007) - created
+'
+'----------------------------------------------------------------------------- */
+
+public class GeneratedTemplate : DotNetScriptTemplate
+{
+	public GeneratedTemplate(ZeusContext context) : base(context) {}
+
+	//---------------------------------------------------
+	// Render() is where you want to write your logic    
+	//---------------------------------------------------
+	public override void Render()
+	{
+		String conSrc = input["srcConnection"] as String; 
+		String conDest = input["destConnection"] as String; 
+		if ((conSrc != null) && (conDest != null))
+		{
+			output.writeln("Reading " + conSrc);
+			SchemaXsd3bEx data = SchemaXsd3bEx.ReadXsd3b(conSrc, null);
+			output.writeln("Writing " + conDest);
+			data.WriteXsd3b(conDest);
+			output.writeln("Done ");
+		}
+
+	}
+
+}
+%>
+##|BODY_END

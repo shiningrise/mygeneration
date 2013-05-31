@@ -1,0 +1,485 @@
+﻿##|TYPE Template
+##|UNIQUEID bb997abc-46b9-418d-a4fd-192586a5bd87
+##|TITLE dOOdads - Invoke a Stored Procedure
+##|NAMESPACE dOOdads.C#
+##|OUTPUT_LANGUAGE None
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstProcs
+Dim cmbProcType
+Dim txtSpecialChar
+Dim specialChar
+
+Sub setup()
+
+	If context.Objects.ContainsKey("DnpUtils") Then
+		DnpUtils.ReadInputFromCache(context)
+	End if
+
+	ui.Width  = 340
+	ui.Height = 600
+	
+	ui.Title = "Generate C# dOOdad code to Execute a Stored Procedure."
+	
+	' Grab default output path
+	Dim sOutputPath
+	sOutputPath = ""
+	If input.Contains("defaultOutputPath") Then 
+		sOutputPath = input.Item("defaultOutputPath")
+	End If
+
+	ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+	ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+	ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+
+	' List Databases in a ComboBox
+	ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+	Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+
+	' List Tables in a listbox
+	ui.AddLabel "lblStoredProcs", "Select a Stored Procedure:", "Select a Stored Procedure from the listbox below."
+	Set lstProcs = ui.AddListBox ("lstProcs", "Select a Stored Procedure:")
+	lstProcs.IsMultiSelect = false
+	lstProcs.Height = 120
+	
+	ui.AddLabel "lblProcType", "Purpose of the Stored Procedure Type:", "What do you want this stored procedure to be used for?"
+	Set cmbProcType = ui.AddComboBox("cmbProcType", "Stored Procedure Type.")		
+	cmbProcType.Item("L") = "Load the Business Entity"		
+	cmbProcType.Item("N") = "Execute Only, Return No Resultset"	
+	cmbProcType.Item("R") = "Return a DataReader"	
+	cmbProcType.SelectedValue = "N"
+
+	ui.AddLabel "lblDrivers", "Select a driver:", "Select a .NET Managed Data Provider."
+	Set cmbDrivers = ui.AddComboBox("cmbDrivers", "Select a Driver.")		
+	
+	ui.AddLabel "lblSpecialChar", "Prefix: ",  ""
+	
+	Select Case MyMeta.DriverString  
+		Case "ACCESS"
+			cmbDrivers.Item("OleDb") = "OleDb"
+			cmbDrivers.SelectedValue = "OleDb"
+			ui.AddTextBox "txtSpecialChar", "@", "Leading character for your parameters, ie, @ or _"					
+		Case "SQL"
+			cmbDrivers.Item("OleDb") = "OleDb"
+			cmbDrivers.Item("SqlClient") = "SqlClient"			
+			cmbDrivers.SelectedValue = "SqlClient"
+			ui.AddTextBox "txtSpecialChar", "@", "Leading character for your parameters, ie, @ or _"					
+		Case "ORACLE"
+			cmbDrivers.Item("OracleClient") = "OracleClient"			
+			cmbDrivers.SelectedValue = "OracleClient"	
+			ui.AddTextBox "txtSpecialChar", "@", "Leading character for your parameters, ie, @ or _"				
+		Case "FIREBIRD"
+			cmbDrivers.Item("FirebirdSql") = "FirebirdSql"			
+			cmbDrivers.SelectedValue = "FirebirdSql"
+			ui.AddTextBox "txtSpecialChar", "$", "Leading character for your parameters, ie, @ or _"			
+	End Select	
+	
+	ui.AddLabel "lblLanguage", "Select a language:", "Select a Language for Column Mappings."
+	Set cmbLanguages = ui.AddComboBox("cmbLanguages", "Select a Language.")
+	cmbLanguages.Item("C#") = "C#"
+	cmbLanguages.Item("C# System Types") = "C# System Types"
+	cmbLanguages.SelectedValue = "C#"
+	
+	If MyMeta.DriverString = "FIREBIRD" Then
+		Set chk = ui.AddCheckBox("ckDialect3", "DIALECT 3", false, "If checked, the stored procedure will use dialect 3 syntax")
+		chk.forecolor = "red"
+	End If		
+
+	' Attach the onchange event to the cmbDatabases control.
+	setupDatabaseDropdown cmbDatabases
+	cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+	
+	ui.ShowGUI = true
+
+End Sub
+
+Sub setupDatabaseDropdown(cmbDatabases)
+	cmbDatabases.BindData MyMeta.Databases
+
+	If Not MyMeta.DefaultDatabase Is Nothing Then
+		cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindProcedures cmbDatabases.SelectedValue
+	End If
+End Sub
+
+Sub bindProcedures(sDatabase)
+	Set db = MyMeta.Databases(sDatabase)
+	lstProcs.BindData(db.Procedures)
+End Sub
+
+' Event Handler
+Sub cmbDatabases_onchange(control)
+	Set cmbDatabases = ui.item("cmbDatabase")
+	bindProcedures cmbDatabases.SelectedText
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'------------------------------------------------------------------------------
+' Copyright 2004 by MyGeneration Software
+' All Rights Reserved 
+'
+' Permission to use, copy, modify, and distribute this software and its 
+' documentation for any purpose and without fee is hereby granted, 
+' provided that the above copyright notice appear in all copies and that 
+' both that copyright notice and this permission notice appear in 
+' supporting documentation. 
+'
+' MYGENERATION SOFTWARE DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS 
+' SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY 
+' AND FITNESS, IN NO EVENT SHALL MYGENERATION SOFTWARE BE LIABLE FOR ANY 
+' SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES 
+' WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, 
+' WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER 
+' TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE 
+' OR PERFORMANCE OF THIS SOFTWARE. 
+'------------------------------------------------------------------------------
+' CSharp_dOOdads_StoredProc.vbgen
+' Last Update : 09/10/2004
+'------------------------------------------------------------------------------
+
+If context.Objects.ContainsKey("DnpUtils") Then
+	DnpUtils.SaveInputToCache(context)
+End if
+
+Dim bFirst
+Dim name
+Dim pname
+Dim objProc
+Dim objParam
+Dim procNames
+Dim language
+Dim databaseName
+Dim database
+Dim specialChar
+Dim procType
+Dim paramName
+Dim str
+Dim ref
+Dim skipOutParams
+
+Dim IDbCommand
+Dim IDataParameter
+
+Dim dialect
+
+dialect = 1
+If input.Item("ckDialect3") Then
+	dialect = 3
+End If
+
+procType = input.Item("cmbProcType")
+specialChar = input.Item("txtSpecialChar")
+
+If procType = "N" Then
+	skipOutParams = false
+Else
+	skipOutParams = true
+End If
+
+MyMeta.DbTarget  = input.Item("cmbDrivers")
+
+IDbCommand    = GetIDbCommand()
+IDataParameter = GetIDataParameter()
+
+' Set the Language for our column data types
+MyMeta.Language = input.Item("cmbLanguages")
+
+' Grab the choices the user made in our UI Script (see Interface Code tab)
+Set procNames = input.Item("lstProcs")
+
+databaseName  = input.Item("cmbDatabase")
+Set database = MyMeta.Databases(databaseName)
+
+' Loop through the tables the user selected and generate the business entities
+For intLp = 0 To procNames.Count - 1
+
+	Set objProc = database.Procedures(procNames.item(intLp))
+%>
+		
+		using System.Data;
+		using System.Collections.Specialized;	
+		using <%= GetDataNameSpace() %>;		
+		
+		<% IF procType = "R" Then %>using System.Data;<% End If %>		
+		
+		public virtual <% output.write GetReturnType(procType) & " " & TrimSpaces(objProc.Alias) & " (" 
+				bFirst = true
+				For Each objParam in objProc.Parameters
+					If skipOutParams And (objParam.Direction = 2 or objParam.Direction = 3) Then
+						' Do Nothing
+					Else
+						If Not objParam.Direction = 4 Then 'ParamDirection.ReturnValue Then
+							
+							If Not bFirst Then
+								output.writeLn ", "
+								output.write "				"
+							End If
+							
+							' Is it an output parameter
+							If objParam.Direction = 2 or objParam.Direction = 3 Then
+								ref = "ref "
+							Else
+								ref = ""
+							End If
+				
+							output.write ref & objParam.LanguageType & " " & StripSpecialChars(GetAlias(objParam), specialChar)
+				
+							bFirst = false
+						End If
+					End If
+				Next 
+				output.write ")" & vbCrLf
+			%>		{
+			ListDictionary parameters = new ListDictionary();
+			<% output.writeLn ""
+				If objProc.Parameters.Count > 0 Then
+				
+					For Each objParam in objProc.Parameters
+						If Not objParam.Direction = 4 Then 'ParamDirection.ReturnValue Then
+						
+							name = GetAlias(objParam)
+							
+							If Not skipOutParams And (objParam.Direction = 2 or objParam.Direction = 3) Then
+							
+								paramName = "p_" & StripSpecialChars(name, specialChar) 
+						
+								output.write vbCrLf	
+								output.write "			IDataParameter " & paramName & " = new " & IDataParameter & "(""" & name & """, " & objParam.DbTargetType
+								if(objParam.CharacterMaxLength > 0) Then
+									output.write ", " & objParam.CharacterMaxLength
+								Else
+									output.write ", 0"
+								End If
+								output.write ");" 	& vbCrLf		
+								
+								output.write "			" & paramName & ".Direction = ParameterDirection.Output;" & vbCrLf	
+								output.write "			parameters.Add(" & paramName 
+								output.write ", " & StripSpecialChars(name, specialChar)  & ");" & vbCrLf & vbCrLf											
+						 
+							Else
+							
+								If objParam.Direction = 1 Then 
+								 
+									output.write "			parameters.Add( new " & IDataParameter & "(""" & name & """, " & objParam.DbTargetType
+									if(objParam.CharacterMaxLength > 0) Then
+										output.write ", " & objParam.CharacterMaxLength
+									Else
+										output.write ", 0"
+									End If
+									output.write ")" 				
+	
+									output.write ", " & StripSpecialChars(name, specialChar)  & ");" & vbCrLf	
+							
+								End If
+								 
+							End If
+
+						End If
+							
+					Next
+		
+				End If 	
+				
+				If MyMeta.DbTarget = "FirebirdSql" Then
+					bFirst = True
+					str = """EXECUTE PROCEDURE " + FirebirdSP(objProc.Name) + " ("
+					For Each objParam in objProc.Parameters
+						If objParam.Direction = 1 Then						
+							If Not bFirst Then
+								str = str + ","
+							End If
+							bFirst = false
+							str = str + "?"
+						End If 
+					Next 
+					str = str + ")"""
+					CreateProcedureName = str
+					
+					output.writeLn ""
+					output.writeLn "			" & GetMethod(procType) & "(" & str & ", parameters);"
+				Else
+					output.writeLn ""
+					output.writeLn "			" & GetMethod(procType) & "(""" & objProc.Name & """, parameters);"
+				End If
+				
+				output.WriteLn ""
+				
+				' Set the Values of any 'ref' input parameters
+				For Each objParam in objProc.Parameters
+					If Not skipOutParams And (objParam.Direction = 2 or objParam.Direction = 3) Then
+						name = StripSpecialChars(GetAlias(objParam), specialChar)
+						output.writeLn "			" & name & " = (" & objParam.LanguageType & ")p_" & name & ".Value;"
+					End IF
+				Next
+				
+				output.writeLn "		}"				
+		
+
+	' Save the output file for this Table
+	Dim filename
+	filename = input.item("txtPath")
+
+	Dim length
+	Dim pos
+	lenth = Len(filename)
+	pos = InStrRev(filename, "\") 
+
+	If Not pos = lenth Then
+		filename = filename & "\"
+	End If
+
+	filename = filename & objProc.Alias & ".cs"
+
+	output.save filename, false
+	buffer = buffer & output.text
+	output.clear
+Next '  tableName
+	
+	output.write buffer
+ %>
+ 
+ <% 
+'===========================================================================
+' These are support routines called by the above scirpt
+'===========================================================================
+Function GetAlias(objColumn)
+	Dim name
+	name = TrimSpaces(objColumn.Alias)
+	GetAlias = UCase(Left(name, 1)) & Right(name, Len(name) -1)
+End Function
+
+Function GetName(objColumn)
+	Dim name
+	name = objColumn.Name
+	GetName = UCase(Left(name, 1)) & Right(name, Len(name) -1)
+End Function
+
+Function TrimSpaces(str)
+
+	Dim tname
+	Dim name
+	Dim char
+	Dim l
+
+	name = ""
+	tname = str
+	l = Len(tname)
+
+	For j = 1 To l
+		char = Mid(tname, j, 1)
+		If Not char = " " Then
+			name = name & char
+		End If
+	Next
+
+	TrimSpaces = name
+End Function
+
+Function StripSpecialChars(sData, sSpecialChar)
+	StripSpecialChars = Replace(sData, sSpecialChar, "")
+End Function
+
+Function GetReturnType(sProcType)
+
+	Select Case sProcType
+		Case "L"
+			GetReturnType = "bool"
+		Case "N"
+			GetReturnType = "void"
+		Case "R"
+			GetReturnType = "IDataReader"
+	End Select	
+
+End Function
+
+Function GetMethod(sProcType)
+
+	Select Case sProcType
+		Case "L"
+			GetMethod = "return LoadFromSql"
+		Case "N"
+			GetMethod = "LoadFromSqlNoExec"
+		Case "R"
+			GetMethod = "return LoadFromSqlReader"
+	End Select	
+
+End Function
+
+Function GetIDataParameter
+
+	Select Case MyMeta.DbTarget 
+		Case "OleDb"
+			GetIDataParameter = "OleDbParameter"
+		Case "SqlClient"
+			GetIDataParameter = "SqlParameter"
+		Case "OracleClient"
+			GetIDataParameter = "OracleParameter"
+		Case "FirebirdSql"
+			GetIDataParameter = "FbParameter"			
+	End Select
+
+End Function
+
+Function GetIDbCommand
+
+	Select Case MyMeta.DbTarget 
+		Case "OleDb"
+			GetIDbCommand = "OleDbCommand"
+		Case "SqlClient"
+			GetIDbCommand = "SqlCommand"
+		Case "OracleClient"
+			GetIDbCommand = "OracleCommand"	
+		Case "FirebirdSql"
+			GetIDbCommand = "FbCommand"			
+	End Select
+
+End Function
+
+Function GetDataNameSpace
+
+	Select Case MyMeta.DbTarget 
+		Case "OleDb"
+			GetDataNameSpace = "System.Data.OleDb"
+		Case "SqlClient"
+			GetDataNameSpace = "System.Data.SqlClient"
+		Case "OracleClient"	
+			GetDataNameSpace = "System.Data.OracleClient"
+		Case "FirebirdSql"	
+			GetDataNameSpace = "FirebirdSql.Data.Firebird"			
+	End Select
+
+End Function
+
+Function GetBaseClass
+
+	Select Case MyMeta.DbTarget 
+		Case "OleDb"
+			GetBaseClass = "OleDbEntity"
+		Case "SqlClient"
+			GetBaseClass = "SqlClientEntity"
+		Case "OracleClient"	
+			GetBaseClass = "OracleClientEntity"
+		Case "FirebirdSql"	
+			GetBaseClass = "FirebirdSqlEntity"			
+	End Select
+	
+End Function
+
+Function FirebirdSP(strText)
+    If dialect = 3 Then
+		FirebirdSP = "\""" + strText + "\"""
+	Else
+		FirebirdSP = strText
+	End If
+End Function
+
+%>
+##|BODY_END

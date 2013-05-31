@@ -1,0 +1,311 @@
+﻿##|TYPE Template
+##|UNIQUEID 7136C862-F62C-4741-A2C0-F3BEBC4D7EEF
+##|TITLE Table Definition Report
+##|NAMESPACE Microsoft SQL Server.Reports
+##|OUTPUT_LANGUAGE HTML
+##|COMMENTS_BEGIN
+Submitted by Peter Welzien
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstTables
+
+Sub setup()
+
+	If Not input.Contains("lstTables") Or Not input.Contains("txtPath") Then
+
+		ui.Title = "HTML Report Generator"
+		ui.Width  = 330
+		ui.Height = 420
+
+		' Grab default output path
+		Dim sOutputPath
+		sOutputPath = ""
+		If input.Contains("defaultOutputPath") Then 
+			sOutputPath = input.Item("defaultOutputPath")
+		End If
+
+		ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+		ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+		ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+		ui.AddCheckBox "chkMultiFiles", "Create multiple files", false, "Create multiple files instead of a single file"
+
+		' List Databases in a ComboBox
+		ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+		Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+
+		' List Tables in a listbox
+		ui.AddLabel "lblTables", "Select tables:", "Select tables from the listbox below."
+		Set lstTables = ui.AddListBox ("lstTables", "Select tables:")
+		'lstTables.IsMultiSelect = false
+		lstTables.Height = 120
+
+
+		' Attach the onchange event to the cmbDatabases control.
+		setupDatabaseDropdown cmbDatabases
+		cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+		
+		ui.ShowGUI = true
+	Else 
+		ui.ShowGUI = false
+	End if
+
+End Sub
+
+Sub setupDatabaseDropdown(cmbDatabases)
+	cmbDatabases.BindData MyMeta.Databases
+
+	If Not MyMeta.DefaultDatabase Is Nothing Then
+		cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindTables cmbDatabases.SelectedValue
+	End If
+End Sub
+
+Sub bindTables(sDatabase)
+	Set db = MyMeta.Databases.Item(sDatabase)
+	lstTables.BindData(db.Tables)
+End Sub
+
+' Event Handler
+Sub cmbDatabases_onchange(control)
+	Set cmbDatabases = ui.item("cmbDatabase")
+	bindTables cmbDatabases.SelectedText
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<% 
+'------------------------------------------------------------------------------ 
+' HTML_TableDefinition.vbgen
+' Submitted by Peter Welzien
+' Requires MyGeneration v0.9.18 or later
+'------------------------------------------------------------------------------ 
+Dim objTable 
+Dim objColumn 
+Dim tableNames 
+Dim databaseName 
+Dim tableName
+Dim foreignTable
+Dim multiFiles
+Dim buffer
+
+buffer = ""
+
+Set tableName = input.Item("lstTables") 
+
+multiFiles = input.Item("chkMultiFiles")
+
+MyMeta.Language = input.Item("cmbLanguages") 
+MyMeta.Language = "HTML"
+MyMeta.DbTarget = "HTML" 
+
+' Grab the choices the user made in our UI Script (see Interface Code tab) 
+Set tableNames = input.Item("lstTables") 
+
+databaseName = input.Item("cmbDatabase") 
+Set database = MyMeta.Databases.Item(databaseName) 
+
+' Create a header if single file is selected
+If Not multiFiles Then Call CreateHeader("Tables")
+
+
+' Loop through the tables the user select and generate the stored procs and save them to disk 
+For intLp = 0 To tableNames.Count - 1 
+
+	Set objTable = database.Tables.Item(tablenames.item(intLp)) 
+
+	' Create a header for every file if multiple files are selected
+	If multiFiles Then Call CreateHeader(objTable.Alias)
+
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+' Now we have the table that we desire to build a Business Object From, let us begin. 
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+%> 
+
+<H2>
+<A NAME="<%=Replace(objTable.Name, " ", "_") %>">Table <%=objTable.Name%></A></H2> 
+
+<P><%= ReplaceEmpty(objTable.Description, "&nbsp;") %></P> 
+
+<TABLE BORDER=1> 
+<TR> 
+<TH nowrap align=left>Field name</TH> 
+<TH nowrap>Data type</TH> 
+<TH nowrap width="99%" align=left>Description</TH> 
+</TR> 
+
+<%
+		For Each objColumn in objTable.Columns 
+%> 
+<TR> 
+<TD nowrap>
+<% 
+			output.write objColumn.Name
+%> 
+</TD> 
+<TD nowrap><%
+			output.write GetDataTypeNameComplete(objColumn)
+			If objColumn.IsInPrimaryKey Then
+				output.write ", PK" 
+			End If
+			foreignTable = GetForeignKey(objTable, objColumn.Name)
+			If Len(foreignTable) > 0 Then
+				output.write ", "
+				output.write CreateLink(foreignTable, "FK")
+			End If
+%></TD> 
+<TD nowrap><%= ReplaceEmpty(objColumn.Description, "&nbsp;") %></TD> 
+</TR> 
+<%
+		Next ' objColumn
+%> 
+</TABLE> 
+
+<%
+	If multiFiles Then
+		Call CreateFooter()
+		Call SaveToFile(objTable.Name)
+	End If
+
+Next ' tableName
+
+If Not multiFiles Then
+	Call CreateFooter()
+	Call SaveToFile("Tables")
+End If
+
+
+output.write buffer
+'Done...
+
+
+
+'=========================================================================== 
+' These are support routines called by the above script 
+'=========================================================================== 
+
+Function GetAlias(objColumn) 
+	Dim name 
+	name = TrimSpaces(objColumn.Alias) 
+	GetAlias = UCase(Left(name, 1)) & Right(name, Len(name) -1) 
+End Function 
+
+Function GetName(objColumn) 
+	Dim name 
+	name = objColumn.Name 
+	GetName = UCase(Left(name, 1)) & Right(name, Len(name) -1) 
+End Function 
+
+Function GetDataTypeNameComplete(objColumn) 
+	If MyMeta.DriverString = "ACCESS" Then 
+		If (objColumn.CharacterOctetLength > 0) And (objColumn.CharacterMaxLength > 0) Then 
+			GetDataTypeNameComplete = objColumn.DataTypeName & "(" & objColumn.CharacterMaxLength & ")" 
+		Else 
+			GetDataTypeNameComplete = objColumn.DataTypeName 
+		End If 
+	Else
+		GetDataTypeNameComplete = objColumn.DataTypeNameComplete
+	End If
+End Function 
+
+Function TrimSpaces(str) 
+	TrimSpaces = Replace(str, " ", "") 
+End Function 
+
+Function GetForeignKey(objTable, strColumnName) 
+	dim objFK, objFC
+
+	GetForeignKey = ""
+
+	For Each objFK In objTable.ForeignKeys
+		For Each objFC In objFK.ForeignColumns 
+			If objFC.Name = strColumnName Then 
+				GetForeignKey = objFK.PrimaryTable.Name
+				Exit Function
+			End If 
+		Next 
+		For Each objFC In objFK.PrimaryColumns 
+			If objFC.Name = strColumnName Then 
+				GetForeignKey = objFK.PrimaryTable.Name
+				Exit Function
+			End If 
+		Next 
+	Next 
+
+End Function
+
+Function SaveToFile(file)
+	' Save the output file for this Table 
+	Dim path
+	Dim length 
+	Dim pos 
+
+	path = input.item("txtPath") 
+
+	length = Len(path) 
+	pos = InStrRev(path, "\") 
+
+	If Not pos = length Then 
+		path = path & "\" 
+	End If 
+
+	' objTable.Alias
+	file = path & Replace(file, " ", "_") & ".htm"
+	
+	output.save file, false 
+	buffer = buffer & output.text 
+	output.clear 
+End Function
+
+Function CreateLink(table, text)
+
+	If multiFiles Then
+		CreateLink = "<A HREF=""" & Replace(table, " ", "_") & ".htm"">" & text & "</A>"
+	Else
+		CreateLink = "<A HREF=""#" & Replace(table, " ", "_") & """>" & text & "</A>"
+	End If
+
+End Function
+
+Function ReplaceEmpty(text,repl)
+	text = trim(text)
+	If Len(text) > 0 Then
+		ReplaceEmpty= text
+	Else
+		ReplaceEmpty = repl
+	End If
+End Function
+
+Function CreateHeader(Title)
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"> 
+<HTML> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+<HEAD> 
+<TITLE><%= Title %></TITLE> 
+<STYLE><!-- 
+TD { } 
+TH { background-color:#CCCCCC } 
+TABLE { } 
+H3 { } 
+H2 { } 
+--></STYLE> 
+</HEAD> 
+<BODY> 
+<%
+End Function
+
+Function CreateFooter()
+%>
+</BODY> 
+</HTML> 
+<%
+End Function
+%>
+##|BODY_END

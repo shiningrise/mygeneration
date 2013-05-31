@@ -1,0 +1,158 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50215</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8666C149-F8D1-47CE-B5E2-BEE0BC844A9A}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>MyGeneration.dOOdads_2005</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MyGeneration.dOOdads</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;VS2005</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;VS2005</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.18.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\System.Data.SQLite.DLL</HintPath>
+    </Reference>
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AggregateParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BusinessEntity.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <None Include="DbAdapters\FirebirdSqlDynamicQuery.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\FirebirdSqlEntity.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\OleDbDynamicQuery.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\OleDbEntity.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\OracleClientDynamicQuery.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\OracleClientEntity.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\PostgreSqlDynamicQuery.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\PostgreSqlEntity.cs">
+      <SubType>Code</SubType>
+    </None>
+    <Compile Include="DbAdapters\SqlClientDynamicQuery.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DbAdapters\SqlClientEntity.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <None Include="DbAdapters\VistaDBDynamicQuery.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\VistaDBEntity.cs">
+      <SubType>Code</SubType>
+    </None>
+    <Compile Include="DynamicQuery.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TransactionMgr.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WhereParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Content Include="README.TXT" />
+    <None Include="DbAdapters\MySql4DynamicQuery.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\MySql4Entity.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\SQLiteDynamicQuery.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="DbAdapters\SQLiteEntity.cs">
+      <SubType>Code</SubType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

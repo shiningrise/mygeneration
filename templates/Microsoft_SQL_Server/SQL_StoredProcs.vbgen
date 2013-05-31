@@ -1,0 +1,732 @@
+﻿##|TYPE Template
+##|UNIQUEID 10998336-5037-496c-a163-050060de065a
+##|TITLE dOOdad Stored Procedures
+##|NAMESPACE Microsoft SQL Server
+##|OUTPUT_LANGUAGE Transact-SQL
+##|COMMENTS_BEGIN
+Use this for SQL dOOdads or other business entities. Select multiple tables and generate all your stored procedures 
+in one click!
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstTables
+
+Sub setup()
+
+	Dim sOutputPath
+
+	If Not input.Contains("lstTables") Or Not input.Contains("txtPath") Then
+	
+		If context.Objects.ContainsKey("DnpUtils") Then
+			DnpUtils.ReadInputFromCache(context)
+		End if	
+
+		ui.Title = "Microsoft SQL Server Stored Procedures"
+		ui.Width  = 330
+		ui.Height = 510
+
+		' Grab default output path
+		sOutputPath = ""
+		If input.Contains("defaultOutputPath") Then 
+			sOutputPath = input.Item("defaultOutputPath")
+		End If
+
+		ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+		ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+		ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+
+		' List Databases in a ComboBox
+		ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+		Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+
+		' List Tables in a listbox
+		ui.AddLabel "lblTables", "Select tables:", "Select tables from the listbox below."
+		Set lstTables = ui.AddListBox ("lstTables", "Select tables:")
+		lstTables.Height = 150
+
+		' Attach the onchange event to the cmbDatabases control.
+		setupDatabaseDropdown cmbDatabases
+		cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+
+		' Add options
+		ui.AddCheckBox "chkAlter", "Use ALTER procedures", False, "Check this to ALTER existing stored procedures, good for preserving permissions"
+		ui.AddCheckBox "chkGenDoc", "Generate Documentation", True, "Check this to generate documentation after stored procedures are generated"
+		ui.AddCheckBox "chk2005", "Targeting SQL 2005", False, "Check this if you are using SQL 2005"
+		
+		ui.ShowGUI = True
+	Else 
+		ui.ShowGUI = False
+	End if
+
+End Sub
+
+Sub setupDatabaseDropdown(cmbDatabases)
+	cmbDatabases.BindData MyMeta.Databases
+
+	If Not MyMeta.DefaultDatabase Is Nothing Then
+		cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindTables cmbDatabases.SelectedValue
+	End If
+End Sub
+
+Sub bindTables(sDatabase)
+	Set db = MyMeta.Databases(sDatabase)
+	lstTables.BindData(db.Tables)
+End Sub
+
+' Event Handler
+Sub cmbDatabases_onchange(control)
+	Set cmbDatabases = ui.item("cmbDatabase")
+	bindTables cmbDatabases.SelectedText
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'------------------------------------------------------------------------------
+' SQL_StoredProcs.vbgen
+' Last Update : 12/23/2005
+'
+' Be sure to rename this template if you plan to customize it, MyGeneration 
+' Software will update this template with new builds.
+'------------------------------------------------------------------------------
+'
+'  This template generates 5 stored procedures
+'
+'  1) proc[TableName]LoadByPrimaryKey
+'  2) proc[TableName]LoadAll
+'  3) proc[TableName]Update
+'  4) proc[TableName]Insert
+'  5) proc[TableName]Delete
+'
+'  There is script in the "Interface Code" tab that pops up a dialog so you can tell this tempate
+'  where to save the files and what tables you want to generate stored procedures for.  So, the
+'  logic at a very high level looks like this:
+'
+'   For Each TableName in Select Tables
+'        objTable = database.Tables(TableName)
+' 	
+'	Generate the 5 stored procs
+'
+'   Save file
+'
+'  However, all of the script ends up in the Output tab and you can copy this right into 
+'  Sql QueryAnalyzer and execute it.  It's a pretty smart template, it knows to make
+'  Identity Columns output parameters to return them, the same holds true for computed
+'  Columns. It knows how to use PrimaryKeys in WHERE clauses and not to update them
+'  in the UpdateStored Proc, if you have a TimeStamp it will do the comparison for you and 
+'  so on.  This template alone can save you tons of time, and at anytime you can regenerate
+'  them as tables change.
+'======================================================================
+
+If context.Objects.ContainsKey("DnpUtils") Then
+	DnpUtils.SaveInputToCache(context)
+End if
+
+Dim objDatabase
+Dim objTable
+Dim objColumn
+Dim intLp
+Dim blnFirst
+Dim strProcName
+Dim blnHasComputed
+Dim strWhereClause
+Dim strWhereAnd
+Dim strWhereFields
+Dim strComma
+Dim colTableNames
+Dim strBuffer
+Dim strDatabaseName 
+Dim blnGenDoc
+Dim strFilename
+Dim strFilenameBase
+Dim intLen
+Dim intPos
+Dim chk2005
+
+strDatabaseName  = input.Item("cmbDatabase")
+Set objDatabase = MyMeta.Databases(strDatabaseName)
+
+Set colTableNames = input.Item("lstTables")
+
+' Do we do ALTER or CREATE
+alterStatement = input.Item("chkAlter")
+
+' Do we do Generate Documentation
+blnGenDoc = input.Item("chkGenDoc")
+
+chk2005 = input.Item("chk2005")
+
+' Save the output file for this Table
+strFilenameBase = input.Item("txtPath")
+
+intLen = Len(strFilenameBase)
+intPos = InStrRev(strFilenameBase, "\") 
+
+If Not intPos = intLen Then
+	strFilenameBase = strFilenameBase & "\"
+End If
+%>
+USE [<%output.write objDatabase.Name %>]
+GO
+<%
+
+' Loop through the tables the user select and generate the stored procs and save them to disk
+For intLp = 0 To colTableNames.Count - 1
+
+	Set objTable = objDatabase.Tables(colTableNames.item(intLp))
+	
+	If objTable.PrimaryKeys.Count = 0 Then
+		output.write "-- ERROR: Table '" & objTable.Name & "' must have a primary key" & vbCrLf
+		Exit For
+	End If 
+
+'----------------------------------------------------------------------
+' LoadByPrimaryKey 
+'----------------------------------------------------------------------
+strProcName = "proc_" & objTable.Name & "LoadByPrimaryKey"	
+%>
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	' List all keys as parameters
+	blnFirst = True
+	For Each objColumn In objTable.PrimaryKeys
+
+		If Not blnFirst Then 
+			output.write  "," & vbCrLf
+		End if	
+
+		blnFirst = False	
+
+		output.write "	@" & GetParameterName(objColumn) & " " & objColumn.DataTypeNameComplete
+	Next
+%>
+)
+AS
+BEGIN
+	SET NOCOUNT ON
+	DECLARE @Err int
+
+	SELECT
+<%
+	' List all fields
+	blnFirst = True
+	For Each objColumn In objTable.Columns
+
+		If Not blnFirst Then 
+			output.write  "," & vbCrLf
+		End if	
+
+		blnFirst = False			
+
+		output.write "		[" & objColumn.Name & "]"
+	Next
+
+	output.write vbCrLf
+%>	FROM [<%output.write objTable.Name %>]
+	WHERE
+<%
+	' Compare keys with parameters
+	blnFirst = True
+	For Each objColumn In objTable.PrimaryKeys
+
+		If Not blnFirst Then 
+			output.write  " AND" & vbCrLf
+		End if	
+
+		blnFirst = False					
+
+		output.write "		([" & objColumn.Name & "] = @" & GetParameterName(objColumn) & ")"
+	Next
+
+	output.write vbCrLf		
+%>
+	SET @Err = @@Error
+
+	RETURN @Err
+END
+GO
+
+<%If blnGenDoc Then%>
+-- Display the status of Proc creation
+IF (@@Error = 0) PRINT 'Procedure Creation: <%output.write strProcName%> Succeeded'
+ELSE PRINT 'Procedure Creation: <%output.write strProcName%> Error on Creation'
+GO
+<%End If
+
+'----------------------------------------------------------------------
+' LoadAll 
+'----------------------------------------------------------------------
+strProcName = "proc_" & objTable.Name & "LoadAll"		
+%>
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+AS
+BEGIN
+
+	SET NOCOUNT ON
+	DECLARE @Err int
+
+	SELECT
+<%
+		' List all fields
+		blnFirst = True
+		For Each objColumn In objTable.Columns
+			If Not blnFirst Then 
+				output.write  "," & vbCrLf
+			End if
+
+			blnFirst = False	
+
+			output.write "		[" & objColumn.Name & "]"
+		Next
+%>
+	FROM [<%output.write objTable.Name %>]
+
+	SET @Err = @@Error
+
+	RETURN @Err
+END
+GO
+
+<%If blnGenDoc Then%>
+-- Display the status of Proc creation
+IF (@@Error = 0) PRINT 'Procedure Creation: <%output.write strProcName%> Succeeded'
+ELSE PRINT 'Procedure Creation: <%output.write strProcName%> Error on Creation'
+GO
+<%End If
+
+'----------------------------------------------------------------------
+' Update
+'----------------------------------------------------------------------
+Dim colCount
+colCount = 0
+For Each objColumn In objTable.Columns
+	If objColumn.IsInPrimaryKey Or objColumn.IsComputed Then
+		colCount = ColCount + 1
+	End If
+Next
+
+If (objTable.Columns.Count = colCount)  Then
+	output.writeLn ""
+	output.writeLn "-------------------------------------------"
+	output.writeLn "-- NO UPDATE Stored Procedure Generated    "
+	output.writeLn "-- All Columns are part of the Primary key "
+	output.writeLn "-------------------------------------------"
+	output.writeLn ""	
+Else
+strProcName = "proc_" & objTable.Name & "Update"			
+%>
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	' List all parameters
+	blnFirst = True
+	For Each objColumn In objTable.Columns
+
+		If Not blnFirst Then 
+			output.write  "," & vbCrLf
+		End if
+
+		blnFirst = False
+
+		output.write "	@" & GetParameterName(objColumn) & " " & objColumn.DataTypeNameComplete
+
+		If objColumn.IsNullable Or objColumn.IsComputed Then
+			output.write " = NULL"
+		End If
+
+		If objColumn.IsComputed Then
+			output.write " output"				
+		End If				
+
+	Next
+%>
+)
+AS
+BEGIN
+
+	SET NOCOUNT OFF
+	DECLARE @Err int
+
+	UPDATE [<%output.write objTable.Name %>]
+	SET
+<%
+	' List all fields
+	blnFirst = True
+	For Each objColumn In objTable.Columns
+
+		If Not objColumn.IsInPrimaryKey And Not objColumn.IsAutoKey And Not objColumn.IsComputed Then
+		   
+			If Not blnFirst Then 
+				output.write  "," & vbCrLf
+			End if	
+
+			blnFirst = False
+
+			output.write "		[" & objColumn.Name & "] = @" & TrimSpaces(objColumn.Name)
+		End If	
+	Next
+
+	output.write vbCrLf		
+%>	WHERE
+<%
+	' Compare keys with parameters
+	blnFirst = True
+	For Each objColumn In objTable.PrimaryKeys
+		If Not blnFirst Then 
+			output.write "	AND	[" & objColumn.Name & "] = @" & GetParameterName(objColumn) & vbCrLf
+		Else
+			output.write "		[" & objColumn.Name & "] = @" & GetParameterName(objColumn) & vbCrLf
+		End if
+		blnFirst = False
+	Next
+
+	For Each objColumn In objTable.Columns
+		If objColumn.DataTypeName = "timestamp" Then 		
+			If Not chkYukon Then
+				output.write "	AND TSEQUAL([" & objColumn.Name & "],@" & GetParameterName(objColumn) & ")" & vbCrLf	
+			Else 
+				output.write "	AND [" & objColumn.Name & "] = @" & GetParameterName(objColumn) & vbCrLf				
+			End If
+		End if
+	Next		
+%>
+
+	SET @Err = @@Error
+<%	
+	' Add the Logic to return computed columns if necessary 
+	blnHasComputed = False
+	strWhereClause = ""
+	strWhereAnd = ""
+	strWhereFields = ""
+	strComma = ""
+
+	blnFirst = True
+	For Each objColumn In objTable.Columns
+
+		If objColumn.IsComputed Then
+			blnHasComputed = True
+		End If
+
+		If objColumn.IsInPrimaryKey Then
+			strWhereClause = strWhereClause & strWhereAnd & "[" & objColumn.Name & "] = @" & GetParameterName(objColumn)
+			strWhereAnd = " AND "
+		End If
+
+		If objColumn.IsComputed Then
+			strWhereFields = strWhereFields & strComma & "@" & GetParameterName(objColumn) & " = [" &  objColumn.Name & "]" 
+			strComma =  ", " 
+		End If		
+	Next
+
+	If blnHasComputed Then
+		output.write vbCrLf
+		output.write "    SELECT "
+		output.write strWhereFields
+		output.write vbCrLf & "      FROM [" & objTable.Name & "]" 
+		output.write vbCrLf & "     WHERE " & strWhereClause & vbCrLf			
+	End If		
+%>
+
+	RETURN @Err
+END
+GO
+
+<%If blnGenDoc Then%>
+-- Display the status of Proc creation
+IF (@@Error = 0) PRINT 'Procedure Creation: <%output.write strProcName%> Succeeded'
+ELSE PRINT 'Procedure Creation: <%output.write strProcName%> Error on Creation'
+GO
+
+<% End If ' objTable.Columns.Count = objTable.PrimaryKeys.Count %>
+
+<%End If
+
+'----------------------------------------------------------------------
+' Insert
+'----------------------------------------------------------------------
+strProcName = "proc_" & objTable.Name & "Insert"
+%>
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	' List all fields as parameters
+	blnFirst = True
+	For Each objColumn In objTable.Columns
+
+		If Not blnFirst Then 
+			output.write "," & vbCrLf
+		End If 
+
+		blnFirst = False
+
+		output.write "	@" & GetParameterName(objColumn) & " " & objColumn.DataTypeNameComplete
+
+		If objColumn.IsNullable Or objColumn.IsComputed Or objColumn.IsAutoKey Then
+			output.write " = NULL"
+		End If
+
+		If objColumn.IsAutoKey Or objColumn.IsComputed Then
+			output.write " output"				
+		End If				
+	Next
+%>
+)
+AS
+BEGIN
+
+	SET NOCOUNT OFF
+	DECLARE @Err int
+<%
+	' generate code to initialize (if necessary) for all keys of uniqueidentifier type
+	blnFirst = True
+	For Each objColumn In objTable.PrimaryKeys
+
+		If objColumn.DataTypeNameComplete = "uniqueidentifier" Then
+			output.write "	IF @" & GetParameterName(objColumn) & " IS NULL" & vbCrLf
+			output.write "		 SET @" & GetParameterName(objColumn) & " = NEWID()" & vbCrLf
+			output.write vbCrLf
+			output.write "	SET @Err = @@Error" & vbCrLf
+			output.write vbCrLf
+			output.write "	IF (@Err <> 0)" & vbCrLf
+			output.write "	    RETURN @Err" & vbCrLf
+			output.write vbCrLf 
+		End If
+	Next
+%>
+	INSERT
+	INTO [<%output.write objTable.Name %>]
+	(
+<%
+		' List all fields except identity (if one exists)
+		blnFirst = True
+		For Each objColumn In objTable.Columns
+
+			' Check if field is not an indentity in which case we won't include it into insert list
+			If Not objColumn.IsAutoKey And Not objColumn.IsComputed Then 			
+				If Not blnFirst Then 
+					output.write  "," & vbCrLf
+				End if	
+
+				blnFirst = False
+
+				output.write "		[" & objColumn.Name & "]" 
+			End If
+		Next
+
+		output.write vbCrLf 		
+%>	)
+	VALUES
+	(
+<%
+		' List all parameters except the one for indetity (if one exists)
+		blnFirst = True
+		For Each objColumn In objTable.Columns
+
+			' check if fields is not an identity
+			If Not objColumn.IsAutoKey And Not objColumn.IsComputed Then 			
+				If Not blnFirst Then 
+					output.write  "," & vbCrLf
+				End if	
+
+				blnFirst = False
+
+				output.write "		@" & GetParameterName(objColumn)
+			End If
+		Next
+
+		output.write vbCrLf 				
+%>	)
+
+	SET @Err = @@Error
+
+<%
+	' Add the Logic to return computed columns if necessary 
+	blnHasComputed = False
+	strWhereClause = ""
+	strWhereAnd = ""
+	strWhereFields = ""
+	strComma = ""
+
+	blnFirst = True
+	For Each objColumn In objTable.Columns
+
+		If objColumn.IsAutoKey Then
+			output.write "	SELECT @" & GetParameterName(objColumn) & " = SCOPE_IDENTITY()" & vbCrLf
+		End If	
+
+		If objColumn.IsComputed Then
+			blnHasComputed = True
+		End If
+
+		If objColumn.IsInPrimaryKey Then
+			strWhereClause = strWhereClause & strWhereAnd & "[" & objColumn.Name & "] = @" & GetParameterName(objColumn)
+			strWhereAnd = " AND "
+		End If
+
+		If objColumn.IsComputed Then
+			strWhereFields = strWhereFields & strComma & "@" & GetParameterName(objColumn) & " = [" &  objColumn.Name & "]" 
+			strComma =  ", " 
+		End If		
+	Next
+
+	If blnHasComputed Then
+		output.write vbCrLf
+		output.write "    SELECT "
+		output.write strWhereFields
+		output.write vbCrLf & "      FROM [" & objTable.Name & "]" 
+		output.write vbCrLf & "     WHERE " & strWhereClause & vbCrLf			
+	End If		
+%>
+	RETURN @Err
+END
+GO
+
+<%If blnGenDoc Then%>
+-- Display the status of Proc creation
+IF (@@Error = 0) PRINT 'Procedure Creation: <%output.write strProcName %> Succeeded'
+ELSE PRINT 'Procedure Creation: <%output.write strProcName %> Error on Creation'
+GO
+<%End If
+
+'----------------------------------------------------------------------
+' Delete
+'----------------------------------------------------------------------
+strProcName = "proc_" & objTable.Name & "Delete"		
+%>
+<%= BuildCreateAlterStatement(strProcName, alterStatement) %>
+(
+<%
+	' List all keys as parameters
+	blnFirst = True
+	For Each objColumn In objTable.PrimaryKeys
+
+		' check if at end of keys
+		If Not blnFirst Then
+			output.write "," & vbCrLf
+		End If
+
+		blnFirst = False
+
+		output.write "	@" & GetParameterName(objColumn) & " " & objColumn.DataTypeNameComplete
+	Next
+%>
+)
+AS
+BEGIN
+
+	SET NOCOUNT OFF
+	DECLARE @Err int
+
+	DELETE
+	FROM [<%output.write objTable.Name %>]
+	WHERE
+<%
+	' Compare keys with parameters
+	blnFirst = True
+	For Each objColumn In objTable.PrimaryKeys
+
+		' Continue where part with an AND
+		If Not blnFirst Then
+			output.write " AND" & vbCrLf
+		End If
+
+		blnFirst = False
+
+		output.write "		[" & objColumn.Name & "] = @" & GetParameterName(objColumn)
+	Next
+%>
+	SET @Err = @@Error
+
+	RETURN @Err
+END
+GO
+
+<%If blnGenDoc Then%>
+-- Display the status of Proc creation
+IF (@@Error = 0) PRINT 'Procedure Creation: <%= strProcName %> Succeeded'
+ELSE PRINT 'Procedure Creation: <%= strProcName %> Error on Creation'
+GO
+<%End If
+
+	' Save the output file for this Table
+	strFilename = strFilenameBase & objTable.Name & ".sql"
+
+	output.save strFilename, False
+	strBuffer = strBuffer & output.text
+	output.clear
+Next '  tableName
+	
+output.write strBuffer
+
+filename = input.item("txtPath") 
+lenth = Len(filename) 
+pos = InStrRev(filename, "\") 
+
+If Not pos = lenth Then 
+  filename = filename & "\" 
+End If 
+
+filename = filename & "MicrosoftSQL_ALL.SQL" 
+output.save filename, false 
+
+' END OF TEMPLATE
+%>
+
+<%
+Function BuildCreateAlterStatement(strProcName, blnAlterStatement)
+
+	Dim strStatement
+	strStatement = ""
+	
+	If Not blnAlterStatement Then 
+		' Drop and recreate
+		strStatement = strStatement & "/****** Object:  StoredProcedure [" & strProcName & "]    Script Date: " & FormatDateTime(Now(), 0) & " ******/" & vbCRLF
+		strStatement = strStatement & "IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[" & strProcName & "]') AND OBJECTPROPERTY(id,N'IsProcedure') = 1)" & vbCRLF
+		strStatement = strStatement & "    DROP PROCEDURE [" & strProcName & "];" & vbCRLF
+		strStatement = strStatement & "GO" & vbCRLF & vbCRLF
+	
+		strStatement = strStatement & "CREATE PROCEDURE [" & strProcName & "]"
+	Else
+		strStatement = strStatement & "ALTER PROCEDURE [" & strProcName & "]"
+	End If 
+
+	BuildCreateAlterStatement = strStatement 
+
+End Function
+
+Function GetParameterName(objColumn)
+	Dim strName
+	strName = TrimSpaces(objColumn.Name)
+	GetParameterName = strName
+End Function
+
+Function TrimSpaces(str)
+
+	Dim tname
+	Dim name
+	Dim char
+	Dim l
+
+	name = ""
+	tname = str
+	l = Len(tname)
+
+	For j = 1 To l
+		char = Mid(tname, j, 1)
+		If Not char = " " And Not Char = "." Then
+			name = name & char
+		End If
+	Next
+
+	TrimSpaces = name
+End Function
+%>
+##|BODY_END

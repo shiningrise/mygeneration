@@ -1,0 +1,508 @@
+﻿##|TYPE Template
+##|UNIQUEID D0CEA184-BD32-4d6f-B290-5F7366D7080B
+##|TITLE HTML Database Report
+##|NAMESPACE Microsoft SQL Server.Reports
+##|OUTPUT_LANGUAGE HTML
+##|COMMENTS_BEGIN
+This is the first template written in C#. 
+Thanks to Peter Welzien for the original idea for the HTML table report.
+
+Justin Greenwood
+MyGeneration Software
+justin.greenwood@mygenerationsoftware.com
+http://www.mygenerationsoftware.com/
+##|COMMENTS_END
+##|GUI_ENGINE .Net Script
+##|GUI_LANGUAGE C#
+##|GUI_BEGIN
+<%#REFERENCE System.Windows.Forms.dll %>
+<%#NAMESPACE System, System.Text, System.Collections, Zeus, Zeus.UserInterface, Zeus.DotNetScript %>
+
+public class GeneratedGui : DotNetScriptGui
+{
+	public GeneratedGui(ZeusGuiContext context) : base(context) {}
+
+	public override void Setup()
+	{
+		if ( !input.Contains("lstTables") || !input.Contains("txtPath") )
+		{
+			ui.Title = "HTML Database Report";
+			ui.Width = 340;
+			ui.Height = 600;
+	
+			// Grab default output path
+			string sOutputPath = "";
+			if (input.Contains("defaultOutputPath")) 
+			{
+				sOutputPath = input["defaultOutputPath"].ToString();
+			}
+	
+			// Display and errors here
+			GuiLabel lblError = ui.AddLabel("lblError", "", "");
+			lblError.ForeColor = "Red";
+	
+			// Setup Folder selection input control.
+			GuiLabel lblPath = ui.AddLabel("lblPath", "Select the output path:", "Select the output path in the field below.");
+			GuiTextBox outpath = ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+			GuiFilePicker btnSelectPath = ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+	
+			// Setup Database selection combobox.
+			GuiLabel label_d = ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+			GuiComboBox cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.");
+	
+			// Setup Tables selection multi-select listbox.
+			GuiLabel label_t = ui.AddLabel("lblTables", "Select tables:", "Select tables from the listbox below.");
+			GuiListBox lstTables = ui.AddListBox("lstTables", "Select tables.");
+			lstTables.Height = 80;
+	
+			// Setup Views selection multi-select listbox.
+			GuiLabel label_v = ui.AddLabel("lblViews", "Select views:", "Select views from the listbox below.");
+			GuiListBox lstViews = ui.AddListBox("lstViews", "Select views.");
+			lstViews.Height = 80;
+	
+			// Setup Procedures selection multi-select listbox.
+			GuiLabel label_p = ui.AddLabel("lblProcs", "Select procedures:", "Select procedures from the listbox below.");
+			GuiListBox lstProcs = ui.AddListBox("lstProcs", "Select procedures.");
+			lstProcs.Height = 80;
+	
+			// Attach the onchange event to the cmbDatabases control.
+			setupDatabaseDropdown(cmbDatabases, lblError);
+			cmbDatabases.AttachEvent("onchange", "cmbDatabases_onchange");
+	
+			ui.ShowGui = true;
+		}
+		else 
+		{
+			ui.ShowGui = false;
+		}
+	}
+	
+	public void setupDatabaseDropdown(GuiComboBox cmbDatabases, GuiLabel lblError)
+	{
+		try 
+		{	
+			if (MyMeta.IsConnected) 
+			{
+				cmbDatabases.BindData(MyMeta.Databases);
+				if (MyMeta.DefaultDatabase != null) 
+				{
+					cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name;
+					bindTables(cmbDatabases.SelectedValue);
+					bindViews(cmbDatabases.SelectedValue);
+					bindProcedures(cmbDatabases.SelectedValue);
+				}
+	
+				lblError.Text = "";
+			}
+			else
+			{
+				lblError.Text = "Please set up your database connection in the Default Settings dialog.";
+			}
+		}
+		catch (Exception ex)
+		{
+			lblError.Text = ex.Message;
+		}
+	}
+	
+	public void bindTables(string sDatabase)
+	{
+		GuiLabel lblError = ui["lblError"] as GuiLabel;
+		int count = 0;
+	
+		GuiListBox lstTables = ui["lstTables"] as GuiListBox;
+		
+		try 
+		{	
+			IDatabase db = MyMeta.Databases[sDatabase];
+			lstTables.BindData(db.Tables);
+	
+			lblError.Text = "";
+		}
+		catch (Exception ex)
+		{
+			lblError.Text = ex.Message;
+		}
+	}
+	
+	
+	public void bindViews(string sDatabase)
+	{
+		GuiLabel lblError = ui["lblError"] as GuiLabel;
+		int count = 0;
+	
+		GuiListBox lstViews = ui["lstViews"] as GuiListBox;
+		
+		try 
+		{	
+			IDatabase db = MyMeta.Databases[sDatabase];
+			lstViews.BindData(db.Views);
+	
+			lblError.Text = "";
+		}
+		catch (Exception ex)
+		{
+			lblError.Text = ex.Message;
+		}
+	}
+	
+	public void bindProcedures(string sDatabase)
+	{
+		GuiLabel lblError = ui["lblError"] as GuiLabel;
+		int count = 0;
+	
+		GuiListBox lstProcs = ui["lstProcs"] as GuiListBox;
+		
+		try 
+		{	
+			IDatabase db = MyMeta.Databases[sDatabase];
+			lstProcs.BindData(db.Procedures);
+	
+			lblError.Text = "";
+		}
+		catch (Exception ex)
+		{
+			lblError.Text = ex.Message;
+		}
+	}
+	
+	public void cmbDatabases_onchange(GuiComboBox control)
+	{
+		GuiLabel lblError = ui["lblError"] as GuiLabel;
+		int count = 0;
+	
+		GuiComboBox cmbDatabases = ui["cmbDatabase"] as GuiComboBox;
+	
+		bindTables(cmbDatabases.SelectedText);
+		bindViews(cmbDatabases.SelectedText);
+		bindProcedures(cmbDatabases.SelectedText);
+	}
+	
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE .Net Script
+##|BODY_LANGUAGE C#
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%#NAMESPACE System.IO, System, System.Text, System.Collections, Zeus, Zeus.DotNetScript %><% 
+
+public class GeneratedTemplate : DotNetScriptTemplate
+{
+	public GeneratedTemplate(ZeusTemplateContext context) : base(context) {}
+
+	public override void Render()
+	{
+		string databaseName = input["cmbDatabase"].ToString(); 		
+		ArrayList tables = input["lstTables"] as ArrayList;	
+		ArrayList views = input["lstViews"] as ArrayList;	
+		ArrayList procs = input["lstProcs"] as ArrayList;	
+		IDatabase database = MyMeta.Databases[databaseName];
+
+		// Filename info
+		string filepath = input["txtPath"].ToString();
+		if (!filepath.EndsWith("\\") ) filepath += "\\";
+		
+		// Build the filename
+		string filename = filepath + "db_report_" + databaseName + ".html";
+		
+		output.setPreserveSource(filename, "<!--::", "::-->");
+
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"> 
+<HTML> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+<HEAD> 
+<TITLE>Tables</TITLE> 
+<%= output.getPreserveBlock("customHeaders") %>
+<STYLE><!-- 
+body, td, th
+{
+	font-family:arial;
+	font-size:9pt;
+}
+
+p
+{
+	margin-top:8px;
+	margin-bottom:8px;
+
+}
+
+p.authorinfo
+{
+	color:darkblue;
+	font-size:10pt;
+	font-style:italic;
+}
+
+h1, h2, h3, h4
+{
+	color:blue;
+}
+
+table 
+{
+	border: black 1px solid;
+}
+
+th 
+{
+	color: dark blue;
+	background-color: #9999ff;
+	font-weight: bold;
+}
+
+td
+{
+	color: dark blue;
+	background-color: #ccccff;
+}
+
+h1
+{
+	font-size:20pt;
+	margin-bottom:4px;
+}
+
+h2
+{
+	font-size:16pt;
+	font-style:italic;
+	margin-bottom:2px;
+}
+
+h3
+{
+	font-size:12pt;
+	font-style:italic;
+	margin-bottom:1px;
+}
+
+h4
+{
+	font-size:10pt;
+	margin-bottom:1px;
+}
+--></STYLE> 
+</HEAD> 
+<BODY>
+<h1>Database Report: <%= databaseName %></h1>
+<%= DateTime.Now.ToString() %>
+<a name="#TOC"></a>
+<h3>Table Of Contents</h3>
+<ul>
+	<li>Tables:
+		<ol><%
+		foreach (string tableName in tables)
+		{
+%>
+			<li><a href="#<%= tableName %>"><%= tableName %></a></li>
+<%
+		}
+%>
+		</ol>
+	</li>
+	<li>Views:
+		<ol><%
+		foreach (string viewName in views)
+		{
+%>
+			<li><a href="#<%= viewName %>"><%= viewName %></a></li>
+<%
+		}
+%>
+		</ol>
+	</li>
+	<li>Stored Procedures:
+		<ol><%
+		foreach (string procName in procs)
+		{
+%>
+			<li><a href="#PROC_<%= procName %>"><%= procName %></a></li>
+<%
+		}
+%>
+		</ol>
+	</li>
+</ul>
+<%
+		foreach (string tableName in tables)
+		{
+			ITable table = database.Tables[tableName];
+%>
+<HR width="100%" height=1 color=blue>
+<a name="<%= table.Name %>"></a>
+<a href="#TOC">Table of Contents</a>
+<H3>Table: <%= table.Name %></H3>
+<H4>Description: <%= table.Description %></H4>
+<H4>Columns</H4> 
+<table>
+	<tr>
+		<th nowrap>Column Name</th>
+		<th nowrap>Data Type</th>
+		<th nowrap>Is in Key?</th>
+		<th nowrap>Is Nullable?</th>
+		<th nowrap>Is Computed?</th>
+		<th nowrap>Is AutoKey?</th>
+		<th nowrap>Default</th>
+		<th nowrap>Description</th>
+	</tr>
+<%
+		foreach (IColumn column in table.Columns)
+		{
+%>
+	<tr>
+		<td nowrap valign=top><%= column.Name %></td>
+		<td nowrap valign=top><%= column.DataTypeNameComplete.ToString() %></td>
+		<td nowrap valign=top><%= column.IsInPrimaryKey ? "Yes" : "&nbsp;" %></td>
+		<td nowrap valign=top><%= column.IsNullable ? "Yes" : "&nbsp;" %></td>
+		<td nowrap valign=top><%= column.IsComputed ? "Yes" : "&nbsp;" %></td>
+		<td nowrap valign=top><%= column.IsAutoKey ? "Yes" : "&nbsp;" %></td>
+		<td valign=top><%= column.Default %>&nbsp;</td>
+		<td valign=top><%= column.Description %>&nbsp;</td>
+	</tr>
+<%
+		}
+%>
+</table>
+
+<H4>Foreign Keys</H4> 
+<table>
+	<tr>
+		<th nowrap>Name</th>
+		<th nowrap>Foreign Table</th>
+		<th nowrap>Primary Key</th>
+	</tr>
+<%
+		foreach (IForeignKey fkey in table.ForeignKeys)
+		{
+%>
+	<tr>
+		<td nowrap valign=top><%= fkey.Name %></td>
+		<td nowrap valign=top><%= fkey.ForeignTable.Name %></td>
+		<td nowrap valign=top><%= fkey.PrimaryKeyName %></td>
+	</tr>
+<%
+		}
+%>
+</table>
+
+<H4>Indexes</H4> 
+<table>
+	<tr>
+		<th nowrap>Name</th>
+		<th nowrap>Unique</th>
+		<th nowrap>Clustered</th>
+		<th nowrap>Type</th>
+		<th nowrap>Collation</th>
+		<th nowrap>Fill Factor</th>
+	</tr>
+<%
+		foreach (IIndex index in table.Indexes)
+		{
+%>
+	<tr>
+		<td nowrap valign=top><%= index.Name %></td>
+		<td nowrap valign=top><%= index.Unique ? "Yes" : "&nbsp;" %></td>
+		<td nowrap valign=top><%= index.Clustered ? "Yes" : "&nbsp;" %></td>
+		<td nowrap valign=top><%= index.Type %></td>
+		<td nowrap valign=top><%= index.Collation.ToString() %></td>
+		<td nowrap valign=top><%= index.FillFactor.ToString() %></td>
+	</tr>
+<%
+		}
+%>
+</table>
+<%
+	}
+
+	foreach (string viewName in views)
+	{
+		IView view = database.Views[viewName];
+%>
+<HR width="100%" height=1 color=blue>
+<a name="<%= view.Name %>"></a>
+<a href="#TOC">Table of Contents</a>
+<H3>View: <%= view.Name %></H3>
+<H4>Columns</H4> 
+<table>
+	<tr>
+		<th nowrap>Column Name</th>
+		<th nowrap>Data Type</th>
+		<th nowrap>Is in Key?</th>
+		<th nowrap>Is Nullable?</th>
+		<th nowrap>Is Computed?</th>
+		<th nowrap>Is AutoKey?</th>
+		<th nowrap>Default</th>
+		<th nowrap>Description</th>
+	</tr>
+<%
+		foreach (IColumn column in view.Columns)
+		{
+%>
+	<tr>
+		<td nowrap valign=top><%= column.Name %></td>
+		<td nowrap valign=top><%= column.DataTypeNameComplete.ToString() %></td>
+		<td nowrap valign=top><%= column.IsInPrimaryKey ? "Yes" : "&nbsp;" %></td>
+		<td nowrap valign=top><%= column.IsNullable ? "Yes" : "&nbsp;" %></td>
+		<td nowrap valign=top><%= column.IsComputed ? "Yes" : "&nbsp;" %></td>
+		<td nowrap valign=top><%= column.IsAutoKey ? "Yes" : "&nbsp;" %></td>
+		<td valign=top><%= column.Default %>&nbsp;</td>
+		<td valign=top><%= column.Description %>&nbsp;</td>
+	</tr>
+<%
+		}
+%>
+</table>
+<pre><%= view.ViewText %></pre>
+<%
+	}
+
+	foreach (string procName in procs)
+	{
+		IProcedure proc = database.Procedures[procName];
+%>
+<HR width="100%" height=1 color=blue>
+<a name="PROC_<%= proc.Name %>"></a>
+<a href="#TOC">Table of Contents</a>
+<H3>Stored Procedure: <%= proc.Name %></H3>
+<H4>Parameters</H4> 
+<table>
+	<tr>
+		<th nowrap>Name</th>
+		<th nowrap>Data Type</th>
+		<th nowrap>Direction?</th>
+		<th nowrap>Is Nullable?</th>
+		<th nowrap>Default</th>
+		<th nowrap>Description</th>
+	</tr>
+<%
+		foreach (IParameter parm in proc.Parameters)
+		{
+%>
+	<tr>
+		<td nowrap valign=top><%= parm.Name %></td>
+		<td nowrap valign=top><%= parm.DataTypeNameComplete.ToString() %></td>
+		<td nowrap valign=top><%= parm.Direction.ToString() %></td>
+		<td nowrap valign=top><%= parm.IsNullable ? "Yes" : "&nbsp;" %></td>
+		<td valign=top><%= parm.Default == null ? "": parm.Default.ToString() %>&nbsp;</td>
+		<td valign=top><%= parm.Description %>&nbsp;</td>
+	</tr>
+<%
+		}
+%>
+</table>
+<pre><%= proc.ProcedureText %></pre>
+<%
+	}
+%>
+</BODY>
+</HTML>
+<%
+		output.save(filename, "o");
+	}
+}
+%>
+##|BODY_END

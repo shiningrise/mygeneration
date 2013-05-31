@@ -1,0 +1,144 @@
+﻿##|TYPE Template
+##|UNIQUEID 495384a3-9c60-4700-be7d-2c7502b026d9
+##|TITLE User Meta Data (VBScript)
+##|NAMESPACE Samples.User Meta Data
+##|OUTPUT_LANGUAGE VB.Net
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstTables
+
+Sub setup()
+
+	If Not input.Contains("lstTables") Or Not input.Contains("txtPath") Then
+
+		ui.Title = "User Meta Data Sample"
+		ui.Width  = 330
+		ui.Height = 365
+
+		set label = ui.AddLabel("lblDesc", "Refresh the 'Database Browser' window after running this script and then look at the 'User Meta Data' for each column in the table chosen.", "")
+		label.Height = 45
+		label.BackColor = "black"
+		label.ForeColor = "yellow"
+	
+		' List Databases in a ComboBox
+		ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+		Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+
+		' List Tables in a listbox
+		ui.AddLabel "lblTables", "Select tables:", "Select tables from the listbox below."
+		Set lstTables = ui.AddListBox ("lstTables", "Select tables:")
+		lstTables.IsMultiSelect = false
+		lstTables.Height = 150
+
+		' Attach the onchange event to the cmbDatabases control.
+		setupDatabaseDropdown cmbDatabases
+		cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+		
+		ui.ShowGUI = true
+	Else 
+		ui.ShowGUI = false
+	End if
+
+End Sub
+
+Sub setupDatabaseDropdown(cmbDatabases)
+	cmbDatabases.BindData MyMeta.Databases
+
+	If Not MyMeta.DefaultDatabase Is Nothing Then
+		cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindTables cmbDatabases.SelectedValue
+	End If
+End Sub
+
+Sub bindTables(sDatabase)
+	Set db = MyMeta.Databases(sDatabase)
+	lstTables.BindData(db.Tables)
+End Sub
+
+' Event Handler
+Sub cmbDatabases_onchange(control)
+	Set cmbDatabases = ui.item("cmbDatabase")
+	bindTables cmbDatabases.SelectedText
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'------------------------------------------------------------------------------
+' UserMetaData.vbgen
+' Last Update : 2/21/2004
+'
+' Be sure to rename this template if you plan to customize it, MyGeneration 
+' Software will update this sample over time.
+'------------------------------------------------------------------------------
+' This template demonstrates the capabilities of MyGenerations 'User Meta Data' feature.
+'
+' There is a property collection on every entity in your database, you can add key/value
+' pairs to the User Meta Data either through the user interface of MyGeneration or 
+' programmatically in your scripts.  This script loops though a table of your choosing
+' and adds 6 key/value pairs to the User Meta Data on every column in the table you
+' choose, don't worry, this is stored in XML and never writes to your database.
+'
+' This can be very useful, you might need more meta data than MyMeta supplies, in fact,
+' MyMeta will eventually offer extended meta data using this feature as well, however,
+' the current plan is that any extended data added via MyGeneration will have a key
+' that beings with "MyMeta.???"  where ??? equals the description.
+'
+' If you want to undo the user meta created by created by this script uncomment out 
+' the last For/Next statement and re-run the script. 
+'------------------------------------------------------------------------------
+Dim objTable
+Dim objColumn
+Dim prop
+
+Dim databaseName
+Dim tableName
+
+' Get selections from the UI (see Interface Code tab)
+Set tableName = input.Item("lstTables")
+databaseName  = input.Item("cmbDatabase")
+
+' Did the user Select at least one table?
+If tableName.Count = 1 Then
+
+	Set objTable = MyMeta.Databases(databaseName).Tables(tableName.item(0))
+
+	'===============================================================================
+    ' Loop through each column in the selected table and assign it some meta data
+	'===============================================================================
+	For Each objColumn in objTable.Columns
+		objColumn.Properties.AddKeyValue objColumn.Name, "The Name of this Column is " & objColumn.Name
+		For i = 1 to 5
+			objColumn.Properties.AddKeyValue i, "This is property " & i
+		Next
+	Next
+
+	'===============================================================================
+	' Loop through each column and print the meta data
+	'===============================================================================
+	For Each objColumn in objTable.Columns
+		Set prop = objColumn.Properties(objColumn.Name)
+		output.writeLn prop.Key & " = " & prop.Value
+	Next
+
+	'===============================================================================
+	' Loop through each column and Clear all the meta data
+	'
+	' Un-comment out the code below to remove the data created by this script
+	'===============================================================================
+	'For Each objColumn in objTable.Columns
+	'	objColumn.Properties.Clear()
+	'Next
+
+	' Now Save that user meta data to disk
+	MyMeta.SaveUserMetaData
+
+End If
+%>
+##|BODY_END

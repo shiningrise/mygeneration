@@ -1,0 +1,94 @@
+﻿##|TYPE Template
+##|UNIQUEID 68da96a0-7bad-4e7b-9cf7-16e21f411ab7
+##|TITLE Chapter 1 - Input / Output (VBScript)
+##|NAMESPACE Tutorials.VBScript.Chapter 1
+##|OUTPUT_LANGUAGE None
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'*********************************************
+'* OUTPUT 
+'*********************************************
+
+' Write doesn't add a carriage return / line feed
+output.Write "Write"
+output.WriteLn ""
+
+' WriteLn does as a a carriage return / line feed
+output.WriteLn "WriteLn"
+
+'------------------------------------------
+' Tabs - How to handle in your templates
+'------------------------------------------
+output.WriteLn ""
+output.WriteLn " -- Tabs --"
+output.WriteLn ""
+
+' Poor mans way ...
+output.WriteLn "No Tab"
+output.WriteLn "	One Tab"
+output.WriteLn "		Two Tabs"
+output.WriteLn ""
+
+' Better way ...
+output.autoTabLn "No Tab"
+output.tabLevel = 1
+output.autoTabLn "One Tab"
+output.tabLevel = 2
+output.autoTabLn "Two Tab"
+output.WriteLn ""
+output.tabLevel = 0
+
+' Another way
+output.autoTabLn "No Tab"
+output.incTab() 
+output.autoTabLn "One Tab"
+output.incTab() 
+output.autoTabLn "Two Tab"
+output.WriteLn ""
+output.decTab() 
+output.decTab() 
+%>
+
+Let's add some literal content ....
+
+<%
+' We don't recommend adding output this way ...
+output.Text = output.Text + "This is not recommended"
+output.WriteLn ""
+output.WriteLn ""
+
+'****************************************************
+'* INPUT (populated via the default settings dialog)
+'****************************************************
+output.WriteLn "Input Variables"
+output.WriteLn ""
+
+output.WriteLn "__defaultOutputPath => " + input.Item("__defaultOutputPath")
+output.WriteLn "__dbDriver => " + input.Item("__dbDriver")
+output.WriteLn "__dbTarget => " + input.Item("__dbTarget")
+output.WriteLn "__language => " + input.Item("__language")
+output.WriteLn "__dbTargetMappingFileName => " + input.Item("__dbTargetMappingFileName")
+output.WriteLn "__dbLanguageMappingFileName => " + input.Item("__dbLanguageMappingFileName")
+output.WriteLn "__userMetaDataFileName => " + input.Item("__userMetaDataFileName")
+
+
+'****************************************************
+'* Now lets save all of this output all to disk
+'****************************************************
+Dim path
+path = input.Item("__defaultOutputPath")
+path = path + "\Chapter1.txt"
+
+output.Save path, false
+
+output.WriteLn ""
+output.WriteLn "All of this text was just saved to '" + path + "'"
+%>
+##|BODY_END

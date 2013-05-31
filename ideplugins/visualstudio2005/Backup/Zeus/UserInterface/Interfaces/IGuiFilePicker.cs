@@ -1,0 +1,1 @@
+using System;using System.Collections;using System.Collections.Specialized;namespace Zeus.UserInterface{	public interface IGuiFilePicker : IGuiControl	{		string ItemData { get; set; }		string TargetControl { get; set; }		bool PicksFolder { get; set; }	}}

@@ -1,0 +1,31 @@
+<VisualStudioProject xmlns:convtool="urn:convtool">
+  <VisualBasic ProjectType="Local" ProductVersion="7.10.3077" SchemaVersion="2.0" ProjectGuid="">
+    <Build>
+      <Settings ApplicationIcon="" AssemblyKeyContainerName="" AssemblyName="dOOdad_QueryTester" AssemblyOriginatorKeyFile="" DefaultClientScript="JScript" DefaultHTMLPageLayout="Grid" DefaultTargetSchema="IE50" DelaySign="false" OutputType="WinExe" PreBuildEvent="" PostBuildEvent="" RootNamespace="dOOdad_QueryTester" RunPostBuildEvent="OnBuildSuccess" StartupObject="">
+        <Config Name="Debug" AllowUnsafeBlocks="" BaseAddress="285212672" CheckForOverflowUnderflow="True" ConfigurationOverrideFile="" DefineConstants="" DocumentationFile="" DebugSymbols="True" FileAlignment="4096" IncrementalBuild="false" NoStdLib="" NoWarn="" Optimize="True" OutputPath=".\bin\Debug" RegisterForComInterop="false" RemoveIntegerChecks="false" TreatWarningsAsErrors="False" WarningLevel="" />
+        <Config Name="Release" AllowUnsafeBlocks="" BaseAddress="285212672" CheckForOverflowUnderflow="False" ConfigurationOverrideFile="" DefineConstants="" DocumentationFile="" DebugSymbols="False" FileAlignment="4096" IncrementalBuild="false" NoStdLib="" NoWarn="" Optimize="True" OutputPath=".\bin\Release" RegisterForComInterop="false" RemoveIntegerChecks="false" TreatWarningsAsErrors="False" WarningLevel="" />
+      </Settings>
+      <References>
+        <Reference Name="System" AssemblyName="System" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll" />
+        <Reference Name="System.Data" AssemblyName="System.Data" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll" />
+        <Reference Name="System.XML" AssemblyName="System.Xml" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll" />
+        <Reference Name="System.Drawing" AssemblyName="System.Drawing" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll" />
+        <Reference Name="System.Windows.Forms" AssemblyName="System.Windows.Forms" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Windows.Forms.dll" />
+        <Reference Name="MyGeneration.dOOdads" Project="{31B93AFD-9D63-48FE-A9F5-27FE5B5E0E74}" Package="{38ACE4B5-5EE6-4068-972D-208DB35E8CFA}" />
+      </References>
+    </Build>
+    <Files>
+      <Include>
+        <File RelPath="MainForm.vb" BuildAction="Compile" />
+        <File RelPath="AssemblyInfo.vb" BuildAction="Compile" />
+        <File RelPath="Products.vb" BuildAction="Compile" />
+        <File RelPath="_Employees.vb" BuildAction="Compile" />
+        <File RelPath="_Products.vb" BuildAction="Compile" />
+        <File RelPath="About.vb" BuildAction="Compile" />
+        <File RelPath="Employees.vb" BuildAction="Compile" />
+        <File RelPath="App.config" BuildAction="Nothing" />
+        <File RelPath="README.TXT" BuildAction="Nothing" />
+      </Include>
+    </Files>
+  </VisualBasic>
+</VisualStudioProject>

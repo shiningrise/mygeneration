@@ -1,0 +1,27 @@
+using System;using System.IO;using System.Collections;namespace Zeus.DotNetScript{	/// <summary>	/// Summary description for DotNetScriptParser.	/// </summary>	public class DotNetScriptCodeParser : IZeusCodeParser	{		protected const string INCLUDE_FILE = "FILE ";		protected const string INCLUDE_REFERENCE = "REFERENCE ";		protected const string INCLUDE_REFERENCE_ALT = "REF ";		protected const string INCLUDE_NAMESPACE = "NAMESPACE ";		protected const string INCLUDE_NAMESPACE_ALT = "NS ";		protected const string WRITE = "output.write";		protected const string WRITELN = "output.writeln";		protected string[,] _csReplaceChars = new string[5, 2] { {"\\", "\\\\"}, {"\"", "\\\""}, {"\r", "\\r"}, {"\n", "\\n"}, {"\t", "\\t"} };		protected string[,] _vbReplaceChars = new string[4, 2] { {"\"", "\"\""}, {"\r\n", "\" & vbcrlf & \""}, {"\n", "\" & vbcrlf & \""}, {"\r", "\" & vbcrlf & \""} };		protected DotNetScriptEngine _engine;		public DotNetScriptCodeParser(DotNetScriptEngine engine) 		{			_engine = engine;		}				public string ParseCustomTag(ZeusCodeSegment segment, string text)		{			ArrayList extraData = segment.ExtraData;			string data = null;			string returnValue = string.Empty;			if (text.StartsWith(INCLUDE_FILE))			{				data = text.Substring(INCLUDE_FILE.Length).Trim();				returnValue = this.IncludeFile(segment.Template.FilePath + data);			}			else if (text.StartsWith(INCLUDE_REFERENCE))			{				data = text.Substring(INCLUDE_REFERENCE.Length).Trim();				this.IncludeReference(data, extraData);			}			else if (text.StartsWith(INCLUDE_REFERENCE_ALT))			{				data = text.Substring(INCLUDE_REFERENCE_ALT.Length).Trim();				this.IncludeReference(data, extraData);			}			else if (text.StartsWith(INCLUDE_NAMESPACE))			{				data = text.Substring(INCLUDE_NAMESPACE.Length).Trim();				this.IncludeNamespace(data, extraData);			}			else if (text.StartsWith(INCLUDE_NAMESPACE_ALT))			{				data = text.Substring(INCLUDE_NAMESPACE_ALT.Length).Trim();				this.IncludeNamespace(data, extraData);			}						return returnValue;		}		public string EscapeLiteral(string language, string text)		{			string[,] replaceChars;			string escapedString = text;			if (language == ZeusConstants.Languages.VBNET)			{				replaceChars = this._vbReplaceChars;			}			else			{				replaceChars = this._csReplaceChars;			}						for (int i = 0; i < (replaceChars.Length / 2); i++) 			{				escapedString = escapedString.Replace(replaceChars[i, 0], replaceChars[i, 1]);			}			return "\"" + escapedString + "\"";		}		public string BuildOutputCommand(string language, string text, bool isLiteral, bool addNewLine)		{			string cmd = (addNewLine ? WRITELN : WRITE);			if (language == ZeusConstants.Languages.VBNET)			{				if (isLiteral) 				{					cmd += "(" + EscapeLiteral(language, text) + ")\r\n";				}				else 				{					cmd += "(" + text + ")\r\n";				}			}			else 			{				if (isLiteral) 				{					cmd += "(" + EscapeLiteral(language, text) + ");\r\n";				}				else 				{					cmd += "(" + text + ");\r\n";				}			}			return cmd;		}		public string GetCustomHeaderCode(ZeusCodeSegment segment) 		{			bool isGui = (segment.SegmentType == ZeusConstants.CodeSegmentTypes.GUI_SEGMENT);			ArrayList imports = new ArrayList();			imports.Add("System");
+			imports.Add("System.Collections");
+			imports.Add("Zeus");
+			imports.Add("Zeus.DotNetScript");
+			if (isGui) 
+			{
+					imports.Add("Zeus.UserInterface");
+			}
+
+			foreach (ZeusScriptableObject obj in ZeusFactory.ScriptableObjects) 
+			{				if (obj.Namespace != null)
+				{					if (!imports.Contains(obj.Namespace))
+						imports.Add(obj.Namespace);				}			}			ArrayList tmpExtraData = segment.ExtraData;			string[] array;			foreach (object obj in tmpExtraData) 
+			{
+				if (obj is String[]) 
+				{
+					array = (string[])obj;
+					if ((array.Length == 2) && (array[0] == DotNetScriptEngine.USE_NAMESPACE))
+					{
+						if (!imports.Contains(array[1]))
+							imports.Add(array[1]);
+					}
+				}
+			}			return this._engine.BuildImportStatments(segment.Language, imports);		}		public string GetCustomFooterCode(ZeusCodeSegment segment) 		{			if (segment.SegmentType == ZeusConstants.CodeSegmentTypes.GUI_SEGMENT) 
+			{				return this._engine.BuildGuiClass(segment.Language);			}
+			else
+			{				return this._engine.BuildBodyClass(segment.Language);			}		}		private string IncludeFile(string filename) 		{			string returnval = string.Empty;			if (File.Exists(filename)) 			{				StreamReader reader = File.OpenText(filename);				returnval = reader.ReadToEnd();				reader.Close();			}			else 			{				//TODO: Could throw an error here.			}			return returnval;		}		private void IncludeReference(string dllrefs, ArrayList extraData) 		{			string[] refs = dllrefs.Split(',');			foreach (string r in refs) 			{				string dllref = r.Trim();				if (dllref != string.Empty) 				{					extraData.Add(new string[2] { DotNetScriptEngine.DLLREF, dllref } );				}			}		}		private void IncludeNamespace(string namespaceRefs, ArrayList extraData) 		{			string[] array = namespaceRefs.Split(',');			foreach (string ns in array) 			{				string nsTrimmed = ns.Trim();				if (nsTrimmed != string.Empty) 				{					extraData.Add(new string[2] { DotNetScriptEngine.USE_NAMESPACE, nsTrimmed } );				}			}		}	}}

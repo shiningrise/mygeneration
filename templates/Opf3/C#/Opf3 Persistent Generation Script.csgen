@@ -1,0 +1,1055 @@
+﻿##|TYPE Template
+##|UNIQUEID fb03a8e8-730c-4492-a679-3166b81e4385
+##|TITLE Opf3 Persistent Generation Script
+##|NAMESPACE Opf3.C#
+##|OUTPUT_LANGUAGE C#
+##|COMMENTS_BEGIN
+This template generates OPF3 Business
+Object classes from database table definitions.
+Entity are splitted into two files: first with generated code second with skeleton
+##|COMMENTS_END
+##|GUI_ENGINE .Net Script
+##|GUI_LANGUAGE C#
+##|GUI_BEGIN
+<%#REFERENCE System.Windows.Forms.dll %>
+<%#NAMESPACE System, System.Text, System.Collections, Zeus, Zeus.UserInterface, Zeus.DotNetScript %>
+
+public class GeneratedGui : DotNetScriptGui
+{
+	public GeneratedGui(ZeusGuiContext context) : base(context) {}
+
+	public override void Setup()
+	{
+		if ( !input.Contains("lstTables") || !input.Contains("txtPath") )
+		{
+			ui.Title = "OPF3 Business Entity";
+			ui.Width = 400;
+			ui.Height = 700;
+	
+			// Grab default output path
+			string sOutputPath = "";
+			if (input.Contains("defaultOutputPath")) 
+			{
+				sOutputPath = input["defaultOutputPath"].ToString();
+			}
+
+			// Setup Folder selection input control.
+			GuiLabel lblPath = ui.AddLabel("lblPath", "Select the output path:", "Select the output path in the field below.");
+			GuiTextBox outpath = ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+			GuiFilePicker btnSelectPath = ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+				
+			
+			ui.AddLabel ("lblNamespace", "Namespace: ",  "Provide your objects namespace.");
+			GuiTextBox txtNamespace = ui.AddTextBox("txtNamespace", "BusinessServer.Objects", "Provide your objects namespace.");	
+
+			GuiCheckBox cbGeneratedPersistent = ui.AddCheckBox("cbGeneratedPersistent", "Generate xxxx.Generated.cs ---------------------------------------------", false, 
+			    "Generate partial class then olds Persistent fields");
+			GuiCheckBox cbIPopulateHelper = ui.AddCheckBox("cbIPopulateHelper", "Implement IPopulateHelper", false, 
+			    "Interface that is implemented by objects that are populated without reflection");
+				
+			GuiCheckBox cbGenerateExtendCostructor = ui.AddCheckBox("cbGenerateExtendCostructor", "Generate Extended Costructor", false, 
+			   "Add Mandatory and all fields constructor");
+			GuiCheckBox cbGenerateIEntityInterface = ui.AddCheckBox("cbGenerateIEntityInterface", "Generate Ixxx interface utility for remoting", false, 
+			   "Generate Ixxx utility interface for remoting");
+			GuiCheckBox cbISelfContainingObject = ui.AddCheckBox("cbISelfContainingObject", "Implement ISelfContainingObject", false, 
+			   "The class implementing this interface is self containing and can be remoted or persisted to any kind of device without problem");
+			GuiCheckBox cbIPropertyChange = ui.AddCheckBox("cbIPropertyChange", "Implement IPropertyChange", false, 
+			    "Send an event when a property change");
+			
+			GuiCheckBox cbGeneratedSkeleton = ui.AddCheckBox("cbGeneratedSkeleton", "Generate xxxx.cs -------------------------------------------------------", false, 
+			    "Generate partial class then olds Persistent skeleton and personalized code");
+			GuiCheckBox cbGenerateSearcherSkeleton = ui.AddCheckBox("cbGenerateSearcherSkeleton", "Generate personalized Searcher", false, 
+			   "Generate skeleton for personalized searcher");
+			   
+			// Setup Database selection combobox.
+			GuiLabel label_d = ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+			GuiComboBox cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.");
+	
+			// Setup Tables selection multi-select listbox.
+			GuiLabel label_t = ui.AddLabel("lblTables", "Select tables:", "Select tables from the listbox below.");
+			GuiListBox lstTables = ui.AddListBox("lstTables", "Select tables.");
+			lstTables.Height = 70;
+	
+			// Setup RelationTables selection multi-select listbox.
+			GuiLabel label_r = ui.AddLabel("lblRelationTables", "Select relation tables:", "Select tables that define n:m relations from the list below.");
+			GuiListBox lstRelationTables = ui.AddListBox("lstRelationTables", "Select relation tables.");
+			lstRelationTables.Height = 70;
+			lstRelationTables.Enabled = true;
+
+            // Attach the onchange event to the cmbDatabases control.
+			setupDatabaseDropdown(cmbDatabases);
+			cmbDatabases.AttachEvent("onchange", "cmbDatabases_onchange");
+			
+	
+			ui.ShowGui = true;
+		}
+		else 
+		{
+			ui.ShowGui = false;
+		}
+	}
+	
+	public void setupDatabaseDropdown(GuiComboBox cmbDatabases)
+	{
+		try 
+		{	
+			if (MyMeta.IsConnected)
+			{
+				cmbDatabases.BindData(MyMeta.Databases);
+				if (MyMeta.DefaultDatabase != null) 
+				{
+					cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Alias;
+					bindTables(cmbDatabases.SelectedValue);
+					bindRelationTables(cmbDatabases.SelectedValue);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+		}
+	}
+	
+	public void bindTables(string sDatabase)
+	{
+		int count = 0;
+	
+		GuiListBox lstTables = ui["lstTables"] as GuiListBox;
+		
+		try 
+		{	
+			IDatabase db = MyMeta.Databases[sDatabase];
+			lstTables.BindData(db.Tables);
+		}
+		catch (Exception ex)
+		{
+
+		}
+	}
+	
+	public void bindRelationTables(string sDatabase)
+	{
+		int count = 0;
+	
+		GuiListBox lstRelationTables = ui["lstRelationTables"] as GuiListBox;
+		
+		try 
+		{	
+			IDatabase db = MyMeta.Databases[sDatabase];
+			lstRelationTables.BindData(db.Tables);
+		}
+		catch (Exception ex)
+		{
+
+		}
+	}
+
+    public void cmbDatabases_onchange(GuiComboBox control)
+	{
+		int count = 0;
+
+		GuiComboBox cmbDatabases = ui["cmbDatabase"] as GuiComboBox;
+	
+		bindTables(cmbDatabases.SelectedText);
+		bindRelationTables(cmbDatabases.SelectedText);
+	}
+	
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE .Net Script
+##|BODY_LANGUAGE C#
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+//////////////////////////////////////////////////////////////////////////////////////////////
+// OPF3 Business Entity
+// C# class generation script for MyGeneration
+// (c) 2005 - Marco Gozzoli
+//
+// Revision info:
+// $Rev: 2 $ $LastChangedDate: 2005-03-04 22:10:53 +0200  $ 
+// $LastChangedBy: Marco, OPF3 BETA2 support $
+//
+// This template generates a C# class for each user selected table in a user selected database
+//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+public class GeneratedTemplate : DotNetScriptTemplate
+{
+	public GeneratedTemplate(ZeusTemplateContext context) : base(context) {}
+
+	private string databaseName;
+	private string TableName;
+	private bool genDebug = true;
+	
+	
+	public enum ConstructorParameters
+	{
+		All,
+		AllAutoKeys,
+		AllExceptAutoKeys,
+		NonNullAndNoAutoKeys,
+	}
+	
+	bool NeedIPropertyChange
+	{
+		get { return (bool)input["cbIPropertyChange"]; }
+	}
+	bool NeedISelfContainingObject
+	{
+		get { return (bool)input["cbISelfContainingObject"]; }
+	}
+	bool NeedIPopulateHelper
+	{
+		get { return (bool)input["cbIPopulateHelper"]; }
+	}
+
+    bool NeedGenerateExtendCostructor
+	{
+		get { return (bool)input["cbGenerateExtendCostructor"]; }
+	}
+	bool NeedGenerateSearcherSkeleton
+	{
+		get { return (bool)input["cbGenerateSearcherSkeleton"]; }
+	}
+	bool NeedGenerateIEntityInterface
+	{
+		get { return (bool)input["cbGenerateIEntityInterface"]; }
+	}
+
+    string Namespace
+	{
+		get { return input["txtNamespace"] as string; }
+	}
+
+    string DatabaseName
+	{
+		get { return input["cmbDatabase"] as string; }
+	}
+
+    ArrayList Tables
+	{
+		get { return input["lstTables"] as ArrayList; }
+	}
+
+    ArrayList RelationTables
+	{
+		get { return input["lstRelationTables"] as ArrayList; }
+	}
+	
+	bool GeneratedPersistent
+	{
+		get { return (bool)input["cbGeneratedPersistent"]; }
+	}
+	bool GeneratedSkeleton
+	{
+		get { return (bool)input["cbGeneratedSkeleton"]; }
+	}
+	
+
+	// genera la classe
+	public override void Render() 
+	{
+        MyMeta.Language = "C#";	
+		ArrayList relationTables = input["lstRelationTables"] as ArrayList;
+		ArrayList csFiles = new ArrayList();
+		string filepath = "";
+		
+		
+		
+		foreach (string tableName in Tables)
+		{
+			ITable table = MyMeta.Databases[DatabaseName].Tables[tableName];
+			this.TableName = table.Alias.Replace(" ", "");
+			
+			if(GeneratedPersistent)
+			{
+				output.clear();
+				
+				// Generate intestazione file e include
+				output_fileheader(table);
+				
+				// Generate interfaccia per remoting
+				if(NeedGenerateIEntityInterface)
+					output_IEntity(table);
+			
+			
+				// Generate intestazione della classe  
+				output_generatedclassheader(table);
+				output.tabLevel++;
+				
+				// Generate membri della classe (protected)
+				Output_DataMembers(table);
+				
+				// Generate costruttori
+				if(NeedGenerateExtendCostructor )
+				{
+					output.autoTabLn("#region extended Constructors");
+					if(hasNullable(table))
+						output_minimalextendconstructor(table);
+					
+					if(hasAutoKeys(table))
+						output_noautoextendconstructor(table);
+					
+					output_allextendconstructor(table);
+					
+					output.autoTabLn("#endregion");
+					output.writeln("");
+				}
+	
+				// Generate Properties della classe 
+				output.autoTabLn("#region Public Properties");
+				output.autoTabLn("");			
+				OutputPublicProperties(table);
+				output.autoTabLn("#endregion");
+				output.writeln("");
+				
+				// Generate relazioni: nested objects
+				if(RelationTables.Count>0)
+				{
+					output.autoTabLn("#region Relations");
+					OutputRelations(table);
+					output.autoTabLn("#endregion");
+					output.writeln("");
+				}
+				
+				// Implement IPopulateHelper se richiesto
+				if(NeedIPopulateHelper)
+					output_IPopulateHelper(table);
+					
+				// Implement NeedISelfContainingObject se richiesto
+				if(NeedISelfContainingObject)
+					output_ISelfContainingObject(table);
+					
+				// Implement IPropertyChange se richiesto
+				if(NeedIPropertyChange)
+					outputNeedIPropertyChange(table);
+			
+			
+				// fine classe
+				output.tabLevel--;
+				output.autoTabLn("}");
+				output.autoTabLn("#endregion");
+				output.autoTabLn("");
+				
+				// fine namespace 
+				output.tabLevel--;
+				output.autoTabLn("}");
+				
+				// Filename info
+				filepath = input["txtPath"].ToString();
+				if (!filepath.EndsWith("\\") ) filepath += "\\";
+				
+				// Build the filename (one .cs file per table)
+				string filename = filepath + SmartName(tableName) + ".Generated.cs";
+				csFiles.Add(filename );
+				
+				output.setPreserveSource(filename, "/***", "***/");
+				output.save(filename, false);
+			}
+			
+			if(GeneratedSkeleton)
+			{
+				output.clear();
+				output_fileheader(table);
+				
+				output_skeletonclassheader(table);
+				output.tabLevel++;
+				
+				// default constructor class 
+				output_constructor(table);
+           			
+					
+				// close class braket
+				output.tabLevel--;
+				output.autoTabLn("}");
+				output.autoTabLn("#endregion");
+				output.autoTabLn("");
+				
+				// Generate a searcher skeleton
+				if(NeedGenerateSearcherSkeleton)
+					output_searcher(table);
+				
+				// close namespace braket				
+				output.tabLevel--;
+				output.autoTabLn("}");
+				
+				// Build the filename (one .cs file per table)
+				string filename = filepath + SmartName(tableName) + ".cs";
+				csFiles.Add(filename );
+				
+				output.setPreserveSource(filename, "/***", "***/");
+				output.save(filename, false);
+			}
+			
+		}
+			
+		if(Tables.Count != 1) // keep output if only one file generated
+		{
+			output.clear();	
+			output.writeln("// Output directory " + filepath );
+			output.writeln("// Files generated:" );
+			foreach( string csFile in csFiles )
+			{
+				output.writeln( "// "+csFile );
+			}
+		}
+			
+		MyMeta.SaveUserMetaData();
+	}
+	
+	// aggiunge le interfaccie necessaria alla dichiarazione del persistent
+	public string GeneratedImplements(ITable table)
+	{
+		string buff = "";
+		if(NeedGenerateIEntityInterface)
+			buff += ((buff.Length>0) ? ", I" : " : I") + SmartName(table.Name);
+		if(NeedIPopulateHelper)
+			buff += ((buff.Length>0) ? ", "  : " : " ) + "IPopulateHelper";
+		if(NeedIPropertyChange)
+			buff += ((buff.Length>0) ? ", "  : " : ") + "IPropertyChange";
+		if(NeedISelfContainingObject)
+			buff += ((buff.Length>0) ? ", " : " : ")+ "ISelfContainingObject";
+		return buff;
+	}
+	
+
+	
+	// Formatta name, iniziali  in maiuscolo
+	// rimuove spazie e underscore, rimuove eventuali s finali
+	public string SmartTableName(string name)
+	{
+		string buff = SmartName(name);
+		
+		// per le entità togliere la s finale
+		if(buff.EndsWith("s"))
+			buff = buff.Remove(buff.Length-1,1);
+	
+		return buff;
+	}
+	
+	// Formatta il buffer, iniziali  in maiuscolo
+	// rimuove spazie e underscore 
+	public string SmartName(string name)
+	{
+		string buff = "";
+		bool next2uppper= true;
+		
+		foreach( char c in name.ToLower() )
+			switch(c)
+			{
+			case '_':
+			case ' ':
+				next2uppper= true;
+				break;
+			default:
+				if(next2uppper)
+					buff += c.ToString().ToUpper();
+				else	
+					buff += c.ToString();
+				next2uppper= false;
+				break;
+			}
+		
+		return buff;
+	}
+	
+	// ritorna il nome del membro della classe in base alla colonna
+	// i nomi sono tutti minuscoli, non contengono _ e sono preceduti da _
+	public string Column2MemberName(IColumn col)
+	{
+	   string buff =  SmartName(col.Alias);
+	   return "_" + buff.ToLower();
+	}
+	
+	
+	// ritorna il nome del proprietà della classe in base alla colonna
+	// i nomi Hanno il carattere iniziale maioscolo, non contengono _
+	public string Column2PropertyName(IColumn col)
+	{
+	   return SmartName(col.Alias);
+	}
+	
+	// ritorna il valore di inizializzazione in base ai vari tipi
+	// tenedo conto dei nullable
+	public string DefaultValue(IColumn col)
+	{
+	   switch(col.LanguageType)
+	   {
+		case "string":
+			if(col.Alias.ToLower().IndexOf("dynprop")>0)
+				return "= new DynamicPropertiesContainer()";
+			else
+				return (col.IsNullable ? "=null" : "=\"\"");
+		case "DateTime":
+			return (col.IsNullable ? "=null" :"=DateTime.Now");
+		case "decimal":
+			return (col.IsNullable ? "=null" :"=0");
+		case "bool":
+			return (col.IsNullable ? "=null" :"=false");
+		case "byte[]":
+			return "= new Blob()";
+		case "double":
+			return (col.IsNullable ? "=null" :"=0");
+		case "int":
+			return (col.IsNullable ? "=null" :"=0");
+		case "float":
+			return (col.IsNullable ? "=null" :"=0");
+		case "byte":
+			return "=null";
+		case "short":
+			return (col.IsNullable ? "=null" : "=0");
+		default:
+			return "???";
+		}
+	}
+	
+	// ritorna il tipo di c# per la dichiarazione
+	// tenedo conto dei nullable
+	public string LanguageType(IColumn col)
+	{
+	   switch(col.LanguageType)
+	   {
+		case "string":
+			if(col.Alias.ToLower().IndexOf("dynprop")>0)
+				return "DynamicPropertiesContainer";
+			else
+				return "string";
+		case "DateTime":
+			return "DateTime" + (col.IsNullable ? "?" : "");
+		case "decimal":
+			return "decimal" + (col.IsNullable ? "?" : "");
+		case "bool":
+			return "bool" + (col.IsNullable ? "?" : "");
+		case "byte[]":
+			return "Blob";
+		case "double":
+			return "double" + (col.IsNullable ? "?" : "");
+		case "int":
+			return "int" + (col.IsNullable ? "?" : "");
+		case "float":
+			return "float" + (col.IsNullable ? "?" : "");
+		case "byte":
+			return "byte" + (col.IsNullable ? "?" : "");
+		case "short":
+			return "short" + (col.IsNullable ? "?" : "");
+		default:
+			return "???";
+		}
+	}
+	
+	// genera le variabili locali per i membri della classe
+	// con le necessarie inizializzazioni
+	// note: i membri sono dichiarati protected in modo da poter 
+	// essere visibili nelle classi derivate
+    public void Output_DataMembers(ITable table)
+	{
+			output.autoTabLn("#region Members");
+
+			foreach( Column c in table.Columns )
+			{
+               output.autoTabLn("protected " + LanguageType(c) + " " + Column2MemberName(c) + DefaultValue(c)+";");
+			}
+			output.autoTabLn("#endregion");	
+			output.autoTabLn("");		
+	}
+
+	// genera le proprietà della classe, un eventuale commento
+	// in base a quanto esiste in bd
+    public void OutputPublicProperties(ITable table)
+	{
+			string _attributes;
+			foreach( Column c in table.Columns )
+			{
+				output.autoTabLn("/// <summary>");
+				if(c.Description.Length>0)
+					output.autoTabLn("/// " + c.Description +".");
+				else
+					output.autoTabLn("/// TODO: add  "  + Column2PropertyName(c) + " description");
+			    output.autoTabLn("/// </summary>");
+				
+				_attributes = "[Field(\"" + c.Alias.ToUpper() + "\"";
+				if(c.IsInPrimaryKey)
+					_attributes += ", Identifier=true";
+				if(c.IsAutoKey)
+					_attributes += ", AutoNumber=true";
+				if(!c.IsNullable)
+					_attributes += ", AllowDBNull=false";	
+				_attributes += ")]";
+				   
+				output.autoTabLn(_attributes);
+				output.autoTabLn("public " + LanguageType(c) + " " + Column2PropertyName(c));
+				output.autoTabLn("{");
+				output.tabLevel++;
+				   
+				output.autoTabLn("get{ return " + Column2MemberName(c) + "; }");
+				   
+				if(NeedIPropertyChange)
+				{
+					output.autoTabLn("set{ " + Column2MemberName(c) + " = value; OnRowChanged(\""+ Column2PropertyName(c) + "\");}");
+				}
+				else
+				{
+					output.autoTabLn("set{ " + Column2MemberName(c) + " = value; }");
+				}
+				 
+				output.tabLevel--;		
+				output.autoTabLn("}");
+				output.autoTabLn("");
+            }
+    }
+
+	// genera i parametri del costruttore 
+	public void ListConstructorParameters(ITable table, ConstructorParameters cp)
+	{
+		bool first = true;	
+		bool printIt;
+		foreach( Column c in table.Columns )
+		{
+			printIt = false;
+			
+			switch(cp)
+			{
+				case ConstructorParameters.All:
+					printIt = true;
+					break;
+					
+				case ConstructorParameters.AllAutoKeys:
+					if(c.IsAutoKey) printIt = true;
+					break;							
+					
+				case ConstructorParameters.AllExceptAutoKeys:
+					if(!c.IsAutoKey)	printIt = true;
+					break;		
+
+				case ConstructorParameters.NonNullAndNoAutoKeys:
+					if(!c.IsNullable && !c.IsAutoKey) printIt = true;
+					break;	
+			}
+
+			if(printIt)
+			{
+				if(!first) output.writeln(", ");					
+				output.autoTab(LanguageType(c) + " " + Column2PropertyName(c));
+				first = false;
+			}			
+		}			
+	}
+
+	// genera le assegnazioni parametri-membri del costruttore 
+	public void AssignDataMembers(ITable table, ConstructorParameters cp)
+	{
+		bool printIt;
+		foreach( Column c in table.Columns )
+		{
+			printIt = false;
+
+			switch(cp)
+			{
+				case ConstructorParameters.All:
+					printIt = true;
+					break;
+
+				case ConstructorParameters.AllExceptAutoKeys:
+					if(!c.IsAutoKey)	printIt = true;
+					break;
+
+				case ConstructorParameters.NonNullAndNoAutoKeys:
+					if(!c.IsNullable && !c.IsAutoKey) printIt = true;
+					break;
+			}
+
+			if(printIt)
+			{
+				if(c.IsAutoKey && cp != ConstructorParameters.All)
+					output.autoTabLn(Column2MemberName(c) + " = 0;");
+				else
+					output.autoTabLn(Column2MemberName(c) + " = " + Column2PropertyName(c) + ";");
+			}			
+		}			
+	}	
+	
+	// genera il costruttore richiesto
+    public void Output_Constructor(ITable table, ConstructorParameters cp)
+	{
+		// public xxxxxx(
+		output.autoTabLn("public " + SmartName(table.Alias) + "( ");
+		output.tabLevel += 2;
+		ListConstructorParameters(table, cp); 
+		output.tabLevel -= 2;			
+		output.writeln(") : this()");
+	
+		// opening brace
+		output.autoTabLn("{");
+		
+		output.tabLevel++;
+		
+		AssignDataMembers(table, cp);
+		output.tabLevel--;
+
+		output.autoTabLn("}");		
+	}	
+
+	// ritorna true se almeno una colonna é autoincrement (identity)
+    public bool hasAutoKeys(ITable table)
+	{
+	   foreach( Column c in table.PrimaryKeys )
+	   {
+	      if(c.IsAutoKey)
+		  {
+		     return true;
+		  }
+	   }
+	   return false;
+	}
+	
+	// ritorna true se almeno una colonna é nullabile
+	public bool hasNullable(ITable table)
+	{
+	   foreach( Column c in table.Columns )
+	   {
+	      if(c.IsNullable && !c.IsAutoKey)
+		  {
+		     return true;
+		  }
+	   }
+	   return false;
+	}
+	
+	    
+	// genera le relazioni: inner object
+	public void OutputRelations(ITable table)
+    {		
+		foreach(string tableName in RelationTables)
+		{
+			ITable ft = MyMeta.Databases[DatabaseName].Tables[tableName];
+			string smartName = SmartName(ft.Alias);
+			
+			foreach(IForeignKey key in table.ForeignKeys)
+			{	
+				if((key.PrimaryTable==table)&&(key.ForeignTable==ft))
+				{
+					string relationName = smartName+SmartName(Column2PropertyName(key.ForeignColumns[0]));
+				
+					output.autoTabLn("[Relation(\""+Column2PropertyName(key.PrimaryColumns[0])+"\", \""+Column2PropertyName(key.ForeignColumns[0])+"\")]");
+					output.autoTabLn("protected ObjectSetHolder<" + smartName + "> _" + relationName.ToLower()+ "s = new ObjectSetHolder<" + smartName +">();");
+					output.autoTabLn("public ObjectSet<" + smartName + "> " + relationName + "s");
+					output.autoTabLn("{");
+					output.tabLevel++;
+					output.autoTabLn("get { return _" + relationName.ToLower() + "s.InnerObject; }");
+					output.autoTabLn("set { _" + relationName.ToLower() + "s.InnerObject = value; }");
+					output.tabLevel--;
+					output.autoTabLn("}");	
+				}
+				else if((key.PrimaryTable==ft)&&(key.ForeignTable==table))
+				{
+					string relationName = smartName+SmartName(Column2PropertyName(key.ForeignColumns[0]));
+				
+					output.autoTabLn("[Relation(\""+Column2PropertyName(key.ForeignColumns[0])+"\", \""+Column2PropertyName(key.PrimaryColumns[0])+"\",PersistRelationship=PersistRelationships.ChildFirst)]");
+					output.autoTabLn("protected ObjectHolder<" + smartName + "> _" + relationName.ToLower()+ " = new ObjectHolder<" + smartName +">();");
+					output.autoTabLn("public " + smartName + " " + relationName);
+					output.autoTabLn("{");
+					output.tabLevel++;
+					output.autoTabLn("get { return _" + relationName.ToLower() + ".InnerObject; }");
+					output.autoTabLn("set { _" + relationName.ToLower() + ".InnerObject = value; }");
+					output.tabLevel--;
+					output.autoTabLn("}");						
+				}
+			}
+		}
+	}
+	
+	// intestazione del file
+	private void output_fileheader(ITable table)
+	{
+        output.autoTabLn("#region Developer's comment header");
+        output.autoTabLn("/* " + this.TableName);
+        output.autoTabLn(" *");
+        output.autoTabLn(" * Author:     ");
+        output.autoTabLn(" * Copyright: (c) - ");
+        output.autoTabLn(" * Created:   " + System.DateTime.Now.ToString());
+        output.autoTabLn(" * Purpose:   ");
+        output.autoTabLn(" * Note   :   This file was generated using the MyGeneration tool in combination");
+        output.autoTabLn("*            with the OP3 Business Entity template, $Rev: 1 $");
+        output.autoTabLn("*/");
+        output.autoTabLn("#endregion");
+        output.autoTabLn("");
+        output.autoTabLn("#region Using directives");
+        output.autoTabLn("using System;");
+        output.autoTabLn("using System.Collections;");
+        if(NeedIPropertyChange)
+            output.autoTabLn("using System.ComponentModel;");
+        output.autoTabLn("");
+        output.autoTabLn("using Opf3;");
+        output.autoTabLn("using Opf3.Relations;");
+		output.autoTabLn("using Opf3.DynamicProperties;");
+		if(NeedGenerateSearcherSkeleton)
+			output.autoTabLn("using Opf3.Query;");
+        output.autoTabLn("#endregion");
+        output.autoTabLn("");
+        output.autoTabLn("namespace " + Namespace);
+        output.autoTabLn("{");
+	}
+	
+	// intestazione della classe
+	private void output_generatedclassheader(ITable table)
+	{
+		output.tabLevel++;
+	    output.autoTabLn("#region "+ SmartName(this.TableName));
+	    output.autoTabLn("/// <summary>");
+	    output.autoTabLn("/// This object represents the properties and methods of a " + SmartName(table.Name) +".");
+	    output.autoTabLn("/// </summary>");
+	    output.autoTabLn("[Serializable]");
+	    output.autoTabLn("[Persistent(\"" + table.Name.ToUpper() +"\", PoolSize = 10)]");
+	    output.autoTabLn("public partial class "+ SmartName(this.TableName) + " " + this.GeneratedImplements(table));
+	    output.autoTabLn("{");      
+	}
+	
+	// intestazione della classe searcher
+	private void output_skeletonclassheader(ITable table)
+	{
+		output.tabLevel++;
+	    output.autoTabLn("#region "+ SmartName(this.TableName));
+	    output.autoTabLn("/// <summary>");
+	    output.autoTabLn("/// This object represents the properties and methods of a " + SmartName(table.Name) +".");
+	    output.autoTabLn("/// </summary>");
+	    output.autoTabLn("public partial class "+ SmartName(this.TableName));
+	    output.autoTabLn("{");      
+	}
+	
+	// costruttore base, senza parametri
+	private void output_constructor(ITable table)
+	{		
+		output.autoTabLn("#region default Constructors");
+		output.autoTabLn("/// <summary>");
+		output.autoTabLn("/// Constructor for " + SmartTableName(this.TableName));
+		output.autoTabLn("/// </summary>");
+		output.autoTabLn("public "+ SmartTableName(this.TableName) +"()");
+		output.autoTabLn("{");
+        output.tabLevel++;
+		output.autoTabLn("//");
+		output.autoTabLn("// TODO: Add constructor logic here");
+		output.autoTabLn("//");
+        output.tabLevel--;
+		output.autoTabLn("}");
+		output.autoTabLn("#endregion ");
+		output.autoTabLn("");
+	}
+	
+	// costruttore con solo i campi obbligatori
+	private void output_minimalextendconstructor(ITable table)
+	{
+		if(hasNullable(table)){
+			output.autoTabLn("/// <summary>");
+			output.autoTabLn("/// Create a new object using the minimum required information (all not-null fields except"); 
+			output.autoTabLn("/// auto-generated primary keys)."); 
+			output.autoTabLn("/// </summary> ");
+			Output_Constructor(table, ConstructorParameters.NonNullAndNoAutoKeys);
+		}
+	}
+	
+	// costruttore con tutti i campi salvo gli autonumber
+	private void output_noautoextendconstructor(ITable table)
+	{
+		if(hasAutoKeys(table)){
+			output.autoTabLn("/// <summary> ");
+			output.autoTabLn("/// Create a new object by specifying all fields (except the auto-generated primary key field)."); 
+			output.autoTabLn("/// </summary>");
+			Output_Constructor(table, ConstructorParameters.AllExceptAutoKeys);
+		}
+	}
+	
+	// costruttore con tutti i campi 
+	private void output_allextendconstructor(ITable table)
+	{
+		output.autoTabLn("/// <summary> ");
+		output.autoTabLn("/// Create a new object using all fields");
+		output.autoTabLn("/// </summary>");
+		Output_Constructor(table, ConstructorParameters.All);
+	}
+	
+	// implementa l'interfaccia IPropertyChange, espone un delegate
+	// richiamato ogni volta si modifica una proprietà
+	private void outputNeedIPropertyChange(ITable table)
+	{
+		output.autoTabLn("#region IPropertyChange Members");
+		output.autoTabLn("public virtual void OnRowChanged(string PropertyName)");
+        output.autoTabLn("{");
+        output.tabLevel++;
+		output.autoTabLn("if (_PropertyChanged != null)");
+        output.tabLevel++;
+		output.autoTabLn("_PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));");
+        output.tabLevel-=2;
+		output.autoTabLn("}");
+        output.autoTabLn("");
+		output.autoTabLn("private PropertyChangedEventHandler _PropertyChanged;");
+		output.autoTabLn("public event PropertyChangedEventHandler PropertyChanged");
+		output.autoTabLn("{");
+        output.tabLevel++;
+		output.autoTabLn("add { _PropertyChanged += value; }");
+        output.tabLevel++;
+		output.autoTabLn("remove { _PropertyChanged -= value; }");
+        output.tabLevel-=2;
+		output.autoTabLn("}");
+		output.autoTabLn("#endregion");	
+		output.autoTabLn("");
+	}
+	
+	// implementa l'interfaccia ISelfContainingObject, mantiene lo stato dell'oggetto
+	// per remoting
+	private void output_ISelfContainingObject(ITable table)
+	{
+		output.autoTabLn("#region ISelfContainingObject Members");
+		output.autoTabLn("/// <summary>");
+		output.autoTabLn("/// The class implementing this interface is self containing and can be remoted or persisted");
+		output.autoTabLn("/// to any kind of device without problems.");
+		output.autoTabLn("/// </summary>");
+		output.autoTabLn("private ObjectInfo _ObjectInfo = new ObjectInfo();");
+		output.autoTabLn("ObjectInfo ISelfContainingObject.ObjectInfo");
+		output.autoTabLn("{");
+        output.tabLevel++;
+		output.autoTabLn("get	{ return _ObjectInfo; }");
+		output.autoTabLn("set	{ _ObjectInfo=value; }");
+        output.tabLevel--;
+		output.autoTabLn("}");
+		output.autoTabLn("#endregion");	
+		output.autoTabLn("");
+	}
+	
+	// crea uno skeleton base per un searcher personalizzato
+	private void output_searcher(ITable table)
+	{
+	    output.autoTabLn("#region specialized to search for " +SmartName(this.TableName));
+	    output.autoTabLn("/// <summary>");
+	    output.autoTabLn("/// Class specialized to search for " + SmartName(this.TableName) + ">.");
+	    output.autoTabLn("/// </summary>");
+	    output.autoTabLn("public class " + SmartName(this.TableName) + "Searcher : ObjectSearcher<"+ SmartName(this.TableName) + ">");
+	    output.autoTabLn("{");
+        output.tabLevel++;
+	    output.autoTabLn("/// <summary>");
+	    output.autoTabLn("/// Constructor.");
+	    output.autoTabLn("/// </summary>");
+	    output.autoTabLn("/// <param name=\"context\"></param>");
+	    output.autoTabLn("public " +  SmartName(this.TableName) + "Searcher(ObjectContext context) : base(context)");
+	    output.autoTabLn("{");
+	    output.autoTabLn("}");
+        output.tabLevel--;
+        output.autoTabLn("");
+        output.tabLevel++;
+	    output.autoTabLn("/// <summary>");
+	    output.autoTabLn("/// Returns all "+ SmartName(this.TableName) + " based on key.");
+        output.autoTabLn("/// Remember : this is a skeleton you must implement the code.");
+	    output.autoTabLn("/// </summary>");
+	    output.autoTabLn("public ObjectSet<" + SmartName(this.TableName) + "> FindByKey(object key)");
+	    output.autoTabLn("{");
+        output.tabLevel++;
+	    output.autoTabLn("// Extended query.");
+	    output.autoTabLn("ObjectQuery<"+ SmartName(this.TableName) + "> query = new ObjectQuery<"+ SmartName(this.TableName) + ">(");
+	    output.autoTabLn("\t\"FLDxxx LIKE {0}\", \"%\" + key.Replace(\"*\", \"%\") + \"%\");");
+        output.autoTabLn("");
+	    output.autoTabLn("return Context.GetObjectSet<" + SmartName(this.TableName) + ">(query);");
+        output.tabLevel--;
+		output.autoTabLn("}");
+        output.tabLevel--;
+	    output.autoTabLn("}");
+	    output.autoTabLn("#endregion");
+	}
+	
+	// crea un'interfaccia base per remoting, normalmente deve essere copiata in 
+	// un namespace separato
+	private void output_IEntity(ITable table)
+	{	
+		output.tabLevel++;
+	    output.autoTabLn("#region I"+ SmartTableName(this.TableName) +" interface for remoting");
+	    output.autoTabLn("/// <summary>");
+	    output.autoTabLn("/// Public interface of "+ SmartTableName(this.TableName) + ".");
+	    output.autoTabLn("/// </summary>");
+	    output.autoTabLn("public interface I" + SmartTableName(this.TableName));
+	    output.autoTabLn("{");
+
+		output.tabLevel++;
+		foreach( Column c in table.Columns )
+		{
+			output.autoTabLn("/// <summary>");
+			if(c.Description.Length>0)
+				output.autoTabLn("/// " + c.Description +".");
+			else
+				output.autoTabLn("/// TODO: add  "  + Column2PropertyName(c) + " description");
+			output.autoTabLn("/// </summary>");
+			output.autoTabLn(LanguageType(c) + " " + Column2PropertyName(c) +" { get; set; }");
+			output.autoTabLn("");
+        }
+		output.tabLevel--;
+
+	    output.autoTabLn("}");
+	    output.autoTabLn("#endregion");
+		output.tabLevel--;
+		output.autoTabLn("");
+
+	}
+	
+	// implementa IPopulateHelper per il riempimento dei campi
+	private void output_IPopulateHelper(ITable table)
+	{
+		output.autoTabLn("#region IPopulateHelper");
+		output.autoTabLn("/// <summary>");
+		output.autoTabLn("/// IPopulateHelper implementation.");
+		output.autoTabLn("/// </summary>");
+		output.autoTabLn("public object this[string propertyName]");
+		output.autoTabLn("{");
+        output.tabLevel++;
+		output.autoTabLn("set");
+		output.autoTabLn("{");
+        output.tabLevel++;
+		output.autoTabLn("switch(propertyName)");
+		output.autoTabLn("{");
+
+		foreach( Column c in table.Columns )
+		{
+			output.autoTabLn("case \"" + Column2PropertyName(c) + "\":");
+			output.tabLevel++;
+			output.autoTabLn("this." + Column2PropertyName(c) + "= (" + LanguageType(c)+")value;");
+			output.autoTabLn("break;");
+			output.tabLevel--;
+        }
+		output.autoTabLn("default:");
+		output.tabLevel++;
+		output.autoTabLn("throw new NotImplementedException();");
+		output.autoTabLn("break;");
+		output.tabLevel--;
+			
+        output.autoTabLn("}");
+        output.tabLevel--;
+        output.autoTabLn("}");
+        output.autoTabLn("get");
+        output.autoTabLn("{");
+        output.tabLevel++;
+        output.autoTabLn("switch(propertyName)");
+        output.autoTabLn("{");
+
+		foreach( Column c in table.Columns )
+		{
+			output.autoTabLn("case \"" + Column2PropertyName(c) + "\":");
+			output.tabLevel++;
+			output.autoTabLn("return (object)this." + Column2PropertyName(c) + ";");
+			output.autoTabLn("break;");
+			output.tabLevel--;
+        }
+		output.autoTabLn("default:");
+		output.tabLevel++;
+		output.autoTabLn("throw new NotImplementedException();");
+		output.autoTabLn("break;");
+		output.tabLevel--;
+		
+        output.autoTabLn("}");
+        output.tabLevel--;
+        output.autoTabLn("}");
+        output.tabLevel--;
+        output.autoTabLn("}");
+        output.autoTabLn("#endregion");
+		output.autoTabLn("");
+	}
+}
+%>
+##|BODY_END

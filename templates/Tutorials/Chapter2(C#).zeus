@@ -1,0 +1,222 @@
+﻿##|TYPE Template
+##|UNIQUEID 98451047-c7ef-497b-a490-f43e8c53ddf0
+##|TITLE Chapter 2 - Column Properties (C#)
+##|NAMESPACE Tutorials.C#.Chapter 2
+##|OUTPUT_LANGUAGE None
+##|GUI_ENGINE .Net Script
+##|GUI_LANGUAGE C#
+##|GUI_BEGIN
+<%#REFERENCE System.Windows.Forms.dll, System.Drawing.dll %>
+<%#NAMESPACE System.Windows.Forms, System.Drawing %>
+
+public class GeneratedGui : DotNetScriptGui
+{
+	public GeneratedGui(ZeusContext context) : base(context) {}
+	
+	public override void Setup() 
+	{
+		MyForm form = new MyForm(MyMeta, input); 
+
+		if (form.ShowDialog() != DialogResult.OK) 
+		{
+			ui.IsCanceled = true;
+		}
+	}
+}
+
+public class MyForm : System.Windows.Forms.Form
+{
+	private System.Windows.Forms.Label lblDatabases;
+	private System.Windows.Forms.ComboBox cboxDatabases;
+	private System.Windows.Forms.Label lblTables;
+	private System.Windows.Forms.ListBox lboxTables;
+	private System.Windows.Forms.Button btnOkay;
+	
+	private dbRoot myMeta;
+	private IZeusInput zeusInput;
+
+	/// <summary>
+	/// Required designer variable.
+	/// </summary>
+	private System.ComponentModel.Container components = null;
+	
+	public MyForm(dbRoot myMeta, IZeusInput zeusInput)
+	{
+		this.myMeta    = myMeta;
+		this.zeusInput = zeusInput;
+		
+		InitializeComponent();
+	}	
+
+	private void MyForm_Load(object sender, System.EventArgs e)
+	{
+		this.cboxDatabases.DataSource    = this.myMeta.Databases;
+		this.cboxDatabases.DisplayMember = "Name";	
+		
+		if(this.myMeta.DefaultDatabase != null)
+		{
+			this.cboxDatabases.SelectedIndex = this.cboxDatabases.FindStringExact(this.myMeta.DefaultDatabase.Name);
+		}
+
+		if(this.myMeta.DefaultDatabase != null)
+		{
+			this.lboxTables.DataSource = this.myMeta.DefaultDatabase.Tables;
+			this.lboxTables.DisplayMember = "Name";
+		}	
+	}
+	
+	private void cboxDatabases_SelectionChangeCommitted(object sender, System.EventArgs e)
+	{
+		IDatabase database = this.cboxDatabases.SelectedValue as IDatabase;
+
+		if(database != null)
+		{
+			this.lboxTables.DataSource = database.Tables;
+			this.lboxTables.DisplayMember = "Name";
+		}	
+	}	
+	
+	public void btnOkay_Click(object sender, EventArgs args) 
+	{
+		if ((cboxDatabases.SelectedIndex >= 0) && (lboxTables.SelectedIndex >= 0)) 
+		{
+			IDatabase database = this.cboxDatabases.SelectedValue as IDatabase;
+			ITable    table    = this.lboxTables.SelectedValue as ITable;
+			
+			this.zeusInput["databaseName"] = database.Name;
+			this.zeusInput["tableName"]    = table.Name;
+			
+			this.DialogResult = DialogResult.OK;
+			this.Close();
+		}
+		else 
+		{
+			MessageBox.Show("Please choose a Table");
+		}
+	}
+	
+
+	/// <summary>
+	/// Clean up any resources being used.
+	/// </summary>
+	protected override void Dispose( bool disposing )
+	{
+		if( disposing )
+		{
+			if (components != null) 
+			{
+				components.Dispose();
+			}
+		}
+		base.Dispose( disposing );
+	}
+
+
+	/// <summary>
+	/// Required method for Designer support - do not modify
+	/// the contents of this method with the code editor.
+	/// </summary>
+	private void InitializeComponent()
+	{
+		this.lblDatabases = new System.Windows.Forms.Label();
+		this.cboxDatabases = new System.Windows.Forms.ComboBox();
+		this.lblTables = new System.Windows.Forms.Label();
+		this.lboxTables = new System.Windows.Forms.ListBox();
+		this.btnOkay = new System.Windows.Forms.Button();
+		this.SuspendLayout();
+		// 
+		// lblDatabases
+		// 
+		this.lblDatabases.Location = new System.Drawing.Point(16, 16);
+		this.lblDatabases.Name = "lblDatabases";
+		this.lblDatabases.TabIndex = 0;
+		this.lblDatabases.Text = "Select a database:";
+		// 
+		// cboxDatabases
+		// 
+		this.cboxDatabases.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+		this.cboxDatabases.Location = new System.Drawing.Point(16, 40);
+		this.cboxDatabases.Name = "cboxDatabases";
+		this.cboxDatabases.Size = new System.Drawing.Size(256, 21);
+		this.cboxDatabases.TabIndex = 1;
+		this.cboxDatabases.SelectionChangeCommitted += new System.EventHandler(this.cboxDatabases_SelectionChangeCommitted);
+		
+		// 
+		// lblTables
+		// 
+		this.lblTables.Location = new System.Drawing.Point(16, 72);
+		this.lblTables.Name = "lblTables";
+		this.lblTables.TabIndex = 0;
+		this.lblTables.Text = "Select a table:";
+		// 
+		// lboxTables
+		// 
+		this.lboxTables.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+		this.lboxTables.Location = new System.Drawing.Point(16, 104);
+		this.lboxTables.Name = "lboxTables";
+		this.lboxTables.Size = new System.Drawing.Size(256, 108);
+		this.lboxTables.TabIndex = 2;
+		// 
+		// btnOkay
+		// 
+		this.btnOkay.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+		this.btnOkay.Location = new System.Drawing.Point(16, 224);
+		this.btnOkay.Name = "btnOkay";
+		this.btnOkay.Size = new System.Drawing.Size(256, 23);
+		this.btnOkay.TabIndex = 3;
+		this.btnOkay.Text = "OK";
+		this.btnOkay.Click += new System.EventHandler(this.btnOkay_Click);
+		// 
+		// Form1
+		// 
+		this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+		this.ClientSize = new System.Drawing.Size(292, 266);
+		this.Controls.Add(this.btnOkay);
+		this.Controls.Add(this.lboxTables);
+		this.Controls.Add(this.cboxDatabases);
+		this.Controls.Add(this.lblDatabases);
+		this.Controls.Add(this.lblTables);
+		this.HelpButton = true;
+		this.Name = "Chapter 2";
+		this.Text = "Chapter 2";		
+		this.MaximizeBox = false;
+		this.MinimizeBox = false;		
+		this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+		this.Load += new System.EventHandler(this.MyForm_Load);		
+		this.ResumeLayout(false);
+	}
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE .Net Script
+##|BODY_LANGUAGE C#
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+public class GeneratedTemplate : DotNetScriptTemplate
+{
+	public GeneratedTemplate(ZeusContext context) : base(context) {}
+
+	public override void Render()
+	{
+		string databaseName = input["databaseName"].ToString();
+		string tableName    = input["tableName"].ToString();
+		
+		IDatabase database = MyMeta.Databases[databaseName];
+		ITable table = database.Tables[tableName];
+		
+		output.writeln("Columns for Table '" + table.Name + "'");
+		output.writeln("");
+		
+		foreach (IColumn column in table.Columns)
+		{
+			output.writeln(column.Name + " : " + column.DataTypeName);
+		}
+	}
+}
+%>
+##|BODY_END

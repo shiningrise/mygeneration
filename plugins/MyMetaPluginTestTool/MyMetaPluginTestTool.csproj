@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D817DB38-3E1A-4AB3-B8C2-9BABCD46983B}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MyMetaPluginTestTool</RootNamespace>
+    <AssemblyName>MyMetaPluginTestTool</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IMyMetaTestContext.cs" />
+    <Compile Include="MyMetaPluginTests.cs" />
+    <Compile Include="MyMetaPluginUtility.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MyMetaPluginUtility.Designer.cs">
+      <DependentUpon>MyMetaPluginUtility.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MyMetaAPITests.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="MyMetaPluginUtility.resx">
+      <DependentUpon>MyMetaPluginUtility.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\mymeta\MyMeta.csproj">
+      <Project>{72BEAB1C-B55F-4F0E-89AF-17F71E74A452}</Project>
+      <Name>MyMeta</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyMetaEffiprozPlugin\MyMetaEffiprozPlugin.csproj">
+      <Project>{38F07F67-08C1-48E4-AF0B-9550157F9460}</Project>
+      <Name>MyMetaEffiprozPlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyMetaFoxProPlugin\MyMetaVisualFoxProPlugin.csproj">
+      <Project>{A0680832-79DA-410E-A650-C974BF0A1205}</Project>
+      <Name>MyMetaVisualFoxProPlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyMetaIngres2006Plugin\MyMeta.Plugins.Ingres2006.csproj">
+      <Project>{BA7AF976-4917-459A-A9E1-6BE44F8F4BDF}</Project>
+      <Name>MyMeta.Plugins.Ingres2006</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyMetaSqlCePlugin\MyMetaSqlCePlugin.csproj">
+      <Project>{E172F96C-2642-42DA-AC44-873123D6970F}</Project>
+      <Name>MyMetaSqlCePlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyMetaSybaseASAPlugin\MyMetaSybaseASAPlugin.csproj">
+      <Project>{DF10FD5D-1893-4738-9D0F-5E7B61B98DBB}</Project>
+      <Name>MyMetaSybaseASAPlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyMetaSybaseASEPlugin\MyMetaSybaseASEPlugin.csproj">
+      <Project>{FED65D0E-038D-4523-A9B4-B4F009778E05}</Project>
+      <Name>MyMetaSybaseASEPlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyMetaTextFilePlugin\MyMetaTextFilePlugin.csproj">
+      <Project>{ECEA8844-E331-4833-AF62-25482AEFC9E9}</Project>
+      <Name>MyMetaTextFilePlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyMetaXsd3bPlugin\MyMetaXsd3bPlugin.csproj">
+      <Project>{17CC8224-460F-4990-8031-F23BF808075E}</Project>
+      <Name>MyMetaXsd3bPlugin</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Settings\DbTargets.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Settings\Languages.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,1165 @@
+﻿##|TYPE Template
+##|UNIQUEID 1b2935a3-16f8-45ed-b50b-5cc6d1855428
+##|TITLE dOOdads Business Entity
+##|NAMESPACE dOOdads.C#
+##|OUTPUT_LANGUAGE C#
+##|COMMENTS_BEGIN
+From a Table, MS SQL, MS Access, Firebird, PostgreSQL, Oracle with aggregate support.
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstTables
+Dim chk
+
+Sub setup()
+
+	If context.Objects.ContainsKey("DnpUtils") Then
+		DnpUtils.ReadInputFromCache(context)
+	End if
+
+	ui.Title = "Generate C# dOOdads"
+	ui.Width  = 330
+	ui.Height = 480
+
+	' Grab default output path
+	Dim sOutputPath
+	sOutputPath = ""
+	If input.Contains("defaultOutputPath") Then 
+		sOutputPath = input.Item("defaultOutputPath")
+	End If
+
+	ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+	ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+	ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+	
+	ui.AddLabel "lblNamespace", "Namespace: ",  "Provide your objects namespace."
+	ui.AddTextBox "txtNamespace", "Your.Namespace", "Provide your objects namespace."			
+
+	' List Databases in a ComboBox
+	ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+	Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+
+	' List Tables in a listbox
+	ui.AddLabel "lblTables", "Select tables:", "Select tables from the listbox below."
+	Set lstTables = ui.AddListBox ("lstTables", "Select tables:")
+	'lstTables.IsMultiSelect = false
+	lstTables.Height = 120
+	
+	Set prefix = ui.AddCheckBox("prefix", "Prefix the 'File' with an underscore?", false, "If checked, the file on disk will begin with an underscore")
+	Set trimName = ui.AddCheckBox("trimName", "Trim spaces from output filename?", false, "If checked, the file on disk will have spaces trimmed from the name.")
+	
+	If MyMeta.DriverString = "FIREBIRD" Then
+		ui.Height = ui.Height + 20
+		Set chk = ui.AddCheckBox("ckDialect3", "DIALECT 3", false, "If checked, the stored procedure will use dialect 3 syntax")
+		chk.forecolor = "red"
+	End If
+
+	' Attach the onchange event to the cmbDatabases control.
+	setupDatabaseDropdown cmbDatabases
+	cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+	
+	ui.ShowGUI = true
+
+End Sub
+
+Sub setupDatabaseDropdown(cmbDatabases)
+	cmbDatabases.BindData MyMeta.Databases
+
+	If Not MyMeta.DefaultDatabase Is Nothing Then
+		cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindTables cmbDatabases.SelectedValue
+	End If
+End Sub
+
+Sub bindTables(sDatabase)
+	Set db = MyMeta.Databases(sDatabase)
+	lstTables.BindData(db.Tables)
+End Sub
+
+' Event Handler
+Sub cmbDatabases_onchange(control)
+	Set cmbDatabases = ui.item("cmbDatabase")
+	bindTables cmbDatabases.SelectedText
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'------------------------------------------------------------------------------
+' Copyright 2004, 2005 by MyGeneration Software
+' All Rights Reserved 
+'
+' Permission to use, copy, modify, and distribute this software and its 
+' documentation for any purpose and without fee is hereby granted, 
+' provided that the above copyright notice appear in all copies and that 
+' both that copyright notice and this permission notice appear in 
+' supporting documentation. 
+'
+' MYGENERATION SOFTWARE DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS 
+' SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY 
+' AND FITNESS, IN NO EVENT SHALL MYGENERATION SOFTWARE BE LIABLE FOR ANY 
+' SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES 
+' WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, 
+' WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER 
+' TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE 
+' OR PERFORMANCE OF THIS SOFTWARE. 
+'------------------------------------------------------------------------------
+' CSharp_dOOdads_BusinessEntity.vbgen
+' Last Update : 12/21/2005
+'------------------------------------------------------------------------------
+
+If context.Objects.ContainsKey("DnpUtils") Then
+	DnpUtils.SaveInputToCache(context)
+End if
+
+Dim bFirst
+Dim name
+Dim pname
+Dim objTable
+Dim objColumn
+Dim tableNames
+Dim language
+Dim databaseName
+Dim database
+Dim namespace
+Dim props
+Dim prefix
+Dim trimName
+
+Dim IDbCommand
+Dim IDataParameter
+Dim ParameterPrefix
+
+Dim dialect
+
+dialect = 1
+If input.Item("ckDialect3") Then
+	dialect = 3
+End If
+
+prefix = input.Item("prefix")
+trimName = input.Item("trimName")
+
+IDbCommand    = GetIDbCommand()
+IDataParameter = GetIDataParameter()
+ParameterPrefix = GetParameterPrefix()
+
+' Grab the namespace
+namespace = input.Item("txtNamespace")
+
+' Set the Language for our column data types
+
+' Grab the choices the user made in our UI Script (see Interface Code tab)
+Set tableNames = input.Item("lstTables")
+
+databaseName  = input.Item("cmbDatabase")
+Set database = MyMeta.Databases(databaseName)
+
+' Loop through the tables the user selected and generate the business entities
+For intLp = 0 To tableNames.Count - 1
+
+	Set objTable = database.Tables(tablenames.item(intLp))
+	Set props = objTable.Properties
+
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+' Now we have the table that we desire to build a Business Object From, let us begin.
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%>
+/*
+'===============================================================================
+'  Generated From - CSharp_dOOdads_BusinessEntity.vbgen
+' 
+'  ** IMPORTANT  ** 
+'  How to Generate your stored procedures:
+' 
+'  SQL        = SQL_StoredProcs.vbgen
+'  ACCESS     = Access_StoredProcs.vbgen
+'  ORACLE     = Oracle_StoredProcs.vbgen
+'  FIREBIRD   = FirebirdStoredProcs.vbgen
+'  POSTGRESQL = PostgreSQL_StoredProcs.vbgen
+'
+'  The supporting base class <%= GetBaseClass %> is in the Architecture directory in "dOOdads".
+'  
+'  This object is 'abstract' which means you need to inherit from it to be able
+'  to instantiate it.  This is very easilly done. You can override properties and
+'  methods in your derived class, this allows you to regenerate this class at any
+'  time and not worry about overwriting custom code. 
+'
+'  NEVER EDIT THIS FILE.
+'
+'  public class YourObject :  _YourObject
+'  {
+'
+'  }
+'
+'===============================================================================
+*/
+
+// Generated by MyGeneration Version # (<%= input.Item("__version") %>)
+
+using System;
+using System.Data;
+using <%= GetDataNameSpace %>;
+using System.Collections;
+using System.Collections.Specialized;
+
+using MyGeneration.dOOdads;
+
+namespace <%= namespace %>
+{
+	public abstract class <%= "_" & TrimSpaces(objTable.Alias) %> : <%= GetBaseClass %>
+	{
+		public <%= "_" & TrimSpaces(objTable.Alias) %>()
+		{<% output.writeLn ""
+		If MyMeta.DbTarget = "OracleClient" Then
+			output.writeLn "			this.SchemaGlobal = """ + objTable.Schema + "."";"
+		End If
+		output.writeLn "			this.QuerySource = """ & objTable.Name & """;"
+		output.writeLn "			this.MappingName = """ & objTable.Name & """;"
+		' Firebird Setting
+		If dialect = 3 Then
+			output.writeLn "			this.Dialect = 3;"
+		End If
+		%>
+		}	
+
+		//=================================================================
+		//  public Overrides void AddNew()
+		//=================================================================
+		//
+		//=================================================================
+		public override void AddNew()
+		{
+			base.AddNew();
+			<% ' SQL Server and Access tweak here ...
+			For Each objColumn in objTable.Columns
+				if objColumn.Default = "newid()" Or objColumn.Default = "GenGUID()" Then
+					output.writeLn "this." + GetAlias(objColumn) +" = Guid.NewGuid();"
+				End If
+			Next %>
+		}
+		
+		<% ' *** THIS IS AN Access SPECIFIC Method for @@IDENTITY COLUMNS ***
+		If MyMeta.DbTarget = "OleDb" Then %>
+		public override string GetAutoKeyColumn()
+		{<% output.writeLn ""
+			output.write "			return """
+			For Each objColumn in objTable.Columns
+				if objColumn.IsAutoKey Then
+					output.write objColumn.Name
+				End If
+			Next
+			output.write """;" & vbCrLf 
+			output.write "		}" & vbCrLf 
+		End If 
+		%>
+		public override void FlushData()
+		{
+			this._whereClause = null;
+			this._aggregateClause = null;
+			base.FlushData();
+		}
+		
+		//=================================================================
+		//  	public Function LoadAll() As Boolean
+		//=================================================================
+		//  Loads all of the records in the database, and sets the currentRow to the first row
+		//=================================================================
+		public bool LoadAll() 
+		{
+			ListDictionary parameters = null;
+			<% ' *** THIS IS AN ORACLE SPECIFIC SNIPPET ***
+			If MyMeta.DbTarget = "OracleClient" Then %>
+			parameters = new ListDictionary();	
+			OracleParameter p = new OracleParameter("outCursor", OracleType.Cursor);
+			p.Direction = ParameterDirection.Output;
+			parameters.Add(p, null);
+			<% End If %>
+			return base.LoadFromSql(<% output.write CreateProcedureName(objTable, "L") %>, parameters);
+		}
+	
+		//=================================================================
+		// public Overridable Function LoadByPrimaryKey()  As Boolean
+		//=================================================================
+		//  Loads a single row of via the primary key
+		//=================================================================
+		public virtual bool LoadByPrimaryKey(<%
+				bFirst = true
+				For Each objColumn in objTable.PrimaryKeys
+		
+					If Not bFirst Then
+						output.write ", "
+					End If
+		
+					output.write objColumn.LanguageType & " " & GetAlias(objColumn)
+		
+					bFirst = false
+				Next 
+				output.write ")" & vbCrLf
+			%>		{
+			ListDictionary parameters = new ListDictionary();
+			<%
+				If objTable.PrimaryKeys.Count > 0 Then
+					For Each objColumn in objTable.PrimaryKeys
+						name = GetAlias(objColumn)
+						output.writeLn "parameters.Add(Parameters." &  name & ", " & name & ");" & vbCrLf							
+					Next
+				End If 	
+			' *** THIS IS AN ORACLE SPECIFIC SNIPPET ***
+			If MyMeta.DbTarget = "OracleClient" Then %>
+			OracleParameter p = new OracleParameter("outCursor", OracleType.Cursor);
+			p.Direction = ParameterDirection.Output;
+			parameters.Add(p, null);
+			<% End If %>		
+			return base.LoadFromSql(<%= CreateProcedureName(objTable, "K") %>, parameters);
+		}
+		
+		#region Parameters
+		protected class Parameters
+		{
+			<% For Each objColumn in objTable.Columns 
+			   pname = GetName(objColumn)
+				name = GetAlias(objColumn)
+			%>
+			public static <%= IDataParameter %> <%= name %>
+			{
+				get
+				{
+					return new <%= IDataParameter %>("<%=ParameterPrefix %><% output.write TrimSpaces(pname) & """, " & objColumn.DbTargetType
+					if(objColumn.CharacterMaxLength > 0) Then
+						output.write ", " & objColumn.CharacterMaxLength
+					Else
+						output.write ", 0"
+					End If
+					output.write ");" %>
+				}
+			}
+			<% Next %>
+		}
+		#endregion		
+	
+		#region ColumnNames
+		public class ColumnNames
+		{  <% output.write vbCrLf 
+			 For Each objColumn in objTable.Columns
+				name = GetAlias(objColumn)
+				output.write "            public const string " & name & " = """ & objColumn.Name & """;" & vbCrLf 
+			 Next %>
+			static public string ToPropertyName(string columnName)
+			{
+				if(ht == null)
+				{
+					ht = new Hashtable();
+					<% output.write vbCrLf 
+					For Each objColumn in objTable.Columns
+						name = GetAlias(objColumn)
+						output.write "					ht[" & name & "] = _" & TrimSpaces(objTable.Alias) & ".PropertyNames." & name & ";" & vbCrLf 
+					Next
+					%>
+				}
+				return (string)ht[columnName];
+			}
+
+			static private Hashtable ht = null;			 
+		}
+		#endregion
+		
+		#region PropertyNames
+		public class PropertyNames
+		{  <% output.write vbCrLf 
+			 For Each objColumn in objTable.Columns
+				name = GetAlias(objColumn)
+				output.write "            public const string " & name & " = """ & name & """;" & vbCrLf 
+			 Next %>
+			static public string ToColumnName(string propertyName)
+			{
+				if(ht == null)
+				{
+					ht = new Hashtable();
+					<% output.write vbCrLf 
+					For Each objColumn in objTable.Columns
+						name = GetAlias(objColumn)
+						output.write "					ht[" & name & "] = _" & TrimSpaces(objTable.Alias) & ".ColumnNames." & name & ";" & vbCrLf 
+					Next
+					%>
+				}
+				return (string)ht[propertyName];
+			}
+
+			static private Hashtable ht = null;			 
+		}			 
+		#endregion	
+
+		#region StringPropertyNames
+		public class StringPropertyNames
+		{  <% output.write vbCrLf 
+			 For Each objColumn in objTable.Columns
+	 			If Not InStr(1, objColumn.LanguageType, "[]") > 0 Then
+					name = GetAlias(objColumn)
+					output.write "            public const string " & name & " = ""s_" & name & """;" & vbCrLf 
+				End If	
+			 Next %>
+		}
+		#endregion		
+		
+		#region Properties
+	<% output.writeLn ""
+		Dim langType
+		Dim GetSet
+		Dim Array 
+				
+		For Each objColumn in objTable.Columns
+		
+			Array = ""
+			langType = objColumn.LanguageType
+			
+			If InStr(1, langType, "[]") > 0 Then
+				GetSet = Replace(langType, "[]", "")
+				' Hack, I messed up
+				If GetSet = "byte" Then
+					GetSet = "Byte"
+				End If
+				Array= "Array"
+			Else
+				GetSet = langType
+			End If			
+			
+			pname = GetName(objColumn)
+			name   = GetAlias(objColumn)		
+			
+			output.write "		public virtual " & langType & " " & name & vbCrLf 
+			output.write "	    {" & vbCrLf 
+			output.write "			get"  & vbCrLf 
+			output.write "	        {"	& vbCrLf 
+			output.write "				return base.Get" & GetSet & Array & "(ColumnNames." & name & ");" & vbCrLf 
+			output.write "			}"  & vbCrLf 
+			If (Not objColumn.DataTypeName = "timestamp" And Not objColumn.IsComputed) Or MyMeta.DbTarget = "Npgsql" Then 
+				output.write "			set"  & vbCrLf 
+				output.write "	        {"	& vbCrLf 
+				output.write "				base.Set" & GetSet & Array & "(ColumnNames." & name & ", value);" & vbCrLf 
+				output.write "			}"  & vbCrLf 
+			End If	
+			output.write "		}"  & vbCrLf & vbCrLf 
+		
+		Next
+	%>
+		#endregion
+		
+		#region String Properties
+	<% output.writeLn ""
+		For Each objColumn in objTable.Columns
+		
+			langType = objColumn.LanguageType
+			
+			If Not InStr(1, langType, "[]") > 0 Then			
+				If Not langType = "object" And Not langType = "byte[]" Then
+				
+					pname = GetName(objColumn)
+					name   = GetAlias(objColumn)		
+					
+					output.write "		public virtual string s_" & name & vbCrLf 
+					output.write "	    {" & vbCrLf 
+					output.write "			get"  & vbCrLf 
+					output.write "	        {"	& vbCrLf 
+					output.write "				return this.IsColumnNull(ColumnNames." & name & ") ? string.Empty : base.Get" & langType & "AsString(ColumnNames." & name & ");" & vbCrLf 
+					output.write "			}"  & vbCrLf 
+					If (Not objColumn.DataTypeName = "timestamp" And Not objColumn.IsComputed) Or MyMeta.DbTarget = "Npgsql" Then 
+						output.write "			set"  & vbCrLf 
+						output.write "	        {"	& vbCrLf 
+						output.write "				if(string.Empty == value)" & vbCrLf
+						output.write "					this.SetColumnNull(ColumnNames." & name & ");" & vbCrLf 
+						output.write "				else" & vbCrLf 
+						output.write "					this." & name & " = base.Set" & langType & "AsString(ColumnNames." & name & ", value);" & vbCrLf 
+						output.write "			}"  & vbCrLf 
+					End If	
+					output.write "		}"  & vbCrLf & vbCrLf 
+				
+				End If
+			End If
+		
+		Next
+	%>
+		#endregion		
+	
+		#region Where Clause
+		public class WhereClause
+		{
+			public WhereClause(BusinessEntity entity)
+			{
+				this._entity = entity;
+			}
+			
+			public TearOffWhereParameter TearOff
+			{
+				get
+				{
+					if(_tearOff == null)
+					{
+						_tearOff = new TearOffWhereParameter(this);
+					}
+
+					return _tearOff;
+				}
+			}
+
+			#region WhereParameter TearOff's
+			public class TearOffWhereParameter
+			{
+				public TearOffWhereParameter(WhereClause clause)
+				{
+					this._clause = clause;
+				}
+				
+				<% output.writeLn ""
+				For Each objColumn in objTable.Columns
+				
+					name   = GetAlias(objColumn)					
+				
+					output.write "				public WhereParameter " & name & vbCrLf 
+					output.write "				{" & vbCrLf 				
+					output.write "					get" & vbCrLf 
+					output.write "					{" & vbCrLf 		
+					output.write "							WhereParameter where = new WhereParameter(ColumnNames." & name & ", Parameters." & name & ");" & vbCrLf
+					output.write "							this._clause._entity.Query.AddWhereParameter(where);" & vbCrLf
+					output.write "							return where;" & vbCrLf
+					output.write "					}" & vbCrLf 
+					output.write "				}" & vbCrLf & vbCrLf 					
+	
+				Next
+				%>
+				private WhereClause _clause;
+			}
+			#endregion
+		<% output.writeLn ""
+			Dim fldName
+			
+			For Each objColumn in objTable.Columns
+				
+				name   = GetAlias(objColumn)		
+			
+				fldName = "_" & name & "_W"
+				
+				output.write "			public WhereParameter " & name & vbCrLf 
+				output.write "		    {" & vbCrLf 				
+				output.write "				get" & vbCrLf 
+				output.write "		        {" & vbCrLf 				
+				output.write "					if(" & fldName & " == null)" & vbCrLf 
+				output.write "	        	    {" & vbCrLf 				
+				output.write "						" & fldName & " = TearOff." & name & ";" & vbCrLf
+				output.write "					}" & vbCrLf 
+				output.write "					return " & fldName & ";" & vbCrLf 
+				output.write "				}" & vbCrLf 
+				output.write "			}" & vbCrLf & vbCrLf 
+			Next
+			
+			For Each objColumn in objTable.Columns
+				name = "_" & GetAlias(objColumn)  & "_W"
+				output.write "			private WhereParameter " & name & " = null;" & vbCrLf 
+			Next  	
+			
+			output.write vbCrLf 
+			output.write "			public void WhereClauseReset()" & vbCrLf
+			output.write "			{" & vbCrLf 		
+			For Each objColumn in objTable.Columns
+				name = "_" & GetAlias(objColumn) & "_W"
+				output.write  "				" & name & " = null;" & vbCrLf 
+			Next    	
+			
+			output.write vbCrLf
+			output.write"				this._entity.Query.FlushWhereParameters();" & vbCrLf & vbCrLf 
+			output.write"			}" & vbCrLf 
+		%>	
+			private BusinessEntity _entity;
+			private TearOffWhereParameter _tearOff;
+			
+		}
+	
+		public WhereClause Where
+		{
+			get
+			{
+				if(_whereClause == null)
+				{
+					_whereClause = new WhereClause(this);
+				}
+		
+				return _whereClause;
+			}
+		}
+		
+		private WhereClause _whereClause = null;	
+		#endregion
+	
+		#region Aggregate Clause
+		public class AggregateClause
+		{
+			public AggregateClause(BusinessEntity entity)
+			{
+				this._entity = entity;
+			}
+			
+			public TearOffAggregateParameter TearOff
+			{
+				get
+				{
+					if(_tearOff == null)
+					{
+						_tearOff = new TearOffAggregateParameter(this);
+					}
+
+					return _tearOff;
+				}
+			}
+
+			#region AggregateParameter TearOff's
+			public class TearOffAggregateParameter
+			{
+				public TearOffAggregateParameter(AggregateClause clause)
+				{
+					this._clause = clause;
+				}
+				
+				<% output.writeLn ""
+				For Each objColumn in objTable.Columns
+				
+					name   = GetAlias(objColumn)					
+				
+					output.write "				public AggregateParameter " & name & vbCrLf 
+					output.write "				{" & vbCrLf 				
+					output.write "					get" & vbCrLf 
+					output.write "					{" & vbCrLf 		
+					output.write "							AggregateParameter aggregate = new AggregateParameter(ColumnNames." & name & ", Parameters." & name & ");" & vbCrLf
+					output.write "							this._clause._entity.Query.AddAggregateParameter(aggregate);" & vbCrLf
+					output.write "							return aggregate;" & vbCrLf
+					output.write "					}" & vbCrLf 
+					output.write "				}" & vbCrLf & vbCrLf 					
+	
+				Next
+				%>
+				private AggregateClause _clause;
+			}
+			#endregion
+		<% output.writeLn ""
+			
+			For Each objColumn in objTable.Columns
+				
+				name   = GetAlias(objColumn)		
+			
+				fldName = "_" & name & "_W"
+				
+				output.write "			public AggregateParameter " & name & vbCrLf 
+				output.write "		    {" & vbCrLf 				
+				output.write "				get" & vbCrLf 
+				output.write "		        {" & vbCrLf 				
+				output.write "					if(" & fldName & " == null)" & vbCrLf 
+				output.write "	        	    {" & vbCrLf 				
+				output.write "						" & fldName & " = TearOff." & name & ";" & vbCrLf
+				output.write "					}" & vbCrLf 
+				output.write "					return " & fldName & ";" & vbCrLf 
+				output.write "				}" & vbCrLf 
+				output.write "			}" & vbCrLf & vbCrLf 
+			Next
+			
+			For Each objColumn in objTable.Columns
+				name = "_" & GetAlias(objColumn)  & "_W"
+				output.write "			private AggregateParameter " & name & " = null;" & vbCrLf 
+			Next  	
+			
+			output.write vbCrLf 
+			output.write "			public void AggregateClauseReset()" & vbCrLf
+			output.write "			{" & vbCrLf 		
+			For Each objColumn in objTable.Columns
+				name = "_" & GetAlias(objColumn) & "_W"
+				output.write  "				" & name & " = null;" & vbCrLf 
+			Next    	
+			
+			output.write vbCrLf
+			output.write"				this._entity.Query.FlushAggregateParameters();" & vbCrLf & vbCrLf 
+			output.write"			}" & vbCrLf 
+		%>	
+			private BusinessEntity _entity;
+			private TearOffAggregateParameter _tearOff;
+			
+		}
+	
+		public AggregateClause Aggregate
+		{
+			get
+			{
+				if(_aggregateClause == null)
+				{
+					_aggregateClause = new AggregateClause(this);
+				}
+		
+				return _aggregateClause;
+			}
+		}
+		
+		private AggregateClause _aggregateClause = null;	
+		#endregion
+	
+		protected override IDbCommand GetInsertCommand() 
+		{
+		<%
+			strProcName = CreateProcedureName(objTable, "I")
+		%>
+			<%= GetIDbCommand() %> cmd = new <%= GetIDbCommand() %>();
+			cmd.CommandType = CommandType.StoredProcedure;
+			cmd.CommandText = <%= strProcName %>;
+	
+			CreateParameters(cmd);
+			<% 
+			    If Not MyMeta.DbTarget = "OleDb" Then 
+					bFirst = true
+					For Each objColumn in objTable.Columns
+						If IsOutParameter(objColumn, props, true) Then
+						
+							If bFirst Then
+								output.writeLn ""
+								output.write "			" & IDataParameter & " p;" & vbCrLf
+							End If
+							bFirst = false
+							
+							name   = GetAlias(objColumn)
+							output.write "			p = cmd.Parameters[Parameters." & name & ".ParameterName];"  & vbCrLf
+							If MyMeta.DbTarget = "FirebirdSql" Then
+								output.write "			p.Direction = ParameterDirection.InputOutput;" & vbCrLf
+							Else
+								output.write "			p.Direction = ParameterDirection.Output;" & vbCrLf
+							End If
+						End If
+					Next 
+				End If 
+				
+				%>    
+			return cmd;
+		}
+	
+		protected override IDbCommand GetUpdateCommand()
+		{
+		<%
+			strProcName = CreateProcedureName(objTable, "U")
+		%>
+			<%= IDbCommand %> cmd = new <%= IDbCommand %>();
+			cmd.CommandType = CommandType.StoredProcedure;
+			cmd.CommandText = <%= strProcName %>;
+	
+			CreateParameters(cmd);
+			<% 
+			    If Not MyMeta.DbTarget = "OleDb" Then
+					bFirst = true
+					For Each objColumn in objTable.Columns
+						If IsOutParameter(objColumn, props, false) Then
+						
+							If bFirst Then
+								output.writeLn ""
+								output.write "			" & IDataParameter & " p;" & vbCrLf
+							End If
+							bFirst = false
+							
+							name   = GetAlias(objColumn)
+							output.write "			p = cmd.Parameters[Parameters." & name & ".ParameterName];"  & vbCrLf	
+							
+							Select Case MyMeta.DbTarget 
+								Case "OleDb"
+									output.write "			p.Direction = ParameterDirection.Output;" & vbCrLf
+								Case "SqlClient"
+								
+									If objColumn.DataTypeName = "timestamp" Then 
+										output.write "			p.Direction = ParameterDirection.InputOutput;" & vbCrLf
+									Else
+										output.write "			p.Direction = ParameterDirection.Output;" & vbCrLf
+									End If
+								Case "OracleClient"
+									output.write "			p.Direction = ParameterDirection.Output;" & vbCrLf
+								Case "FirebirdSql"
+									output.write "			p.Direction = ParameterDirection.InputOutput;" & vbCrLf	
+							End Select
+						End If
+					Next 
+				End If %>      
+			return cmd;
+		}
+	
+		protected override IDbCommand GetDeleteCommand()
+		{
+		<%
+			strProcName = CreateProcedureName(objTable, "D")
+		%>
+			<%= IDbCommand %> cmd = new <%= IDbCommand %>();
+			cmd.CommandType = CommandType.StoredProcedure;
+			cmd.CommandText = <%= strProcName %>;
+	
+			<%= IDataParameter %> p;<% output.write vbCrLf
+				For Each objColumn in objTable.PrimaryKeys
+					
+					name = GetAlias(objColumn)
+									
+					output.write "			p = cmd.Parameters.Add(Parameters." & name & ");" & vbCrLf
+					output.write "			p.SourceColumn = ColumnNames." & name & ";" & vbCrLf
+					output.write "			p.SourceVersion = DataRowVersion.Current;" & vbCrLf & vbCrLf
+				Next
+			%>  
+			return cmd;
+		}
+		
+		private IDbCommand CreateParameters(<%= IDbCommand %> cmd)
+		{
+			<%= IDataParameter %> p;
+		<% output.write vbCrLf
+			'================================================================
+			'  We're going to treat loop through and add the SqlParameters to our SqlCommand
+			'================================================================
+			For Each objColumn in objTable.Columns
+				name = GetAlias(objColumn)
+				output.write "			p = cmd.Parameters.Add(Parameters." & name & ");" & vbCrLf
+				output.write "			p.SourceColumn = ColumnNames." & name & ";" & vbCrLf
+				output.write "			p.SourceVersion = DataRowVersion.Current;" & vbCrLf & vbCrLf
+			Next
+		%>
+			return cmd;
+		}
+	}
+}
+<% 
+	' Save the output file for this Table
+	Dim filename
+	filename = input.item("txtPath")
+
+	Dim length
+	Dim pos
+	length = Len(filename)
+	pos = InStrRev(filename, "\") 
+
+	If Not pos = length Then
+		filename = filename & "\"
+	End If
+	
+	If prefix = True Then 
+		If trimName = True Then
+			filename = filename & "_" & TrimSpaces(objTable.Alias) & ".cs"
+		Else
+			filename = filename & "_" & objTable.Alias & ".cs"
+		End If
+	Else 
+		If trimName = True Then
+			filename = filename & TrimSpaces(objTable.Alias) & ".cs"
+		Else
+			filename = filename & objTable.Alias & ".cs"
+		End If
+	End If
+
+	output.save filename, false
+	buffer = buffer & output.text
+	output.clear
+Next '  tableName
+	
+	output.write buffer
+ %>
+
+<% 
+'===========================================================================
+' These are support routines called by the above scirpt
+'===========================================================================
+Function GetAlias(objColumn)
+	Dim name
+	name = TrimSpaces(objColumn.Alias)
+	GetAlias = UCase(Left(name, 1)) & Right(name, Len(name) -1)
+End Function
+
+Function GetName(objColumn)
+	Dim name
+	name = objColumn.Name
+	GetName = UCase(Left(name, 1)) & Right(name, Len(name) -1)
+End Function
+
+Function IsOutParameter(objColumn, props, isInsert) 
+	Dim isOut
+	isOut = false
+
+	If (isInsert AND objColumn.IsAutoKey) Or objColumn.IsComputed Then	
+		isOut = true
+	End If
+	
+   ' We also must check this, this is not an Else to the above If
+   ' This is how can also indicate indicate Sequenced Columns
+	If Not isOut AND props.Count > 0  Then
+		If isInsert Then
+			If props.ContainsKey("SEQ:I:" & objColumn.Name) Or _
+			   props.ContainsKey("GEN:I:" & objColumn.Name) Or _
+			   props.ContainsKey("GEN:I:T:" & objColumn.Name) Then
+				isOut = true
+			End If
+		Else
+			If props.ContainsKey("SEQ:U:" & objColumn.Name) Or _
+			   props.ContainsKey("GEN:U:" & objColumn.Name) Or _
+			   props.ContainsKey("GEN:U:T:" & objColumn.Name) Then
+				isOut = true
+			End If
+		End If
+	End If
+	
+	IsOutParameter = isOut
+End Function
+
+Function TrimSpaces(str)
+
+	Dim tname
+	Dim name
+	Dim char
+	Dim l
+
+	name = ""
+	tname = str
+	l = Len(tname)
+
+	For j = 1 To l
+		char = Mid(tname, j, 1)
+		If Not char = " " And Not Char = "." Then
+			name = name & char
+		End If
+	Next
+
+	TrimSpaces = name
+End Function
+
+Function GetIDataParameter
+
+	Select Case MyMeta.DbTarget 
+		Case "OleDb"
+			GetIDataParameter = "OleDbParameter"
+		Case "SqlClient"
+			GetIDataParameter = "SqlParameter"
+		Case "OracleClient"
+			GetIDataParameter = "OracleParameter"
+		Case "FirebirdSql"
+			GetIDataParameter = "FbParameter"
+		Case "Npgsql"
+			GetIDataParameter = "NpgsqlParameter"	
+		Case "Advantage.Net"
+			GetIDataParameter = "AdsParameter"		
+	End Select
+
+End Function
+
+Function GetParameterPrefix
+
+	Select Case MyMeta.DbTarget 
+		Case "OleDb"
+			GetParameterPrefix = "@"
+		Case "SqlClient"
+			GetParameterPrefix = "@"
+		Case "OracleClient"
+			GetParameterPrefix = "p_"
+		Case "FirebirdSql"
+			GetParameterPrefix = "@"
+		Case "Npgsql"
+			GetParameterPrefix = ""		
+		Case "Advantage.Net"
+			GetParameterPrefix = ""			
+	End Select
+
+End Function
+
+Function GetIDbCommand
+
+	Select Case MyMeta.DbTarget 
+		Case "OleDb"
+			GetIDbCommand = "OleDbCommand"
+		Case "SqlClient"
+			GetIDbCommand = "SqlCommand"
+		Case "OracleClient"
+			GetIDbCommand = "OracleCommand"	
+		Case "FirebirdSql"
+			GetIDbCommand = "FbCommand"	
+		Case "Npgsql"
+			GetIDbCommand = "NpgsqlCommand"		
+		Case "Advantage.Net"
+			GetIDbCommand = "AdsCommand"
+	End Select
+
+End Function
+
+Function GetDataNameSpace
+
+	Select Case MyMeta.DbTarget 
+		Case "OleDb"
+			GetDataNameSpace = "System.Data.OleDb"
+		Case "SqlClient"
+			GetDataNameSpace = "System.Data.SqlClient"
+		Case "OracleClient"	
+			GetDataNameSpace = "System.Data.OracleClient"
+		Case "FirebirdSql"	
+			GetDataNameSpace = "FirebirdSql.Data.Firebird"
+		Case "Npgsql"
+			GetDataNameSpace = "Npgsql"
+		Case "Advantage.Net"
+			GetDataNameSpace = "Advantage.Data.Provider"		
+	End Select
+
+End Function
+
+Function CreateProcedureName(objTable, suffix)
+
+	Dim bFirst
+    Dim str 
+	
+	bFirst = true
+	
+	Select Case MyMeta.DbTarget 
+		Case "OleDb"
+			Select Case suffix
+				Case "L"
+					str = "LoadAll"
+				Case "K"
+					str = "LoadByPrimaryKey"
+				Case "U"
+					str ="Update"
+				Case "I"
+					str = "Insert"
+				Case "D"
+					str = "Delete"
+			End Select		
+			CreateProcedureName = """["" + this.SchemaStoredProcedure + ""proc_" & objTable.Name &  str & "]"""		
+		Case "SqlClient"	
+			Select Case suffix
+				Case "L"
+					str = "LoadAll"
+				Case "K"
+					str = "LoadByPrimaryKey"
+				Case "U"
+					str ="Update"
+				Case "I"
+					str = "Insert"
+				Case "D"
+					str = "Delete"
+			End Select
+			CreateProcedureName = """["" + this.SchemaStoredProcedure + ""proc_" & objTable.Name &  str & "]"""		
+		Case "OracleClient"	
+			CreateProcedureName = "this.SchemaStoredProcedure + " + """P" & suffix & "_" & objTable.Name & """"
+		Case "FirebirdSql"	
+			Select Case suffix
+				Case "L"
+					CreateProcedureName = FirebirdSP(false, "PL_" + objTable.Name, false, 0)				
+				Case "K"
+					CreateProcedureName = FirebirdSP(false, "PK_" + objTable.Name, false, 0)
+				Case "U"
+					CreateProcedureName = FirebirdSP(true, "PU_" + objTable.Name, true, 0)				
+				Case "I"
+					CreateProcedureName = FirebirdSP(true, "PI_" + objTable.Name, true, 0)				
+				Case "D"
+					CreateProcedureName = FirebirdSP(true, "PD_" + objTable.Name, true, objTable.PrimaryKeys.Count)				
+			End Select
+		Case "Npgsql"	
+			Select Case suffix
+				Case "L"
+					str = "_load_all"
+				Case "K"
+					str = "_load_by_primarykey"
+				Case "U"
+					str = "_update"
+				Case "I"
+					str = "_insert"
+				Case "D"
+					str = "_delete"
+			End Select
+			CreateProcedureName = "this.SchemaStoredProcedure + """ & objTable.Name & str & """"			
+		Case "Advantage.Net"	
+			Select Case suffix
+				Case "L"
+					str = "LoadAll"
+				Case "K"
+					str = "LoadByPrimaryKey"
+				Case "U"
+					str ="Update"
+				Case "I"
+					str = "Insert"
+				Case "D"
+					str = "Delete"
+			End Select
+			CreateProcedureName = """["" + this.SchemaStoredProcedure + ""proc_" & objTable.Name &  str & "]"""						
+	End Select
+
+End Function
+
+'==================================================================
+' This function accounts for Firebird Dialects and Driver Versions
+'==================================================================
+Function FirebirdSP(execPrefix, strName, withParams, hardCodedParamCount)
+
+    Dim bFirst
+    Dim strText
+	
+	bFirst = true
+	
+	If execPrefix = true Then
+		strText = """EXECUTE PROCEDURE "
+	Else
+		strText = """"	
+	End If
+	
+    If dialect = 3 Then
+		strText = strText + UCase(strName) 
+	Else
+		strText = strText + strName
+	End If
+	
+	If withParams = true Then
+	
+		strText = strText + " ("
+		
+		If hardCodedParamCount > 0 Then
+			For i = 1 To hardCodedParamCount
+				If Not bFirst Then
+					strText = strText + ","
+				End If
+				bFirst = false
+				strText = strText + "?"			
+			Next 
+			strText = strText + ")"""			
+		Else
+			For Each objColumn in objTable.Columns
+				If Not bFirst Then
+					strText = strText + ","
+				End If
+				bFirst = false
+				strText = strText + "?"
+			Next 
+			strText = strText + ")"""
+		End If
+		
+	Else
+		strText = strText + """"
+	End If
+
+	FirebirdSP = strText
+	
+End Function
+
+Function GetBaseClass
+
+	Select Case MyMeta.DbTarget 
+		Case "OleDb"
+			GetBaseClass = "OleDbEntity"
+		Case "SqlClient"
+			GetBaseClass = "SqlClientEntity"
+		Case "OracleClient"	
+			GetBaseClass = "OracleClientEntity"
+		Case "FirebirdSql"	
+			GetBaseClass = "FirebirdSqlEntity"
+		Case "Npgsql"
+			GetBaseClass = "PostgreSqlEntity"
+		Case "Advantage.Net"
+			GetBaseClass = "AdvantageSqlEntity"			
+	End Select
+	
+End Function
+
+%>
+##|BODY_END

@@ -1,0 +1,659 @@
+﻿##|TYPE Template
+##|UNIQUEID 4667C0C2-03B5-4a58-A294-A66485DE29DC
+##|TITLE VB.NET SQL Business Object
+##|NAMESPACE Samples.Deprecated.VbNet
+##|OUTPUT_LANGUAGE VB.Net
+##|COMMENTS_BEGIN
+see dOOdads
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstTables
+
+Sub setup()
+
+	If Not input.Contains("lstTables") Or Not input.Contains("txtPath") Then
+
+		ui.Title = "Generate VB.NET Business Objects"
+		ui.Width  = 330
+		ui.Height = 430
+
+		' Grab default output path
+		Dim sOutputPath
+		sOutputPath = ""
+		If input.Contains("defaultOutputPath") Then 
+			sOutputPath = input.Item("defaultOutputPath")
+		End If
+
+		ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+		ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+		ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+
+		' List Databases in a ComboBox
+		ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+		Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+
+		' List Tables in a listbox
+		ui.AddLabel "lblTables", "Select tables:", "Select tables from the listbox below."
+		Set lstTables = ui.AddListBox ("lstTables", "Select tables:")
+		'lstTables.IsMultiSelect = false
+		lstTables.Height = 120
+
+		ui.AddLabel "lblLanguage", "Select a language:", "Select a Language for Column Mappings."
+		Set cmbLanguages = ui.AddComboBox("cmbLanguages", "Select a Language.")
+		cmbLanguages.Item("VB.NET")              = "VB.NET"
+		cmbLanguages.Item("VB.NET System Types") = "VB.NET System Types"
+		cmbLanguages.SelectedValue = "VB.NET"
+
+		' Attach the onchange event to the cmbDatabases control.
+		setupDatabaseDropdown cmbDatabases
+		cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+		
+		ui.ShowGUI = true
+	Else 
+		ui.ShowGUI = false
+	End if
+
+End Sub
+
+Sub setupDatabaseDropdown(cmbDatabases)
+	cmbDatabases.BindData MyMeta.Databases
+
+	If IsObject(MyMeta.DefaultDatabase) Then
+		cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindTables cmbDatabases.SelectedValue
+	End If
+End Sub
+
+Sub bindTables(sDatabase)
+	Set db = MyMeta.Databases(sDatabase)
+	lstTables.BindData(db.Tables)
+End Sub
+
+' Event Handler
+Sub cmbDatabases_onchange(control)
+	Set cmbDatabases = ui.item("cmbDatabase")
+	bindTables cmbDatabases.SelectedText
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'------------------------------------------------------------------------------
+' VbNet_SQL_BusinessObject.vbgen
+' Last Update : 4/10/2004
+'
+' DEPRECATED !! DEPRECATED !! DEPRECATED !! DEPRECATED !! DEPRECATED !! 
+' DEPRECATED !! DEPRECATED !! DEPRECATED !! DEPRECATED !! DEPRECATED !!
+' DEPRECATED !! DEPRECATED !! DEPRECATED !! DEPRECATED !! DEPRECATED !! 
+'
+' THIS SAMPLE TEMPLATE, ALTHOUGH IT WORKS, HAS BEEN SURPASSED BY dOOdad templates
+'
+' *** WARNING ***
+' Be sure to rename this template if you plan to customize it, MyGeneration 
+' Software will update this sample over time.
+' *** WARNING ***
+'------------------------------------------------------------------------------
+Dim bFirst
+Dim name
+Dim pname
+Dim objTable
+Dim objColumn
+Dim tableNames
+Dim language
+Dim databaseName
+Dim database
+Dim namespace
+
+' Set the Language for our column data types
+MyMeta.Language = input.Item("cmbLanguages")
+MyMeta.DbTarget  = "SqlClient"
+
+' Grab the choices the user made in our UI Script (see Interface Code tab)
+Set tableNames = input.Item("lstTables")
+
+databaseName  = input.Item("cmbDatabase")
+Set database = MyMeta.Databases(databaseName)
+
+' Loop through the tables the user select and generate the stored procs and save them to disk
+For intLp = 0 To tableNames.Count - 1
+
+	Set objTable = database.Tables(tablenames.item(intLp))
+
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+' Now we have the table that we desire to build a Business Object From, let us begin.
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%>
+'===============================================================================
+'  ** IMPORTANT  ** 
+'
+'  Use 'SQL_StoredProcs.vbgen' to generate the stored procs for your table.
+'  
+'  This object is 'Mustnherit' which means you need to inherit from it to be able to instantiate it.  This is very
+'  easilly done. You can Override properties and methods in your derived class, this allows you to regenerate
+'  this class at any time and not worry about overwriting custom code. (see below).
+'
+'  Also, this object is not meant to be all consuming, without shipping an accompanying architecture this is a pretty good
+'  sample and can be used as is or taken and further customized, for instance, if you access a field that is dbNull an
+'  exception will be thrown, it would be better to return say "String.Empty".  Nonetheless, this object is fully function.
+'  ** IMPORTANT  ** 
+'
+'  Public Class YourObject
+'    Inherits _YourObject
+'
+'  End Class
+'
+' ============= Adding a Record =================
+'
+'  Dim newObj As New YourObject
+'  newObj.ConnectionString = "Server=localhost;Database=Northwind;UID=sa;PWD=;"
+'  newObj.AddNew()
+'
+'  ' Your Properties will be different here
+'  newObj.EmployeeID = 9000
+'  newObj.FirstName = "Joe"
+'  newObj.LastName = "Plank"
+'
+'  newObj.Save()
+'
+' ============= Updating A Record  =================
+'
+'  Dim obj As New YourObject
+'  obj.ConnectionString = "Server=localhost;Database=Northwind;UID=sa;PWD=;"
+'  If obj.LoadByPrimaryKey(10) Then
+'  	newObj.LastName = "Plank"
+'  newObj.Save()
+'
+'
+' ============= Interating through Records  =================
+'
+'  Dim obj As New YourObject
+'  obj.ConnectionString = "Server=localhost;Database=Northwind;UID=sa;PWD=;"
+'  If o.LoadAll() Then
+'  	obj.Rewind()
+'  	While obj.MoveNext
+'      		Console.WriteLine(obj.FirstName)
+'  	End While
+'  End If
+'===============================================================================
+
+Imports System
+Imports System.Data
+Imports System.Data.SqlClient
+Imports System.Collections
+
+Public MustInherit Class <%= "_" & TrimSpaces(objTable.Alias) %>
+
+	Private dataTable as DataTable = New DataTable
+	Private currentRow as DataRow = Nothing
+	Private enumerator As IEnumerator = Nothing
+
+	Public ConnectionString as String = ""
+
+	Public Sub New()
+
+	End Sub
+
+	'=================================================================
+	'  Public Overridable Sub AddNew()
+	'=================================================================
+	'  Adds a new record to our DataTable, if we haven't loaded any data yet the table has no
+	'  structure, so, we do a little trick to get the column by doing a SELECT against the 
+	'  table using "WHERE 1=0" which will bring back no data but our DataColumns and 
+	'  other information are filled out for us.
+	'=================================================================
+	Public Overridable Sub AddNew()
+
+		If dataTable.Rows.Count = 0  Then
+			Dim cmd As SqlCommand = New SqlCommand
+			cmd.Connection = New SqlConnection(Me.ConnectionString)
+			cmd.CommandType = CommandType.Text
+			cmd.CommandText = <% output.write """SELECT * FROM [" & objTable.Alias & "] WHERE 1=0""" %> 
+
+			Dim dataAdapter As New SqlDataAdapter
+			dataAdapter.SelectCommand=  cmd
+			dataAdapter.Fill(dataTable)
+		End If
+
+		currentRow = dataTable.NewRow()
+		dataTable.Rows.Add(currentRow)
+
+	End Sub
+
+	'=================================================================
+	'  	Public Function LoadAll() As Boolean
+	'=================================================================
+	'  Loads all of the records in the database, and sets the currentRow to the first row
+	'=================================================================
+	Public Overridable Function LoadAll() As Boolean
+
+		Dim success as Boolean = False
+
+		Dim dataAdapter As New SqlDataAdapter(<% output.write """[proc_" & objTable.Alias & "LoadAll]""" %>, Me.ConnectionString)
+		dataAdapter.Fill(dataTable)
+
+		If dataTable.Rows.Count > 0 Then
+			currentRow = dataTable.Rows(0)
+			success = True
+		End If
+
+		Return success
+
+	End Function
+
+	'=================================================================
+	' Public Overridable Function LoadByPrimaryKey()  As Boolean
+	'=================================================================
+	'  Loads a single row of via the primary key
+	'=================================================================
+	Public Overridable Function LoadByPrimaryKey(<%
+		bFirst = true
+		For Each objColumn in objTable.PrimaryKeys
+
+			If Not bFirst Then
+				output.write ", "
+			End If
+
+			output.write "ByVal " & GetAlias(objColumn) & " As " & objColumn.LanguageType
+
+			bFirst = false
+		Next 
+		output.write ") As Boolean" & vbCrLf
+		%>
+		Dim success as Boolean = False
+
+		Dim cmd As SqlCommand = New SqlCommand
+		cmd.Connection = New SqlConnection(Me.ConnectionString)
+		cmd.CommandType = CommandType.StoredProcedure   
+		cmd.CommandText = <% output.write """[proc_" & objTable.Alias & "LoadByPrimaryKey]""" %> 
+
+		<%
+			If objTable.PrimaryKeys.Count > 0 Then
+				output.write "Dim p As SqlParameter" & vbCrLf & vbCrLf
+
+				For Each objColumn in objTable.PrimaryKeys
+
+					name = GetAlias(objColumn)
+
+					output.writeLn "        p = Parameters." & name
+					output.writeLn "        p.Value = " & name
+					output.writeLn "        cmd.Parameters.Add(p)"
+
+				Next
+			End If
+		%>
+		Dim dataAdapter As New SqlDataAdapter()
+		dataAdapter.SelectCommand = cmd
+		dataAdapter.Fill(dataTable)
+
+		If dataTable.Rows.Count > 0 Then
+			currentRow = dataTable.Rows(0)
+			success = True
+		End If
+
+		Return success
+
+	End Function
+
+	'=================================================================
+	'  Public Overridable Sub Save()
+	'=================================================================
+	'  Saves all changes, including Inserts, Deletes, and Updates. All Computed Columns and
+	'  AutoKeys are updated and ready for access immediately after your call to Save()
+	'=================================================================
+	Public Overridable Sub Save()
+
+		Dim inserts As Boolean = False
+		Dim updates As Boolean = False
+		Dim deletes As Boolean = False
+
+		If DataTable.Rows.Count 
+		  Dim row as DataRow
+		  ' Do we have any data to save
+		  For Each row In dataTable.Rows
+			Select Case row.RowState
+			  Case DataRowState.Added
+				inserts = True
+			  Case DataRowState.Modified
+				updates = True
+			  Case DataRowState.Deleted
+				deletes = True
+			End Select
+		  Next	
+		End If
+
+		Dim dataAdapter As New SqlDataAdapter
+        If inserts = True Then
+            dataAdapter.InsertCommand = Me.CreateInsertCommand()
+            dataAdapter.InsertCommand.Connection = New SqlConnection(Me.ConnectionString)
+        End If
+
+        If updates = True Then
+            dataAdapter.UpdateCommand = Me.CreateUpdateCommand()
+            dataAdapter.UpdateCommand.Connection = New SqlConnection(Me.ConnectionString)
+        End If
+
+        If deletes = True Then
+            dataAdapter.DeleteCommand = Me.CreateDeleteCommand()
+            dataAdapter.DeleteCommand.Connection = New SqlConnection(Me.ConnectionString)
+        End If
+
+        dataAdapter.Update(dataTable)
+	
+	End Sub
+
+	'=================================================================
+	'  Public Overridable Sub DeleteCurrentRow()
+	'=================================================================
+	'  NOTE: The most important thing to remember about this method is that it only marks
+	'  the record for deletion, you must still call Save() to actually delete it.
+	'=================================================================
+	Public Overridable Sub DeleteCurrentRow()
+
+		If Not currentRow Is Nothing Then
+			currentRow.Delete()
+		End If
+
+	End Sub
+
+	'=================================================================
+	'  Public Function RowState() As DataRowState
+	'=================================================================
+	'  This will return the actual DataRowState such as Added, Deleted, Modified
+	'=================================================================
+	Public Function RowState() As DataRowState
+	
+		If Not dataTable Is Nothing AndAlso Not currentRow Is Nothing Then
+		  Return currentRow.RowState
+		Else
+		  Return DataRowState.Detached
+		End If
+	
+	End Function
+	
+	'=================================================================
+	'  	Public ReadOnly Property RowCount() As Integer
+	'=================================================================
+	'  The number of rows in the object
+	'=================================================================
+	Public ReadOnly Property RowCount() As Integer
+		Get
+		  Dim count As Integer = 0
+		
+		  If Not dataTable Is Nothing Then
+			count = dataTable.DefaultView.Count()
+		  End If
+		
+		  Return count
+		End Get
+	End Property
+	
+	'=================================================================
+	'  Public Sub Rewind()
+	'=================================================================
+	'  This resets the iteraton, you should call this before you call MoveNext().
+	'=================================================================
+	Public Sub Rewind()
+	
+		currentRow = Nothing
+		enumerator = Nothing
+		
+		If Not dataTable Is Nothing Then
+		  If (dataTable.DefaultView.Count > 0) Then
+		
+			enumerator = dataTable.DefaultView.GetEnumerator()
+			enumerator.MoveNext()
+			Dim rowView As DataRowView = CType(enumerator.Current, DataRowView)
+			currentRow = rowView.Row
+		
+		  End If
+		End If
+	
+	End Sub
+	
+	'=================================================================
+	'  Public Function MoveNext() As Boolean
+	'=================================================================
+	'  This Moves the current row pointer to the next row and returns false if it has reached the
+	'  end
+	'=================================================================
+	Public Function MoveNext() As Boolean
+	
+		Dim moved As Boolean = False
+		
+		If Not enumerator Is Nothing AndAlso enumerator.MoveNext() Then
+		  Dim rowView As DataRowView = CType(enumerator.Current, DataRowView)
+		  currentRow = rowView.Row
+		  moved = True
+		End If
+		
+		Return moved
+	
+	End Function
+
+
+	#Region "Parameters"
+	Protected class Parameters 
+		<% For Each objColumn in objTable.Columns 
+		   pname = GetName(objColumn)
+		    name = GetAlias(objColumn)
+		%>
+		Public Shared ReadOnly Property <%= name %> As SqlParameter
+			Get
+				Return New SqlParameter("@<% output.write TrimSpaces(pname) & """, " & objColumn.DbTargetType
+				if(objColumn.CharacterMaxLength > 0) Then
+					output.write ", " & objColumn.CharacterMaxLength
+				Else
+					output.write ", 0"
+				End If
+				output.write ")" %>
+			End Get
+		End Property
+		<% Next %>
+	End Class
+	#End Region	
+
+	#Region "ColumnNames"
+	Public class ColumnNames
+		<% For Each objColumn in objTable.Columns
+		   pname = GetName(objColumn)
+            name = GetAlias(objColumn)
+			output.write "        Public Const " & name & " As String = """ & pname & """" & vbCrLf 
+		 Next %>
+	End Class
+	#End Region	
+
+	'=================================================================
+	'  Properties Generated from the Table                        
+	'=================================================================
+	<%
+	Dim readOnly
+	For Each objColumn in objTable.Columns
+		name = GetAlias(objColumn)
+		If objColumn.DataTypeName = "timestamp" Or objColumn.IsComputed Or objColumn.IsAutoKey Then readOnly = "ReadOnly " Else readOnly = "" End if
+    %>
+	Public Overridable <%= readOnly %>Property <%= name %> As <%= objColumn.LanguageType %>
+		Get
+			Return CType(currentRow(ColumnNames.<%= name %>), <%= objColumn.LanguageType %>)
+		End Get
+		<% If Not objColumn.DataTypeName = "timestamp" And Not objColumn.IsComputed And Not objColumn.IsAutoKey Then %>
+		Set(ByVal Value as <%= objColumn.LanguageType %>)
+			currentRow(ColumnNames.<%= name %>) = Value
+		End Set	<% End If %>
+	End Property
+	<%
+	Next
+	%>
+
+	Protected Function CreateInsertCommand() As SqlCommand
+	<%
+		strProcName = "[proc_" & objTable.Alias & "Insert]"
+	%>
+		Dim cmd As SqlCommand = CreateParameters()
+		cmd.CommandText = <%output.write """" & strProcName & """" %> 
+
+	<%
+		'================================================================
+		'  We're going to treat loop through and add the SqlParameters to our SqlCommand
+		'================================================================
+		For Each objColumn in objTable.Columns
+			' AutoKeys and IsComputed Columns need to be returned, so we set them as output
+			If objColumn.IsAutoKey Or objColumn.IsComputed Then
+				name = GetName(objColumn)
+				output.write "    cmd.Parameters(""@" & name & """).Direction = ParameterDirection.Output" & vbCrLf
+			End If
+		Next
+	%>
+		Return cmd
+
+	End Function
+
+	Protected Function CreateUpdateCommand() As SqlCommand
+	<%
+		strProcName = "[proc_" & objTable.Alias & "Update]"
+	%>
+		Dim cmd As SqlCommand = CreateParameters()
+		cmd.CommandText = <%output.write """" & strProcName & """" %> 
+
+	<%
+		'================================================================
+		'  We're going to treat loop through and add the SqlParameters to our SqlCommand
+		'================================================================
+		For Each objColumn in objTable.Columns
+
+			' AutoKeys and IsComputed Columns need to be returned, so we set them as output
+			If objColumn.IsComputed Then
+				name = GetName(objColumn)
+				output.write "    cmd.Parameters(""@" & name & """).Direction = ParameterDirection.Output" & vbCrLf
+			End If
+
+		Next
+	%>
+		Return cmd
+
+	End Function
+
+	Protected Function CreateDeleteCommand() As SqlCommand
+	<%
+		strProcName = "[proc_" & objTable.Alias & "Delete]"
+	%>
+		Dim cmd As SqlCommand = New SqlCommand()
+		cmd.CommandType = CommandType.StoredProcedure
+		cmd.CommandText = <%output.write """" & strProcName & """" %> 
+
+		Dim p as SqlParameter
+	<%
+		'================================================================
+		'  We're going to treat loop through and add the SqlParameters to our SqlCommand
+		'================================================================
+		For Each objColumn in objTable.Columns
+
+			' AutoKeys and IsComputed Columns need to be returned, so we set them as output
+			If objColumn.IsAutoKey Then
+			    name = GetAlias(objColumn)
+				output.write "        p = cmd.Parameters.Add(Parameters." & name & ")" & vbCrLf
+				output.write "        p.SourceColumn = """ & GetName(objColumn) & """" & vbCrLf
+				output.write "        p.SourceVersion = DataRowVersion.Current" & vbCrLf & vbCrLf
+			End If
+
+		Next
+	%>
+		Return cmd
+
+	End Function
+
+	Protected Function CreateParameters() As SqlCommand
+
+		Dim p as SqlParameter
+
+		Dim cmd As SqlCommand = New SqlCommand()
+		cmd.CommandType = CommandType.StoredProcedure    
+
+		'  Add params
+	<%
+		'================================================================
+		'  We're going to treat loop through and add the SqlParameters to our SqlCommand
+		'================================================================
+		For Each objColumn in objTable.Columns
+
+			name = GetAlias(objColumn)
+			output.write "        p = cmd.Parameters.Add(Parameters." & name & ")" & vbCrLf
+			output.write "        p.SourceColumn = """ & GetName(objColumn) & """" & vbCrLf
+			output.write "        p.SourceVersion = DataRowVersion.Current" & vbCrLf & vbCrLf
+
+		Next
+	%>
+	Return cmd
+
+	End Function
+
+End Class
+<% 
+	' Save the output file for this Table
+	Dim filename
+	filename = input.item("txtPath")
+
+	Dim length
+	Dim pos
+	lenth = Len(filename)
+	pos = InStrRev(filename, "\") 
+
+	If Not pos = lenth Then
+		filename = filename & "\"
+	End If
+
+	filename = filename & objTable.Alias & ".vb"
+
+	output.save filename, false
+	buffer = buffer & output.text
+	output.clear
+Next '  tableName
+	
+	output.write buffer
+ %>
+
+<% 
+'===========================================================================
+' These are support routines called by the above scirpt
+'===========================================================================
+Function GetAlias(objColumn)
+	Dim name
+	name = TrimSpaces(objColumn.Alias)
+	GetAlias = UCase(Left(name, 1)) & Right(name, Len(name) -1)
+End Function
+
+Function GetName(objColumn)
+	Dim name
+	name = objColumn.Name
+	GetName = UCase(Left(name, 1)) & Right(name, Len(name) -1)
+End Function
+
+Function TrimSpaces(str)
+
+	Dim tname
+	Dim name
+	Dim char
+	Dim l
+
+	name = ""
+	tname = str
+	l = Len(tname)
+
+	For j = 1 To l
+		char = Mid(tname, j, 1)
+		If Not char = " " Then
+			name = name & char
+		End If
+	Next
+
+	TrimSpaces = name
+End Function
+
+%>
+##|BODY_END

@@ -1,0 +1,1 @@
+using System;namespace Zeus.UserInterface{	public interface IGuiTextBox : IGuiControl	{		string Text { get; set; }		bool WordWrap { get; set; }		bool Multiline { get; set; }		bool VerticalScroll { get; set; }		bool HorizontalScroll { get; set; }	}}

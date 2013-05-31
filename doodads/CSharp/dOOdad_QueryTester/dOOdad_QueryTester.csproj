@@ -1,0 +1,32 @@
+<VisualStudioProject xmlns:convtool="urn:convtool">
+  <CSHARP ProjectType="Local" ProductVersion="7.10.3077" SchemaVersion="2.0" ProjectGuid="">
+    <Build>
+      <Settings ApplicationIcon="" AssemblyKeyContainerName="" AssemblyName="dOOdad_QueryTester" AssemblyOriginatorKeyFile="" DefaultClientScript="JScript" DefaultHTMLPageLayout="Grid" DefaultTargetSchema="IE50" DelaySign="false" OutputType="WinExe" PreBuildEvent="" PostBuildEvent="" RootNamespace="dOOdad_QueryTester" RunPostBuildEvent="OnBuildSuccess" StartupObject="">
+        <Config Name="Debug" AllowUnsafeBlocks="False" BaseAddress="285212672" CheckForOverflowUnderflow="True" ConfigurationOverrideFile="" DefineConstants="" DocumentationFile="" DebugSymbols="True" FileAlignment="4096" IncrementalBuild="false" NoStdLib="False" NoWarn="" Optimize="False" OutputPath=".\bin\Debug" RegisterForComInterop="false" RemoveIntegerChecks="false" TreatWarningsAsErrors="False" WarningLevel="4" />
+        <Config Name="Release" AllowUnsafeBlocks="False" BaseAddress="285212672" CheckForOverflowUnderflow="False" ConfigurationOverrideFile="" DefineConstants="" DocumentationFile="" DebugSymbols="False" FileAlignment="4096" IncrementalBuild="false" NoStdLib="False" NoWarn="" Optimize="True" OutputPath=".\bin\Release" RegisterForComInterop="false" RemoveIntegerChecks="false" TreatWarningsAsErrors="False" WarningLevel="4" />
+      </Settings>
+      <References>
+        <Reference Name="System" AssemblyName="System" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll" />
+        <Reference Name="System.Data" AssemblyName="System.Data" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll" />
+        <Reference Name="System.XML" AssemblyName="System.Xml" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll" />
+        <Reference Name="System.Drawing" AssemblyName="System.Drawing" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll" />
+        <Reference Name="System.Windows.Forms" AssemblyName="System.Windows.Forms" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Windows.Forms.dll" />
+        <Reference Name="MyGeneration.dOOdads" Project="{04C2E8E6-CD2C-4D7A-85A5-54CB71DDFEA2}" Package="{8ED1D948-5D5D-4682-B15F-6606E28F3760}" />
+      </References>
+    </Build>
+    <Files>
+      <Include>
+        <File RelPath="MainForm.cs" BuildAction="Compile" />
+        <File RelPath="About.cs" BuildAction="Compile" />
+        <File RelPath="AssemblyInfo.cs" BuildAction="Compile" />
+        <File RelPath="App.config" BuildAction="Nothing" />
+        <File RelPath="dOOdad_QueryTester.MainForm.resources" BuildAction="EmbeddedResource" />
+        <File RelPath="README.TXT" BuildAction="Nothing" />
+        <File RelPath="Products.cs" BuildAction="Compile" />
+        <File RelPath="_Employees.cs" BuildAction="Compile" />
+        <File RelPath="_Products.cs" BuildAction="Compile" />
+        <File RelPath="Employees.cs" BuildAction="Compile" />
+      </Include>
+    </Files>
+  </CSHARP>
+</VisualStudioProject>

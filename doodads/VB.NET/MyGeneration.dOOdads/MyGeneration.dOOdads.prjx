@@ -1,0 +1,52 @@
+<Project name="MyGeneration.dOOdads" standardNamespace="" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="VBNET">
+  <Contents>
+    <File name=".\AggregateParameter.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\AssemblyInfo.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\BusinessEntity.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DynamicQuery.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TransactionMgr.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WhereParameter.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\FirebirdSqlDynamicQuery.vb" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\FirebirdSqlEntity.vb" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\OleDbDynamicQuery.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\OleDbEntity.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\OracleClientDynamicQuery.vb" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\OracleClientEntity.vb" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\PostgreSqlDynamicQuery.vb" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\PostgreSqlEntity.vb" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\SqlClientDynamicQuery.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\SqlClientEntity.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\VistaDBDynamicQuery.vb" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\VistaDbEntity.vb" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\README.TXT" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\MySql4DynamicQuery.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\MySql4Entity.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\SQLiteDynamicQuery.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\SQLiteEntity.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+  </Contents>
+  <References>
+    <Reference type="Gac" refto="MySql.Data, Version=1.0.5.13785, Culture=neutral, PublicKeyToken=c5687fc88969c44d" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\..\..\..\Program Files\MyGeneration\SQLite.NET.dll" localcopy="True" />
+  </References>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="False" name="Debug">
+    <CodeGeneration compilerversion="" includedebuginformation="True" optimize="False" generateoverflowchecks="False" rootnamespace="" mainclass="" target="Library" definesymbols="" optionexplicit="True" optionstrict="False" win32Icon="" imports="Microsoft.VisualBasic,System,System.Collections,System.Data,System.Diagnostics," />
+    <VBDOC outputfile="" filestoparse="" commentprefix="" />
+    <Execution consolepause="True" commandlineparameters="" />
+    <Output directory=".\bin\Debug" assembly="MyGeneration.dOOdads" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="False" name="Debug">
+      <CodeGeneration compilerversion="" includedebuginformation="True" optimize="False" generateoverflowchecks="False" rootnamespace="" mainclass="" target="Library" definesymbols="" optionexplicit="True" optionstrict="False" win32Icon="" imports="Microsoft.VisualBasic,System,System.Collections,System.Data,System.Diagnostics," />
+      <VBDOC outputfile="" filestoparse="" commentprefix="" />
+      <Execution consolepause="True" commandlineparameters="" />
+      <Output directory=".\bin\Debug" assembly="MyGeneration.dOOdads" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration compilerversion="" includedebuginformation="False" optimize="True" generateoverflowchecks="False" rootnamespace="" mainclass="" target="Library" definesymbols="" optionexplicit="True" optionstrict="False" win32Icon="" imports="Microsoft.VisualBasic,System,System.Collections,System.Data,System.Diagnostics," />
+      <VBDOC outputfile="" filestoparse="" commentprefix="" />
+      <Execution consolepause="True" commandlineparameters="" />
+      <Output directory=".\bin\Release" assembly="MyGeneration.dOOdads" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>

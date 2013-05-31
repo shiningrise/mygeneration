@@ -1,0 +1,233 @@
+﻿##|TYPE Template
+##|UNIQUEID 5a5e4266-2ad0-1af1-b8c5-acd22b3a4342
+##|TITLE PHP Business Object
+##|NAMESPACE PHP
+##|OUTPUT_LANGUAGE PHP
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE JScript
+##|GUI_BEGIN
+function setup()
+{
+	ui.Title = "Generate PHP Business Objects";
+	ui.Width = 350;
+	ui.Height = 430;
+
+	// Grab default output path
+	var sOutputPath = "";
+	if (input.Contains("defaultOutputPath")) 
+	{
+		sOutputPath = input.Item("defaultOutputPath");
+	}
+
+	// Display and errors here
+	var lblError = ui.AddLabel("lblError", "", "");
+	lblError.ForeColor = "Red";
+
+	// Setup Folder selection input control.
+	var lblPath = ui.AddLabel("lblPath", "Select the output path:", "Select the output path in the field below.");
+	var outpath = ui.AddTextBox("txtPath", sOutputPath, "Select the Output Path.");
+	var btnSelectPath = ui.AddFilePicker("btnPath", "Select Path", "Select the Output Path.", "txtPath", true);
+
+	// Setup Database selection combobox.
+	var label_d = ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+	var cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.");
+
+	// Setup Tables selection multi-select listbox.
+	var label_t = ui.AddLabel("lblTables", "Select tables:", "Select tables from the listbox below.");
+	var lstTables = ui.AddListBox("lstTables", "Select tables.");
+	lstTables.Height = 150;
+
+	// Attach the onchange event to the cmbDatabases control.
+	setupDatabaseDropdown(cmbDatabases, lblError);
+	cmbDatabases.AttachEvent("onchange", "cmbDatabases_onchange");
+
+		
+	ui.ShowGUI = true;
+}
+
+function setupDatabaseDropdown(cmbDatabases, lblError)
+{
+	try 
+	{	
+		if (MyMeta.IsConnected) 
+		{
+			cmbDatabases.BindData(MyMeta.Databases);
+			if (MyMeta.DefaultDatabase != null) 
+			{
+				cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name;
+				bindTables(cmbDatabases.SelectedValue);
+			}
+
+			lblError.Text = "";
+		}
+		else
+		{
+			lblError.Text = "Please set up your database connection in the Default Settings dialog.";
+		}
+	}
+	catch (error) 
+	{
+		lblError.Text = "" + error + ", " + error.number + ", " + error.description;
+	}
+}
+
+function bindTables(sDatabase)
+{
+	var lblError = ui.item("lblError");
+	var count = 0
+
+	var lstTables = ui.item("lstTables");
+	
+	try 
+	{	
+		var db = MyMeta.Databases.Item(sDatabase);
+		lstTables.BindData(db.Tables);
+
+		lblError.Text = "";
+	}
+	catch (error) 
+	{
+		lblError.Text = "" + error + ", " + error.number + ", " + error.description;
+	}
+}
+
+function cmbDatabases_onchange(control)
+{
+	var lblError = ui.item("lblError");
+	var count = 0
+
+	var cmbDatabases = ui.item("cmbDatabase");
+
+	bindTables(cmbDatabases.SelectedText);
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE JScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<?php
+<%
+//------------------------------------------------------------------------------
+// PHP_BusinessObject.jgen
+// Last Update : 06/03/2005
+//
+// Be sure to rename this template if you plan to customize it, MyGeneration 
+// Software will update this sample over time.
+//------------------------------------------------------------------------------
+//  This template generates 2 classes for each table selected
+//
+//  1) [TableAlias]
+//  2) [TableAlias]Collection
+//
+//  There is script in the "Interface Code" tab that pops up a dialog so you can tell this tempate
+//  where to save the files and what tables you want to generate classes for. However, 
+//  all of the script ends up in the Output tab and you can copy this right into 
+//  a php file in your webroot.
+//------------------------------------------------------------------------------
+//  Justin Greenwood
+//  MyGeneration Software
+//  justin.greenwood@mygenerationsoftware.com
+//  http://www.mygenerationsoftware.com/
+//------------------------------------------------------------------------------
+
+// collect needed data/objects and put them in local variables
+var databaseName = input.Item("cmbDatabase"); 
+var tablenames = input.Item("lstTables"); 
+var database = MyMeta.Databases.Item(databaseName);
+
+// Filename info
+var filepath = input.item("txtPath");
+if (filepath.charAt(filepath.length - 1) != '\\') filepath += "\\";
+
+// Build the filename
+var filename = filepath + "php_classes_" + databaseName + ".php"
+
+// The buffer that will hold all the output for rendering.
+var buffer = "";
+
+for (var i = 0; i < tablenames.Count; i++)
+{
+	var tableName = tablenames.item(i);
+	var tableMeta = database.Tables.Item(tableName);
+	var objectAlias = tableMeta.Alias.split(" ").join("");
+	var hasAutoKey = false;
+
+%>
+class <%= objectAlias %> extends BusinessObject
+{
+	function <%= objectAlias %>()
+	{
+		$this->db_key = "<%= databaseName %>";
+		$this->table_name = "<%= tableName %>";
+		$this->field_metadata = array(
+<%
+	for (var j = 0; j < tableMeta.Columns.Count; j++) 
+	{
+		column = tableMeta.Columns.Item(j);
+		
+		if (!hasAutoKey) hasAutoKey = column.IsAutoKey;
+
+		if (j != 0) 
+		{
+			output.writeln(",");
+		}
+		output.write("\t\t\t\t\"" + column.Name + "\" => array(\"" + column.DataTypeName.toLowerCase() + "\", ");
+		output.write("" + (column.IsInPrimaryKey ? "true" : "false") + ", ");
+		output.write("" + (column.IsNullable ? "true" : "false") + ", ");
+		output.write("" + (column.IsAutoKey ? "true" : "false") + ", ");
+		output.write("" + (column.IsComputed ? "true" : "false") + ", ");
+		output.write("" + (column.HasDefault ? "true" : "false") + ")");
+	}
+%>
+			);
+
+		parent::BusinessObject();
+	}
+<% if (hasAutoKey) { %>
+	function fill_ids()
+	{
+		global $data_objects;
+
+<%
+	for (var j = 0; j < tableMeta.PrimaryKeys.Count; j++) 
+	{
+		column = tableMeta.Columns.Item(j);		
+		if (column.IsAutoKey) 
+		{
+			output.writeln("\t\t$this->data[\"" + column.Name + "\"] = $data_objects[$this->db_key]->sql_nextid();");
+		}
+	}
+%>		
+	}
+<% } %>
+}
+
+class <%= objectAlias %>Collection extends BusinessObjectCollection
+{
+	function <%= objectAlias %>Collection()
+	{
+		parent::BusinessObjectCollection();
+	}
+	
+	function create_singular($row) 
+	{ 
+		$obj = new <%= objectAlias %>();
+		$obj->load_from_list($row);
+		
+		return $obj;
+	}
+}
+<% } %>
+
+?>
+<%
+// Save this set of procedures to disk
+output.save(filename, false);
+buffer = output.text;
+output.clear();
+
+output.write(buffer);
+%>
+##|BODY_END

@@ -1,0 +1,20 @@
+<Combine fileversion="1.0" name="dOOdad_QueryTester" description="">
+  <StartMode startupentry="dOOdad_QueryTester" single="True">
+    <Execute entry="dOOdad_QueryTester" type="None" />
+    <Execute entry="MyGeneration.dOOdads" type="None" />
+  </StartMode>
+  <Entries>
+    <Entry filename=".\dOOdad_QueryTester.prjx" />
+    <Entry filename="..\MyGeneration.dOOdads\MyGeneration.dOOdads.prjx" />
+  </Entries>
+  <Configurations active="Debug">
+    <Configuration name="Release">
+      <Entry name="dOOdad_QueryTester" configurationname="Debug" build="False" />
+      <Entry name="MyGeneration.dOOdads" configurationname="Debug" build="False" />
+    </Configuration>
+    <Configuration name="Debug">
+      <Entry name="dOOdad_QueryTester" configurationname="Debug" build="False" />
+      <Entry name="MyGeneration.dOOdads" configurationname="Debug" build="False" />
+    </Configuration>
+  </Configurations>
+</Combine>

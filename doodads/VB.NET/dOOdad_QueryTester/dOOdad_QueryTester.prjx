@@ -1,0 +1,37 @@
+<Project name="dOOdad_QueryTester" standardNamespace="dOOdad_QueryTester" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="VBNET">
+  <Contents>
+    <File name=".\MainForm.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\AssemblyInfo.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Products.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\_Employees.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\_Products.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\About.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\Employees.vb" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\App.config" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\README.TXT" subtype="Code" buildaction="Nothing" dependson="" data="" />
+  </Contents>
+  <References>
+    <Reference type="Project" refto="MyGeneration.dOOdads" localcopy="True" />
+  </References>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="True" name="Debug">
+    <CodeGeneration compilerversion="" includedebuginformation="True" optimize="True" generateoverflowchecks="True" rootnamespace="" mainclass="" target="WinExe" definesymbols="" optionexplicit="True" optionstrict="False" win32Icon="" imports="" />
+    <VBDOC outputfile="" filestoparse="" commentprefix="'" />
+    <Execution consolepause="False" commandlineparameters="" />
+    <Output directory=".\bin\Debug" assembly="dOOdad_QueryTester" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration compilerversion="" includedebuginformation="True" optimize="True" generateoverflowchecks="True" rootnamespace="" mainclass="" target="WinExe" definesymbols="" optionexplicit="True" optionstrict="False" win32Icon="" imports="" />
+      <VBDOC outputfile="" filestoparse="" commentprefix="'" />
+      <Execution consolepause="False" commandlineparameters="" />
+      <Output directory=".\bin\Debug" assembly="dOOdad_QueryTester" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration compilerversion="" includedebuginformation="False" optimize="True" generateoverflowchecks="False" rootnamespace="" mainclass="" target="WinExe" definesymbols="" optionexplicit="True" optionstrict="False" win32Icon="" imports="" />
+      <VBDOC outputfile="" filestoparse="" commentprefix="'" />
+      <Execution consolepause="False" commandlineparameters="" />
+      <Output directory=".\bin\Release" assembly="dOOdad_QueryTester" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>

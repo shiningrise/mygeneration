@@ -1,0 +1,22 @@
+<AddIn name        = "MyGenSharpDev22"
+   author      = "justin.greenwood"
+   url         = ""
+   description = "TODO: Put description here">
+
+<Runtime>
+    <Import assembly = "MyGenSharpDev22.dll"/>
+</Runtime>
+<Manifest>
+        <Identity name="MyGeneration.MyGenSharpDev" version="@MyGenSharpDev22.dll"/>
+        <Dependency addin ="SharpDevelop" version= "2.2"/>
+</Manifest>
+
+<Path name = "/SharpDevelop/Workbench/Pads">
+    <Pad id       = "MyGenSharpDev22Pad"
+         category = "Main"
+         title    = "MyGenSharpDev22Pad"
+         icon     = "PadIcons.Output"
+         shortcut = "Control|Alt|T"
+         class    = "MyGenSharpDev22.TestPad"/>
+</Path>
+</AddIn>

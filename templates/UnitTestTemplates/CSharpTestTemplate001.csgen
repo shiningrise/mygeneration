@@ -1,0 +1,30 @@
+﻿##|TYPE Template
+##|UNIQUEID 52300a10-536d-422b-ba1e-60d0db52474e
+##|TITLE C# Test Template 001
+##|NAMESPACE UnitTestTemplates
+##|SOURCE_TYPE Source
+##|OUTPUT_LANGUAGE None
+##|GUI_ENGINE .Net Script
+##|GUI_LANGUAGE C#
+##|BODY_MODE Markup
+##|BODY_ENGINE .Net Script
+##|BODY_LANGUAGE C#
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%#VERSION v3.5%><%#REF System.Core.dll %><%#NS System.Linq %><%
+public class GeneratedTemplate : DotNetScriptTemplate
+{
+	public GeneratedTemplate(ZeusContext context) : base(context) {}
+
+	public override void Render()
+	{
+		var q = from i in Enumerable.Range(1,100)
+                          where i % 2 == 0
+                          select i;
+						  
+		foreach (var x in q) output.writeln(x.ToString());
+	}
+}
+%>
+##|BODY_END

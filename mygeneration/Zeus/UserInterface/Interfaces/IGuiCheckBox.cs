@@ -1,0 +1,1 @@
+using System;using System.Collections;using System.Collections.Specialized;namespace Zeus.UserInterface{	public interface IGuiCheckBox : IGuiControl	{		string Text { get; set; }		bool Checked { get; set; }	}}

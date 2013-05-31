@@ -1,0 +1,420 @@
+﻿##|TYPE Template
+##|UNIQUEID 65EAD6A9-0625-4413-8F58-7FAAB95BA871
+##|TITLE Access Stored Procedures
+##|NAMESPACE Microsoft Access
+##|OUTPUT_LANGUAGE Jet SQL
+##|COMMENTS_BEGIN
+Generates LoadByPrimaryKey, LoadAll, Insert, Update, and Delete Stored Procedures for your
+Access Database. Select multiple tables and generate all your stored procedures 
+in one click!
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstTables
+
+Sub setup()
+
+	If Not input.Contains("lstTables") Or Not input.Contains("txtPath") Then
+
+		ui.Title = "Select tables for this Template."
+		ui.Width  = 330
+		ui.Height = 380
+
+		' Grab default output path
+		Dim sOutputPath
+		sOutputPath = ""
+		If input.Contains("defaultOutputPath") Then 
+			sOutputPath = input.Item("defaultOutputPath")
+		End If
+
+		ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+		ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+		ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+
+		' List Tables in a listbox
+		ui.AddLabel "lblTables", "Select tables:", "Select tables from the listbox below."
+		Set lstTables = ui.AddListBox ("lstTables", "Select tables:")
+
+		Set db = MyMeta.Databases(0)
+		lstTables.BindData(db.Tables)
+		lstTables.Height = 150
+
+		Set chkBox = ui.AddCheckBox("chkBox", "Write Proc's to the Access Database", false, "Checking this will cause the stored procedures to be created in your database")
+		
+		ui.ShowGUI = true
+	Else 
+		ui.ShowGUI = false
+	End if
+
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'------------------------------------------------------------------------------
+' Access_StoredProcs.vbgen
+' Last Update : 04/12/2005
+'
+' Be sure to rename this template if you plan to customize it, MyGeneration 
+' Software will update this sample over time.
+'------------------------------------------------------------------------------
+'
+' NOTE: THIS TEMPLATE HAS ONLY BEEN TESTED WITH 'MICROSOFT ACCESS 2003'
+'
+'  This template generates 5 stored procedures - NOTE: Only for tables with Primary Keys
+'
+'  1) proc[TableName]LoadByPrimaryKey  (if there is at least one primary key)
+'  2) proc[TableName]LoadAll
+'  3) proc[TableName]Update
+'  4) proc[TableName]Insert
+'  5) proc[TableName]Delete
+'
+'  There is script in the "Interface Code" tab that pops up a dialog so you can tell this tempate
+'  where to save the files and what tables you want to generate stored procedures for.  So, the
+'  logic at a very high level looks like this:
+'
+'   For Each TableName in Select Tables
+'        objTable = database.Tables(TableName)
+' 	
+'	Generate the 5 stored procs
+'
+'   Save file
+'
+'  However, all of the script ends up in the Output tab and you can copy this right into 
+'  Sql QueryAnalyzer and execute it.  It's a pretty smart template, it knows to make
+'  Identity Columns output parameters to return them, the same holds true for computed
+'  Columns. It knows how to use PrimaryKeys in WHERE clauses and not to update them
+'  in the UpdateStored Proc, if you have a TimeStamp it will do the comparison for you and 
+'  so on.  This template alone can save you tons of time, and at anytime you can regenerate
+'  them as tables change.
+'------------------------------------------------------------------------------
+
+on error resume next
+
+Dim database
+Dim objTable
+Dim objColumn
+Dim intLp
+Dim bInFirst
+Dim strProcName
+Dim bHasComputed
+Dim strWhereClause
+Dim strWhereAnd
+Dim strWhereFields
+Dim strComma
+Dim tableNames
+Dim tableName
+Dim buffer
+Dim writeToDatabase
+
+Set database = MyMeta.Databases(0)
+
+Set tableNames = input.Item("lstTables")
+writeToDatabase = input.Item("chkBox")
+
+' Loop through the tables the user select and generate the stored procs and save them to disk
+For intLp = 0 To tableNames.Count - 1
+
+	Set objTable = database.Tables(tablenames.item(intLp))
+
+	If objTable.PrimaryKeys.Count > 0 Then
+
+		'----------------------------------------------------------------------
+		' LoadByPrimaryKey 
+		'----------------------------------------------------------------------
+		strProc = "DROP PROC proc_" & objTable.Alias & "LoadByPrimaryKey;"	
+		If writeToDatabase then
+			database.ExecuteSql(strProc)
+		End If
+	
+		strProc = "CREATE PROC proc_" & TrimSpaces(objTable.Alias) & "LoadByPrimaryKey (" 
+	
+		' list all keys as parameters
+		bInFirst = True
+		For Each objColumn in objTable.PrimaryKeys
+	
+			If Not bInFirst Then 
+				strProc = strProc &  ", "
+			End if	
+	
+			bInFirst = false	
+	
+			strProc = strProc & "[_" & TrimSpaces(objColumn.Name) & "] " & objColumn.DataTypeNameComplete
+		Next
+	
+		strProc = strProc & ") AS" & vbCrLf & "SELECT "
+	
+		' list all fields
+		bInFirst = true
+		For Each objColumn in objTable.Columns
+	
+			If Not bInFirst Then
+				strProc = strProc &  ", "
+			End if
+	
+			bInFirst = false
+	
+			strProc = strProc & "[" & TrimSpaces(objColumn.Name) & "]"
+		Next
+	
+		strProc = strProc & vbCrLf & "FROM [" & objTable.Name & "] "
+		strProc = strProc & vbCrLf & "WHERE "
+	
+		' compare keys with parameters
+		bInFirst = true
+		For Each objColumn in objTable.PrimaryKeys
+	
+			If Not bInFirst Then 
+				strProc = strProc & " AND"
+			End if	
+	
+			bInFirst = false
+	
+			strProc = strProc & " ([" & objColumn.Name & "] = [_" & TrimSpaces(objColumn.Name) & "])"
+		Next
+	
+		output.writeLn(strProc & vbCrLf)
+		If writeToDatabase then
+			database.ExecuteSql(strProc)
+		End If
+
+		'----------------------------------------------------------------------
+		' LoadAll
+		'----------------------------------------------------------------------
+		strProc = "DROP PROC proc_" & objTable.Alias & "LoadAll;"	
+		If writeToDatabase then
+			database.ExecuteSql(strProc)
+		End If
+	
+		strProc = "CREATE PROC proc_" & TrimSpaces(objTable.Alias) & "LoadAll AS" & vbCrLf & "SELECT" & vbCrLf
+	
+		' list all keys as parameters
+		bInFirst = True
+		For Each objColumn in objTable.Columns
+	
+			If Not bInFirst Then 
+				strProc = strProc &  ", "
+			End if	
+	
+			bInFirst = false	
+	
+			strProc = strProc & "[" & TrimSpaces(objColumn.Name) & "]"
+		Next
+	
+		strProc = strProc & vbCrLf & "FROM [" & objTable.Name & "]; "
+	
+		output.writeLn(strProc & vbCrLf)
+		If writeToDatabase then
+			database.ExecuteSql(strProc)
+		End If
+	
+		'----------------------------------------------------------------------
+		' Update
+		'----------------------------------------------------------------------
+		If Not objTable.Columns.Count = objTable.PrimaryKeys.Count Then
+		
+			strProc = "DROP PROC proc_" & objTable.Alias & "Update;"	
+			If writeToDatabase then
+				database.ExecuteSql(strProc)
+			End If
+		
+			strProc = "CREATE PROC proc_" & TrimSpaces(objTable.Alias) & "Update ( "
+		
+			' list all keys as parameters
+			bInFirst = True
+			For Each objColumn in objTable.Columns
+		
+				If Not bInFirst Then 
+					strProc = strProc &  ", "
+				End if	
+		
+				bInFirst = false	
+		
+				strProc = strProc & "[_" & TrimSpaces(objColumn.Name) & "] " & objColumn.DataTypeNameComplete
+			Next
+		
+			strProc = strProc & ") AS" & vbCrLf & "UPDATE ["  &  objTable.Name & "]" & vbCrLf & "SET "
+		
+			' list all fields
+			bInFirst = true
+			For Each objColumn in objTable.Columns
+				If Not objColumn.IsInPrimaryKey Then
+					If not objColumn.IsCalculated Then 
+						If Not bInFirst Then
+							strProc = strProc &  ", "
+						End if
+					End If
+			
+					bInFirst = false
+			
+					strProc = strProc &  "[" & TrimSpaces(objColumn.Name) & "] = [_" & TrimSpaces(objColumn.Name) & "] "
+				End If
+			Next
+		
+			strProc = strProc & vbCrLf & "WHERE "
+		
+			' compare keys with parameters
+			bInFirst = true
+			For Each objColumn in objTable.PrimaryKeys
+		
+				If Not bInFirst Then 
+					strProc = strProc & " AND"
+				End if	
+		
+				bInFirst = false
+		
+				strProc = strProc & " ([" & objColumn.Name & "] = [_" & TrimSpaces(objColumn.Name) & "])"
+			Next
+		
+			output.writeLn(strProc & vbCrLf)
+			If writeToDatabase then
+				database.ExecuteSql(strProc)
+			End If
+		
+		End If
+	
+		'----------------------------------------------------------------------
+		' INSERT
+		'----------------------------------------------------------------------
+		strProc = "DROP PROC proc_" & objTable.Alias & "Insert;"	
+		If writeToDatabase then
+			database.ExecuteSql(strProc)
+		End If
+	
+		strProc = "CREATE PROC proc_" & TrimSpaces(objTable.Alias) & "Insert ( "
+	
+		' list all keys as parameters
+		bInFirst = True
+		For Each objColumn in objTable.Columns
+	
+			If Not bInFirst Then 
+				strProc = strProc &  ", "
+			End if	
+	
+			bInFirst = false	
+	
+			strProc = strProc & "[_" & TrimSpaces(objColumn.Name) & "] " & objColumn.DataTypeNameComplete
+		Next
+	
+		strProc = strProc & ") AS" & vbCrLf & "INSERT INTO ["  &  objTable.Name & "]" & vbCrLf & "( " 
+	
+		' list all fields
+		bInFirst = true
+		For Each objColumn in objTable.Columns
+			If Not objColumn.IsAutoKey Then
+				If not objColumn.IsCalculated Then 
+					If Not bInFirst Then
+						strProc = strProc &  ", "
+					End if
+				End If
+		
+				bInFirst = false
+		
+				strProc = strProc &  "[" & TrimSpaces(objColumn.Name) & "] "
+			End If
+		Next
+	
+		strProc = strProc & " )"  & vbCrLf & "VALUES" & vbCrLf & "( " 
+	
+		' list all fields
+		bInFirst = true
+		For Each objColumn in objTable.Columns
+			If Not objColumn.IsAutoKey Then
+				If not objColumn.IsCalculated Then 
+					If Not bInFirst Then
+						strProc = strProc &  ", "
+					End if
+				End If
+		
+				bInFirst = false
+		
+				strProc = strProc &  "[_" & TrimSpaces(objColumn.Name) & "] "
+			End If
+		Next
+	
+		strProc = strProc & ")"  & vbCrLf
+	
+		output.writeLn(strProc & vbCrLf)
+		If writeToDatabase then
+			database.ExecuteSql(strProc)
+		End If
+	
+		'----------------------------------------------------------------------
+		' DELETE
+		'----------------------------------------------------------------------
+		strProc = "DROP PROC proc_" & objTable.Alias & "Delete;"	
+		If writeToDatabase then
+			database.ExecuteSql(strProc)
+		End If
+	
+		strProc = "CREATE PROC proc_" & TrimSpaces(objTable.Alias) & "Delete (" 
+		
+		' list all keys as parameters
+		bInFirst = True
+		For Each objColumn in objTable.PrimaryKeys
+	
+			If Not bInFirst Then 
+				strProc = strProc &  ", "
+			End if	
+	
+			bInFirst = false	
+	
+			strProc = strProc & "[_" & TrimSpaces(objColumn.Name) & "] " & objColumn.DataTypeNameComplete
+		Next
+	
+		strProc = strProc & ") AS" & vbCrLf
+		strProc = strProc & "DELETE" & vbCrLf & "FROM [" & objTable.Name & "]" & vbCrLf	
+		strProc = strProc & "WHERE " 
+	
+		' compare keys with parameters
+		bInFirst = true
+		For Each objColumn in objTable.PrimaryKeys
+	
+			If Not bInFirst Then 
+				strProc = strProc & " AND"
+			End if	
+	
+			bInFirst = false
+	
+			strProc = strProc & " ([" & objColumn.Name & "] = [_" & TrimSpaces(objColumn.Name) & "])"
+		Next
+	
+		output.writeLn(strProc & vbCrLf)
+		If writeToDatabase then
+			database.ExecuteSql(strProc)
+		End If
+
+	End If
+
+ Next
+%>
+
+<%
+Function TrimSpaces(str)
+
+	Dim tname
+	Dim name
+	Dim char
+	Dim l
+
+	name = ""
+	tname = str
+	l = Len(tname)
+
+	For j = 1 To l
+		char = Mid(tname, j, 1)
+		If Not char = " " Then
+			name = name & char
+		End If
+	Next
+
+	TrimSpaces = name
+End Function
+%>
+##|BODY_END

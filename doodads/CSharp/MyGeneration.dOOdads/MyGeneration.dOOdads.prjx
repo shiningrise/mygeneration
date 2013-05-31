@@ -1,0 +1,52 @@
+<Project name="MyGeneration.dOOdads" standardNamespace="MyGeneration.dOOdads" description="" newfilesearch="None" enableviewstate="True" version="1.1" projecttype="C#">
+  <Contents>
+    <File name=".\AggregateParameter.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\AssemblyInfo.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\BusinessEntity.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DynamicQuery.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\TransactionMgr.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\WhereParameter.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\OleDbDynamicQuery.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\OleDbEntity.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\SqlClientDynamicQuery.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\SqlClientEntity.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\README.TXT" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\MySql4DynamicQuery.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\MySql4Entity.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\SQLiteDynamicQuery.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\SQLiteEntity.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\AdsEntity.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\AdsDynamicQuery.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
+    <File name=".\DbAdapters\VistaDBEntity.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\FirebirdSqlDynamicQuery.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\FirebirdSqlEntity.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\OracleClientDynamicQuery.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\OracleClientEntity.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\PostgreSqlDynamicQuery.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\PostgreSqlEntity.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\DbAdapters\VistaDBDynamicQuery.cs" subtype="Code" buildaction="Nothing" dependson="" data="" />
+  </Contents>
+  <References>
+    <Reference type="Gac" refto="MySql.Data, Version=1.0.5.13785, Culture=neutral, PublicKeyToken=c5687fc88969c44d" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\..\..\..\Program Files\MyGeneration\SQLite.NET.dll" localcopy="True" />
+    <Reference type="Assembly" refto="..\..\..\..\..\Program Files\Extended Systems\Advantage\ADO.NET\Advantage.Data.Provider.dll" localcopy="True" />
+  </References>
+  <DeploymentInformation target="" script="" strategy="File" />
+  <Configuration runwithwarnings="True" name="Debug">
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="DEBUG;TRACE;ORACLE;" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+    <Execution commandlineparameters="" consolepause="True" />
+    <Output directory=".\bin\Debug" assembly="MyGeneration.dOOdads" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+  </Configuration>
+  <Configurations active="Debug">
+    <Configuration runwithwarnings="True" name="Debug">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="DEBUG;TRACE;ORACLE;" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory=".\bin\Debug" assembly="MyGeneration.dOOdads" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+    <Configuration runwithwarnings="True" name="Release">
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="TRACE" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
+      <Execution commandlineparameters="" consolepause="True" />
+      <Output directory=".\bin\Release" assembly="MyGeneration.dOOdads" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    </Configuration>
+  </Configurations>
+</Project>

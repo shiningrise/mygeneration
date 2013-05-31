@@ -1,0 +1,733 @@
+﻿##|TYPE Template
+##|UNIQUEID 91291754-7a37-4d23-bffa-914dd42d5834
+##|TITLE SQLite C# dOOdads Business View
+##|NAMESPACE dOOdads.SQLite.C#
+##|OUTPUT_LANGUAGE C#
+##|COMMENTS_BEGIN
+From a View with aggregate support
+##|COMMENTS_END
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cmbDatabases
+Dim lstViews
+Dim chk
+
+Sub setup()
+
+	If context.Objects.ContainsKey("DnpUtils") Then
+		DnpUtils.ReadInputFromCache(context)
+	End if
+
+	ui.Title = "Generate C# dOOdad from a View."
+	ui.Width  = 330
+	ui.Height = 525
+
+	' Grab default output path
+	Dim sOutputPath
+	sOutputPath = ""
+	If input.Contains("defaultOutputPath") Then 
+		sOutputPath = input.Item("defaultOutputPath")
+	End If
+
+	ui.AddLabel "lblPath", "Output file path: ",  "Select the output path."
+	ui.AddTextBox "txtPath", sOutputPath, "Select the Output Path."
+	ui.AddFilePicker "btnPath", "Select Path", "Select the Output Path.", "txtPath", true
+	
+	ui.AddLabel "lblNamespace", "Namespace: ",  "Provide your objects namespace."
+	ui.AddTextBox "txtNamespace", "Your.Namespace", "Provide your objects namespace."			
+
+	' List Databases in a ComboBox
+	ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+	Set cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.")
+
+	' List Views in a listbox
+	ui.AddLabel "lblViews", "Select views:", "Select views from the listbox below."
+	Set lstViews = ui.AddListBox ("lstViews", "Select views:")
+	'lstViews.IsMultiSelect = false
+	lstViews.Height = 120
+	
+	Set abstract    = ui.AddCheckBox("abstract", "Make class abstract?", false, "If checked, the generated class will be 'abstract'")
+	Set classPrefix = ui.AddCheckBox("classPrefix", "Prefix the 'Class' with underscore?", false, "If checked, the class will be preceded by a leading underscore")
+	Set prefix      = ui.AddCheckBox("prefix", "Prefix the 'File' with an underscore?", false, "If checked, the file on disk will begin with an underscore")
+	Set trimName = ui.AddCheckBox("trimName", "Trim spaces from output filename?", false, "If checked, the file on disk will have spaces trimmed from the name.")
+	
+	' Attach the onchange event to the cmbDatabases control.
+	setupDatabaseDropdown cmbDatabases
+	cmbDatabases.AttachEvent "onchange", "cmbDatabases_onchange"
+	
+	ui.ShowGUI = true
+
+End Sub
+
+Sub setupDatabaseDropdown(cmbDatabases)
+	cmbDatabases.BindData MyMeta.Databases
+
+	If Not MyMeta.DefaultDatabase Is Nothing Then
+		cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindViews cmbDatabases.SelectedValue
+	End If
+End Sub
+
+Sub bindViews(sDatabase)
+	Set db = MyMeta.Databases(sDatabase)
+	lstViews.BindData(db.Views)
+End Sub
+
+' Event Handler
+Sub cmbDatabases_onchange(control)
+	Set cmbDatabases = ui.item("cmbDatabase")
+	bindViews cmbDatabases.SelectedText
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+'------------------------------------------------------------------------------
+' Copyright 2004, 2005 by MyGeneration Software
+' All Rights Reserved 
+'
+' Permission to use, copy, modify, and distribute this software and its 
+' documentation for any purpose and without fee is hereby granted, 
+' provided that the above copyright notice appear in all copies and that 
+' both that copyright notice and this permission notice appear in 
+' supporting documentation. 
+'
+' MYGENERATION SOFTWARE DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS 
+' SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY 
+' AND FITNESS, IN NO EVENT SHALL MYGENERATION SOFTWARE BE LIABLE FOR ANY 
+' SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES 
+' WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, 
+' WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER 
+' TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE 
+' OR PERFORMANCE OF THIS SOFTWARE. 
+'------------------------------------------------------------------------------
+' SQLite_CSharp_Aggregate_BusinessView.vbgen
+' Last Update : 12/21/2005
+'------------------------------------------------------------------------------
+
+If context.Objects.ContainsKey("DnpUtils") Then
+	DnpUtils.SaveInputToCache(context)
+End if
+
+Dim bFirst
+Dim name
+Dim pname
+Dim objView
+Dim objColumn
+Dim viewNames
+Dim language
+Dim databaseName
+Dim database
+Dim namespace
+Dim classPrefix
+Dim abstract
+Dim trimName
+Dim prefix
+
+Dim IDbCommand
+Dim IDataParameter
+Dim ParameterPrefix
+
+prefix = input.Item("prefix")
+trimName = input.Item("trimName")
+
+If input.Item("classPrefix") = True Then 
+	classPrefix = "_"
+Else
+	classPrefix = ""
+End IF
+
+If input.Item("abstract") = True Then 
+	abstract = " abstract"
+Else
+	abstract = ""
+End IF
+
+IDbCommand      = GetIDbCommand()
+IDataParameter  = GetIDataParameter()
+ParameterPrefix = GetParameterPrefix()
+
+' Grab the namespace
+namespace = input.Item("txtNamespace")
+
+' Grab the choices the user made in our UI Script (see Interface Code tab)
+Set viewNames = input.Item("lstViews")
+
+databaseName  = input.Item("cmbDatabase")
+Set database = MyMeta.Databases(databaseName)
+
+' Loop through the tables the user selected and generate the business entities
+For intLp = 0 To viewNames.Count - 1
+
+	Set objView = database.Views(viewNames.item(intLp))
+	Set props = objView.Properties
+
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+' Now we have the table that we desire to build a Business Object From, let us begin.
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%>
+//===============================================================================
+//  Generated From - SQLite_CSharp_BusinessView.vbgen
+//
+//  The supporting base class <%= GetBaseClass %> is in the 
+//  Architecture directory in "dOOdads".
+//===============================================================================
+
+// Generated by MyGeneration Version # (<%= input.Item("__version") %>)
+
+using System;
+using System.Data;
+using <%= GetDataNameSpace %>;
+using System.Collections;
+using System.Collections.Specialized;
+
+using MyGeneration.dOOdads;
+
+namespace <%= namespace %>
+{
+	public<%= abstract %> class <%= classPrefix & TrimSpaces(objView.Alias) %> : <%= GetBaseClass %>
+	{
+		public <%= classPrefix & TrimSpaces(objView.Alias) %>()
+		{<% output.writeLn ""
+		output.writeLn "			this.QuerySource = """ & objView.Name & """;"
+		output.writeLn "			this.MappingName = """ & objView.Name & """;"
+		%>
+		}	
+
+		//=================================================================
+		//  public Overrides void AddNew()
+		//=================================================================
+		//
+		//=================================================================
+		public override void AddNew()
+		{
+			base.AddNew();
+		}
+		
+		public override void FlushData()
+		{
+			this._whereClause = null;
+			this._aggregateClause = null;
+			base.FlushData();
+		}
+
+		//=================================================================
+		//  	public Function LoadAll() As Boolean
+		//=================================================================
+		//  Loads all of the records in the database, and sets the currentRow to the first row
+		//=================================================================
+		public bool LoadAll() 
+		{
+			return this.Query.Load();
+		}
+	
+		#region Parameters
+		protected class Parameters
+		{
+			<% For Each objColumn in objView.Columns 
+			   pname = GetName(objColumn)
+				name = GetAlias(objColumn)
+			%>
+			public static <%= IDataParameter %> <%= name %>
+			{
+				get
+				{
+					return new <%= IDataParameter %>("<%=ParameterPrefix %><% output.write TrimSpaces(pname) & """, " & objColumn.DbTargetType & ");" & vbCrLf %>
+				}
+			}
+			<% Next %>
+		}
+		#endregion		
+	
+		#region ColumnNames
+		public class ColumnNames
+		{  <% output.write vbCrLf 
+			 For Each objColumn in objView.Columns
+				name = GetAlias(objColumn)
+				output.write "            public const string " & name & " = """ & objColumn.Name & """;" & vbCrLf 
+			 Next %>
+			static public string ToPropertyName(string columnName)
+			{
+				if(ht == null)
+				{
+					ht = new Hashtable();
+					<% output.write vbCrLf 
+					For Each objColumn in objView.Columns
+						name = GetAlias(objColumn)
+						output.write "					ht[" & name & "] = " & classPrefix & TrimSpaces(objView.Alias) & ".PropertyNames." & name & ";" & vbCrLf 
+					Next
+					%>
+				}
+				return (string)ht[columnName];
+			}
+
+			static private Hashtable ht = null;			 
+		}
+		#endregion
+		
+		#region PropertyNames
+		public class PropertyNames
+		{  <% output.write vbCrLf 
+			 For Each objColumn in objView.Columns
+				name = GetAlias(objColumn)
+				output.write "            public const string " & name & " = """ & name & """;" & vbCrLf 
+			 Next %>
+			static public string ToColumnName(string propertyName)
+			{
+				if(ht == null)
+				{
+					ht = new Hashtable();
+					<% output.write vbCrLf 
+					For Each objColumn in objView.Columns
+						name = GetAlias(objColumn)
+						output.write "					ht[" & name & "] = " & classPrefix & TrimSpaces(objView.Alias) & ".ColumnNames." & name & ";" & vbCrLf 
+					Next
+					%>
+				}
+				return (string)ht[propertyName];
+			}
+
+			static private Hashtable ht = null;			 
+		}			 
+		#endregion	
+
+		#region StringPropertyNames
+		public class StringPropertyNames
+		{  <% output.write vbCrLf 
+			 For Each objColumn in objView.Columns
+	 			If Not InStr(1, objColumn.LanguageType, "[]") > 0 Then
+					name = GetAlias(objColumn)
+					output.write "            public const string " & name & " = ""s_" & name & """;" & vbCrLf 
+				End If	
+			 Next %>
+		}
+		#endregion		
+		
+		#region Properties
+	<% output.writeLn ""
+		Dim langType
+		Dim GetSet
+		Dim Array 
+		Dim readOnly
+				
+		For Each objColumn in objView.Columns
+		
+			Array = ""
+			langType = objColumn.LanguageType
+			
+			If InStr(1, langType, "[]") > 0 Then
+				GetSet = Replace(langType, "[]", "")
+				' Hack, I messed up
+				If GetSet = "byte" Then
+					GetSet = "Byte"
+				End If
+				Array= "Array"
+			Else
+				GetSet = langType
+			End If			
+			
+			If objColumn.DataTypeName = "timestamp" Or objColumn.IsComputed Then readOnly = "ReadOnly " Else readOnly = "" End If
+			
+			pname = GetName(objColumn)
+			name   = GetAlias(objColumn)		
+			
+			output.write "		public virtual " & langType & " " & name & vbCrLf 
+			output.write "	    {" & vbCrLf 
+			output.write "			get"  & vbCrLf 
+			output.write "	        {"	& vbCrLf 
+			output.write "				return base.Get" & GetSet & Array & "(ColumnNames." & name & ");" & vbCrLf 
+			output.write "			}"  & vbCrLf 
+			If Not objColumn.IsComputed Then 
+				output.write "			set"  & vbCrLf 
+				output.write "	        {"	& vbCrLf 
+				output.write "				base.Set" & GetSet & Array & "(ColumnNames." & name & ", value);" & vbCrLf 
+				output.write "			}"  & vbCrLf 
+			End If	
+			output.write "		}"  & vbCrLf & vbCrLf 
+		
+		Next
+	%>
+		#endregion
+		
+		#region String Properties
+	<% output.writeLn ""
+		For Each objColumn in objView.Columns
+		
+			langType = objColumn.LanguageType
+			
+			If Not InStr(1, langType, "[]") > 0 Then			
+				If Not langType = "object" And Not langType = "byte[]" Then
+				
+					If objColumn.IsComputed Then readOnly = "ReadOnly " Else readOnly = "" End If
+					
+					pname = GetName(objColumn)
+					name   = GetAlias(objColumn)		
+					
+					output.write "		public virtual string s_" & name & vbCrLf 
+					output.write "	    {" & vbCrLf 
+					output.write "			get"  & vbCrLf 
+					output.write "	        {"	& vbCrLf 
+					output.write "				return this.IsColumnNull(ColumnNames." & name & ") ? string.Empty : base.Get" & langType & "AsString(ColumnNames." & name & ");" & vbCrLf 
+					output.write "			}"  & vbCrLf 
+					If Not objColumn.IsComputed Then 
+						output.write "			set"  & vbCrLf 
+						output.write "	        {"	& vbCrLf 
+						output.write "				if(string.Empty == value)" & vbCrLf
+						output.write "					this.SetColumnNull(ColumnNames." & name & ");" & vbCrLf 
+						output.write "				else" & vbCrLf 
+						output.write "					this." & name & " = base.Set" & langType & "AsString(ColumnNames." & name & ", value);" & vbCrLf 
+						output.write "			}"  & vbCrLf 
+					End If	
+					output.write "		}"  & vbCrLf & vbCrLf 
+				
+				End If
+			End If
+		
+		Next
+	%>
+		#endregion		
+	
+		#region Where Clause
+		public class WhereClause
+		{
+			public WhereClause(BusinessEntity entity)
+			{
+				this._entity = entity;
+			}
+			
+			public TearOffWhereParameter TearOff
+			{
+				get
+				{
+					if(_tearOff == null)
+					{
+						_tearOff = new TearOffWhereParameter(this);
+					}
+
+					return _tearOff;
+				}
+			}
+
+			#region WhereParameter TearOff's
+			public class TearOffWhereParameter
+			{
+				public TearOffWhereParameter(WhereClause clause)
+				{
+					this._clause = clause;
+				}
+				
+				<% output.writeLn ""
+				For Each objColumn in objView.Columns
+				
+					name   = GetAlias(objColumn)					
+				
+					output.write "				public WhereParameter " & name & vbCrLf 
+					output.write "				{" & vbCrLf 				
+					output.write "					get" & vbCrLf 
+					output.write "					{" & vbCrLf 		
+					output.write "							WhereParameter where = new WhereParameter(ColumnNames." & name & ", Parameters." & name & ");" & vbCrLf
+					output.write "							this._clause._entity.Query.AddWhereParameter(where);" & vbCrLf
+					output.write "							return where;" & vbCrLf
+					output.write "					}" & vbCrLf 
+					output.write "				}" & vbCrLf & vbCrLf 					
+	
+				Next
+				%>
+				private WhereClause _clause;
+			}
+			#endregion
+		<% output.writeLn ""
+			Dim fldName
+			
+			For Each objColumn in objView.Columns
+				
+				name   = GetAlias(objColumn)		
+			
+				fldName = "_" & name & "_W"
+				
+				output.write "			public WhereParameter " & name & vbCrLf 
+				output.write "		    {" & vbCrLf 				
+				output.write "				get" & vbCrLf 
+				output.write "		        {" & vbCrLf 				
+				output.write "					if(" & fldName & " == null)" & vbCrLf 
+				output.write "	        	    {" & vbCrLf 				
+				output.write "						" & fldName & " = TearOff." & name & ";" & vbCrLf
+				output.write "					}" & vbCrLf 
+				output.write "					return " & fldName & ";" & vbCrLf 
+				output.write "				}" & vbCrLf 
+				output.write "			}" & vbCrLf & vbCrLf 
+			Next
+			
+			For Each objColumn in objView.Columns
+				name = "_" & GetAlias(objColumn)  & "_W"
+				output.write "			private WhereParameter " & name & " = null;" & vbCrLf 
+			Next  	
+			
+			output.write vbCrLf 
+			output.write "			public void WhereClauseReset()" & vbCrLf
+			output.write "			{" & vbCrLf 		
+			For Each objColumn in objView.Columns
+				name = "_" & GetAlias(objColumn) & "_W"
+				output.write  "				" & name & " = null;" & vbCrLf 
+			Next    	
+			
+			output.write vbCrLf
+			output.write"				this._entity.Query.FlushWhereParameters();" & vbCrLf & vbCrLf 
+			output.write"			}" & vbCrLf 
+		%>	
+			private BusinessEntity _entity;
+			private TearOffWhereParameter _tearOff;
+			
+		}
+	
+		public WhereClause Where
+		{
+			get
+			{
+				if(_whereClause == null)
+				{
+					_whereClause = new WhereClause(this);
+				}
+		
+				return _whereClause;
+			}
+		}
+		
+		private WhereClause _whereClause = null;	
+		#endregion
+		
+		#region Aggregate Clause
+		public class AggregateClause
+		{
+			public AggregateClause(BusinessEntity entity)
+			{
+				this._entity = entity;
+			}
+			
+			public TearOffAggregateParameter TearOff
+			{
+				get
+				{
+					if(_tearOff == null)
+					{
+						_tearOff = new TearOffAggregateParameter(this);
+					}
+
+					return _tearOff;
+				}
+			}
+
+			#region AggregateParameter TearOff's
+			public class TearOffAggregateParameter
+			{
+				public TearOffAggregateParameter(AggregateClause clause)
+				{
+					this._clause = clause;
+				}
+				
+				<% output.writeLn ""
+				For Each objColumn in objView.Columns
+				
+					name   = GetAlias(objColumn)					
+				
+					output.write "				public AggregateParameter " & name & vbCrLf 
+					output.write "				{" & vbCrLf 				
+					output.write "					get" & vbCrLf 
+					output.write "					{" & vbCrLf 		
+					output.write "							AggregateParameter aggregate = new AggregateParameter(ColumnNames." & name & ", Parameters." & name & ");" & vbCrLf
+					output.write "							this._clause._entity.Query.AddAggregateParameter(aggregate);" & vbCrLf
+					output.write "							return aggregate;" & vbCrLf
+					output.write "					}" & vbCrLf 
+					output.write "				}" & vbCrLf & vbCrLf 					
+	
+				Next
+				%>
+				private AggregateClause _clause;
+			}
+			#endregion
+		<% output.writeLn ""
+			
+			For Each objColumn in objView.Columns
+				
+				name   = GetAlias(objColumn)		
+			
+				fldName = "_" & name & "_W"
+				
+				output.write "			public AggregateParameter " & name & vbCrLf 
+				output.write "		    {" & vbCrLf 				
+				output.write "				get" & vbCrLf 
+				output.write "		        {" & vbCrLf 				
+				output.write "					if(" & fldName & " == null)" & vbCrLf 
+				output.write "	        	    {" & vbCrLf 				
+				output.write "						" & fldName & " = TearOff." & name & ";" & vbCrLf
+				output.write "					}" & vbCrLf 
+				output.write "					return " & fldName & ";" & vbCrLf 
+				output.write "				}" & vbCrLf 
+				output.write "			}" & vbCrLf & vbCrLf 
+			Next
+			
+			For Each objColumn in objView.Columns
+				name = "_" & GetAlias(objColumn)  & "_W"
+				output.write "			private AggregateParameter " & name & " = null;" & vbCrLf 
+			Next  	
+			
+			output.write vbCrLf 
+			output.write "			public void AggregateClauseReset()" & vbCrLf
+			output.write "			{" & vbCrLf 		
+			For Each objColumn in objView.Columns
+				name = "_" & GetAlias(objColumn) & "_W"
+				output.write  "				" & name & " = null;" & vbCrLf 
+			Next    	
+			
+			output.write vbCrLf
+			output.write"				this._entity.Query.FlushAggregateParameters();" & vbCrLf & vbCrLf 
+			output.write"			}" & vbCrLf 
+		%>	
+			private BusinessEntity _entity;
+			private TearOffAggregateParameter _tearOff;
+			
+		}
+	
+		public AggregateClause Aggregate
+		{
+			get
+			{
+				if(_aggregateClause == null)
+				{
+					_aggregateClause = new AggregateClause(this);
+				}
+		
+				return _aggregateClause;
+			}
+		}
+		
+		private AggregateClause _aggregateClause = null;	
+		#endregion
+	
+		protected override IDbCommand GetInsertCommand() 
+		{
+			return null;
+		}
+	
+		protected override IDbCommand GetUpdateCommand()
+		{
+			return null;
+		}
+	
+		protected override IDbCommand GetDeleteCommand()
+		{
+			return null;
+		}
+	}
+}
+<% 
+	' Save the output file for this Table
+	Dim filename
+	filename = input.item("txtPath")
+
+	Dim length
+	Dim pos
+	length = Len(filename)
+	pos = InStrRev(filename, "\") 
+
+	If Not pos = length Then
+		filename = filename & "\"
+	End If
+	
+	If prefix = True Then 
+		If trimName = True Then
+			filename = filename & "_" & TrimSpaces(objView.Alias) & ".cs"
+		Else
+			filename = filename & "_" & objView.Alias & ".cs"
+		End If
+	Else 
+		If trimName = True Then
+			filename = filename & TrimSpaces(objView.Alias) & ".cs"
+		Else
+			filename = filename & objView.Alias & ".cs"
+		End If
+	End If
+
+	output.save filename, false
+	buffer = buffer & output.text
+	output.clear
+Next '  tableName
+	
+	output.write buffer
+ %>
+
+<% 
+'===========================================================================
+' These are support routines called by the above scirpt
+'===========================================================================
+Function GetAlias(objColumn)
+	Dim name
+	name = TrimSpaces(objColumn.Alias)
+	GetAlias = UCase(Left(name, 1)) & Right(name, Len(name) -1)
+End Function
+
+Function GetName(objColumn)
+	Dim name
+	name = objColumn.Name
+	GetName = UCase(Left(name, 1)) & Right(name, Len(name) -1)
+End Function
+
+Function IsOutParameter(objColumn, props, isInsert) 
+	Dim isOut
+	isOut = false
+
+	If (isInsert AND objColumn.IsAutoKey) Or objColumn.IsComputed Then	
+		isOut = true
+	End If
+	
+	IsOutParameter = isOut
+End Function
+
+Function TrimSpaces(str)
+
+	Dim tname
+	Dim name
+	Dim char
+	Dim l
+
+	name = ""
+	tname = str
+	l = Len(tname)
+
+	For j = 1 To l
+		char = Mid(tname, j, 1)
+		If Not char = " " Then
+			name = name & char
+		End If
+	Next
+
+	TrimSpaces = name
+End Function
+
+Function GetIDataParameter
+	GetIDataParameter = "SQLiteParameter"
+End Function
+
+Function GetParameterPrefix
+	GetParameterPrefix = "@"
+End Function
+
+Function GetIDbCommand
+	GetIDbCommand = "SQLiteCommand"
+End Function
+
+Function GetDataNameSpace
+	GetDataNameSpace = "Finisar.SQLite"
+End Function
+
+Function GetBaseClass
+	GetBaseClass = "SQLiteEntity"
+End Function
+
+%>
+##|BODY_END

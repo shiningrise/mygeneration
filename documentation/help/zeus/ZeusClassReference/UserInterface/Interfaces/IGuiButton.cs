@@ -1,0 +1,1 @@
+using System;using System.Collections;using System.Collections.Specialized;namespace Zeus.UserInterface{	public interface IGuiButton : IGuiControl	{		bool ClosesForm { get; set; }		bool CancelGeneration { get; set; }	}}

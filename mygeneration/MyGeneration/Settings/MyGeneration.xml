@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<MyGeneration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <options>
+    <option name="name" value="val" />
+    <option name="name2" value="val2" />
+  </options>
+  <Scintilla>
+    <includes>
+      <include file="ScintillaNET.xml" />
+    </includes>
+    <globals>
+      <value name="test">val</value>
+    </globals>
+  </Scintilla>
+</MyGeneration>

@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<mygeneration exepath="C:\Program Files\MyGeneration\MyGeneration.exe" templatepath="C:\Program Files\MyGeneration\Templates\CodeSmith" launch="True"/>
+	<codesmith applicationpath="C:\Program Files\CodeSmith" templatepath="C:\Program Files\CodeSmith\Samples\Collections" />
+</configuration>

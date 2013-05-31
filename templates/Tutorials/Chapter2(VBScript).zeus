@@ -1,0 +1,96 @@
+﻿##|TYPE Template
+##|UNIQUEID 2765394f-2485-4d4b-b938-bd70d9edfd5e
+##|TITLE Chapter 2 - Column Properties (VBScript)
+##|NAMESPACE Tutorials.VBScript.Chapter 2
+##|OUTPUT_LANGUAGE None
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE VBScript
+##|GUI_BEGIN
+Dim cboxDatabases
+Dim lboxTables
+
+'==============================================================
+' Setup() is the entry point to your user interface, this 
+' is called automatically by the MyGeneration scripting engine
+'==============================================================
+Sub setup()
+
+	ui.Title = "Chapter 2"
+	ui.Width  = 330
+	ui.Height = 300
+
+	' Create our Database(s) ComboBox
+	ui.AddLabel "lblDatabases", "Select a database:", "Select a database in the dropdown below."
+	Set cboxDatabases = ui.AddComboBox("cboxDatabases", "Select a database.")
+
+	' Create our Tables Listbox
+	ui.AddLabel "lblTables", "Select a table:", "Select tables from the listbox below."
+	Set lboxTables = ui.AddListBox ("lboxTables", "Select tables:")
+	lboxTables.IsMultiSelect = false
+	lboxTables.Height = 120
+
+	' Populate our Database ComboBox
+	cboxDatabases.BindData MyMeta.Databases
+
+	If Not MyMeta.DefaultDatabase Is Nothing Then
+		' Populate our Tables Listbox if we can
+		cboxDatabases.SelectedValue = MyMeta.DefaultDatabase.Name
+		bindTables cboxDatabases.SelectedValue
+	End If
+	
+	' Attach the onchange event to the cboxDatabases control.	
+	cboxDatabases.AttachEvent "onchange", "cboxDatabases_onchange"
+
+	' Without this the UI wouldn't display
+	ui.ShowGUI = true
+
+End Sub
+
+'---------------------------------------------------------------
+' Event Handler
+'---------------------------------------------------------------
+' Attach the onchange event to the cboxDatabases control.	
+' cboxDatabases.AttachEvent "onchange", "cboxDatabases_onchange"
+'----------------------------------------------------------------
+Sub cboxDatabases_onchange(control)
+	bindTables cboxDatabases.SelectedText
+End Sub
+
+'---------------------------------------------------------------
+' Simple sub-routine that we use to populate our Tables Listbox
+'---------------------------------------------------------------
+Sub bindTables(sDatabase)
+	Set db = MyMeta.Databases(sDatabase)
+	lboxTables.BindData(db.Tables)
+End Sub
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE VBScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+Dim tableName
+Dim databaseName
+
+Dim objDatabase
+Dim objTable
+Dim objColumn
+
+' The names such as "lboxTables" were provided in the "Interface Code" Tab
+tableName    = input.Item("lboxTables").item(0)
+databaseName = input.Item("cboxDatabases")
+
+Set objDatabase = MyMeta.Databases(databaseName)
+Set objTable    = objDatabase.Tables(tableName)
+
+output.writeLn "Columns for Table '" + objTable.Name + "'"
+output.writeLn ""
+
+For Each objColumn in objTable.Columns
+	output.writeLn objColumn.Name + " : " + objColumn.DataTypeName
+Next
+
+%>
+##|BODY_END

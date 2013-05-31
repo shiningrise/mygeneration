@@ -1,0 +1,155 @@
+﻿##|TYPE Template
+##|UNIQUEID df881f37-1e79-4fd7-bdf3-75302b5c8738
+##|TITLE User Meta Data (JScript)
+##|NAMESPACE Samples.User Meta Data
+##|OUTPUT_LANGUAGE Java
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE JScript
+##|GUI_BEGIN
+function setup()
+{
+	if ( !input.Contains("lstTables") || !input.Contains("txtPath") )
+	{
+		ui.Title = "User Meta Data Sample";
+		ui.Width  = 330;
+		ui.Height = 365;
+
+		var label = ui.AddLabel("lblDesc", "Refresh the 'Database Browser' window after running this script and then look at the 'User Meta Data' for each column in the table chosen.", "");
+		label.Height = 45;
+		label.BackColor = "black";
+		label.ForeColor = "yellow";
+
+		// List Databases in a ComboBox
+		ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+		var cmbDatabases = ui.AddComboBox("cmbDatabase", "Select a database.");
+
+		// List Tables in a listbox
+		ui.AddLabel("lblTables", "Select tables:", "Select tables from the listbox below.");
+		var lstTables = ui.AddListBox ("lstTables", "Select tables:");
+		lstTables.IsMultiSelect = false;
+		lstTables.Height = 150;
+
+		// Attach the onchange event to the cmbDatabases control.
+		setupDatabaseDropdown(cmbDatabases, "");
+		cmbDatabases.AttachEvent("onchange", "cmbDatabases_onchange");
+		
+		ui.ShowGUI = true;
+	}
+	else 
+	{
+		ui.ShowGUI = false;
+	}
+}
+
+function setupDatabaseDropdown(cmbDatabases, lblError)
+{
+	if (MyMeta.IsConnected) 
+	{
+		cmbDatabases.BindData(MyMeta.Databases);
+		if (MyMeta.DefaultDatabase != null) 
+		{
+			cmbDatabases.SelectedValue = MyMeta.DefaultDatabase.Name;
+			bindTables(cmbDatabases.SelectedValue);
+		}
+	}
+}
+
+function bindTables(sDatabase)
+{
+	var lstTables = ui.item("lstTables");
+	
+	var db = MyMeta.Databases.Item(sDatabase);
+	lstTables.BindData(db.Tables);
+}
+
+function cmbDatabases_onchange(control)
+{
+	var cmbDatabases = ui.item("cmbDatabase");
+	bindTables(cmbDatabases.SelectedText);
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE JScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<%
+//------------------------------------------------------------------------------
+// UserMetaData.jgen
+// Last Update : 2/21/2004
+//
+// Be sure to rename this template if you plan to customize it, MyGeneration 
+// Software will update this sample over time.
+//------------------------------------------------------------------------------
+//
+// This template demonstrates the capabilities of MyGenerations 'User Meta Data' feature.
+//
+// There is a property collection on every entity in your database, you can add key/value
+// pairs to the User Meta Data either through the user interface of MyGeneration or 
+// programmatically in your scripts.  This script loops though a table of your choosing
+// and adds 6 key/value pairs to the User Meta Data on every column in the table you
+// choose, don't worry, this is stored in XML and never writes to your database.
+//
+// This can be very useful, you might need more meta data than MyMeta supplies, in fact,
+// MyMeta will eventually offer extended meta data using this feature as well, however,
+// the current plan is that any extended data added via MyGeneration will have a key
+// that beings with "MyMeta.???"  where ??? equals the description.
+//
+// If you want to undo the user meta created by created by this script uncomment out 
+// the last For/Next statement and re-run the script. 
+//------------------------------------------------------------------------------
+
+// Get selections from the UI (see Interface Code tab)
+var tableName = input.Item("lstTables");
+var objColumn = null;
+
+// Did the user Select at least one table?
+if(tableName.Count == 1) 
+{
+	var objDatabase = MyMeta.Databases.Item(input.Item("cmbDatabase"));
+	var objTable = objDatabase.Tables.Item(tableName.item(0));
+
+	//===============================================================================
+    // Loop through each column in the selected table and assign it some meta data
+	//===============================================================================
+	for (var i = 0; i < objTable.Columns.Count; i++)
+	{
+		objColumn = objTable.Columns.Item(i);
+		objColumn.Properties.AddKeyValue(objColumn.Name, "The Name of this Column is " + objColumn.Name);
+
+		for (var j = 0; j < 5; j++)
+		{
+			objColumn.Properties.AddKeyValue(j, "This is property " + j);
+		}
+	}
+
+	//===============================================================================
+	// Loop through each column and print the meta data
+	//===============================================================================
+	for (var i = 0; i < objTable.Columns.Count; i++)
+	{
+		objColumn = objTable.Columns.Item(i);
+
+		var prop = objColumn.Properties.Item(objColumn.Name);
+		output.writeLn(prop.Key + " = " + prop.Value);
+	}
+
+	//===============================================================================
+	// Loop through each column and Clear all the meta data
+	//
+	// Un-comment out the code below to remove the data created by this script
+	//===============================================================================
+	/*
+	for (var i = 0; i < objTable.Columns.Count; i++)
+	{
+		objColumn = objTable.Columns.Item(i);
+		objColumn.Properties.Clear();
+	}
+	*/
+
+	// Now Save that user meta data to disk
+	MyMeta.SaveUserMetaData();
+}
+%>
+##|BODY_END

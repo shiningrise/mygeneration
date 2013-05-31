@@ -1,0 +1,1 @@
+using System;using System.Collections;using System.Collections.Specialized;namespace Zeus.UserInterface{	public interface IGuiComboBox : IGuiListControl	{		string SelectedText { get; } 		string SelectedValue { get; set; }	}}

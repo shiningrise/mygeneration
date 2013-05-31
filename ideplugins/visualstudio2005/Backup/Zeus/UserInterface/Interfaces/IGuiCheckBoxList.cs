@@ -1,0 +1,1 @@
+using System;using System.Collections;using System.Collections.Specialized;namespace Zeus.UserInterface{	public interface IGuiCheckBoxList : IGuiListControl	{		void ClearSelected();		ArrayList SelectedItems  { get; }		void SelectAll();	}}

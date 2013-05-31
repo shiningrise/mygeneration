@@ -1,0 +1,1453 @@
+# lang langname lexer filefilters keywordcats
+lang ada SCLEX_ADA *.ads;*.adb Keywords
+* Keywords
+! abort abstract accept access aliased all array at begin body 
+! case constant declare delay delta digits do else elsif end entry exception exit for 
+! function generic goto if in is limited loop new null of others out package pragma 
+! private procedure protected raise range record renames requeue return reverse 
+! select separate subtype tagged task terminate then type until use when while with
+! abs and mod not or rem xor
+
+lang asm SCLEX_ASM *.asm CPU-instructions FPU-instructions Registers Directives Directive-operands Extended-instructions
+*CPU-instructions 
+! aaa aad aam aas adc add and call cbw 
+! clc cld cli cmc cmp cmps cmpsb cmpsw cwd daa das dec div esc hlt 
+! idiv imul in inc int into iret ja jae jb jbe jc jcxz je jg jge jl 
+! jle jmp jna jnae jnb jnbe jnc jne jng jnge jnl jnle jno jnp jns 
+! jnz jo jp jpe jpo js jz lahf lds lea les lods lodsb lodsw loop 
+! loope loopew loopne loopnew loopnz loopnzw loopw loopz loopzw 
+! mov movs movsb movsw mul neg nop not or out pop popf push pushf 
+! rcl rcr ret retf retn rol ror sahf sal sar sbb scas scasb scasw 
+! shl shr stc std sti stos stosb stosw sub test wait xchg xlat 
+! xlatb xor bound enter ins insb insw leave outs outsb outsw popa pusha pushw 
+! arpl lar lsl sgdt sidt sldt smsw str verr verw clts lgdt lidt lldt lmsw ltr 
+! bsf bsr bt btc btr bts cdq cmpsd cwde insd iretd iretdf  iretf 
+! jecxz lfs lgs lodsd loopd  looped  loopned  loopnzd  loopzd  lss 
+! movsd movsx movzx outsd popad popfd pushad pushd  pushfd scasd seta 
+! setae setb setbe setc sete setg setge setl setle setna setnae setnb 
+! setnbe setnc setne setng setnge setnl setnle setno setnp setns 
+! setnz seto setp setpe setpo sets setz shld shrd stosd 
+! bswap cmpxchg invd  invlpg  wbinvd  xadd 
+! lock rep repe repne repnz repz cflush cpuid emms femms 
+! cmovo cmovno cmovb cmovc cmovnae cmovae cmovnb cmovnc 
+! cmove cmovz cmovne cmovnz cmovbe cmovna cmova cmovnbe 
+! cmovs cmovns cmovp cmovpe cmovnp cmovpo cmovl cmovnge 
+! cmovge cmovnl cmovle cmovng cmovg cmovnle 
+! cmpxchg486 cmpxchg8b  
+! loadall loadall286 ibts icebp int1 int3 int01 int03 iretw 
+! popaw popfw pushaw pushfw rdmsr rdpmc rdshr rdtsc 
+! rsdc rsldt rsm rsts salc smi smint smintold svdc svldt svts 
+! syscall sysenter sysexit sysret ud0 ud1 ud2 umov xbts wrmsr wrshr
+
+*FPU-instructions 
+! f2xm1 fabs fadd faddp fbld fbstp fchs fclex fcom fcomp fcompp fdecstp 
+! fdisi fdiv fdivp fdivr fdivrp feni ffree fiadd ficom ficomp fidiv 
+! fidivr fild fimul fincstp finit fist fistp fisub fisubr fld fld1 
+! fldcw fldenv fldenvw fldl2e fldl2t fldlg2 fldln2 fldpi fldz fmul 
+! fmulp fnclex fndisi fneni fninit fnop fnsave fnsavew fnstcw fnstenv 
+! fnstenvw fnstsw fpatan fprem fptan frndint frstor frstorw fsave 
+! fsavew fscale fsqrt fst fstcw fstenv fstenvw fstp fstsw fsub fsubp 
+! fsubr fsubrp ftst fwait fxam fxch fxtract fyl2x fyl2xp1 
+! fsetpm fcos fldenvd fnsaved fnstenvd fprem1 frstord fsaved fsin fsincos 
+! fstenvd fucom fucomp fucompp fcomi fcomip ffreep 
+! fcmovb fcmove fcmovbe fcmovu fcmovnb fcmovne fcmovnbe fcmovnu
+*Registers 
+! ah al ax bh bl bp bx ch cl cr0 cr2 cr3 cr4 cs 
+! cx dh di dl dr0 dr1 dr2 dr3 dr6 dr7 ds dx eax ebp ebx ecx edi edx 
+! es esi esp fs gs si sp ss st tr3 tr4 tr5 tr6 tr7 
+! st0 st1 st2 st3 st4 st5 st6 st7 mm0 mm1 mm2 mm3 mm4 mm5 mm6 mm7 
+! xmm0 xmm1 xmm2 xmm3 xmm4 xmm5 xmm6 xmm7
+*Directives 
+! .186 .286 .286c .286p .287 .386 .386c .386p .387 .486 .486p 
+! .8086 .8087 .alpha .break .code .const .continue .cref .data .data?  
+! .dosseg .else .elseif .endif .endw .err .err1 .err2 .errb 
+! .errdef .errdif .errdifi .erre .erridn .erridni .errnb .errndef 
+! .errnz .exit .fardata .fardata? .if .lall .lfcond .list .listall 
+! .listif .listmacro .listmacroall  .model .no87 .nocref .nolist 
+! .nolistif .nolistmacro .radix .repeat .sall .seq .sfcond .stack 
+! .startup .tfcond .type .until .untilcxz .while .xall .xcref 
+! .xlist alias align assume catstr comm comment db dd df dosseg dq 
+! dt dup dw echo else elseif elseif1 elseif2 elseifb elseifdef elseifdif 
+! elseifdifi elseife elseifidn elseifidni elseifnb elseifndef end 
+! endif endm endp ends eq equ even exitm extern externdef extrn for 
+! forc ge goto group gt high highword if if1 if2 ifb ifdef ifdif 
+! ifdifi ife  ifidn ifidni ifnb ifndef include includelib instr invoke 
+! irp irpc label le length lengthof local low lowword lroffset 
+! lt macro mask mod .msfloat name ne offset opattr option org %out 
+! page popcontext proc proto ptr public purge pushcontext record 
+! repeat rept seg segment short size sizeof sizestr struc struct 
+! substr subtitle subttl textequ this title type typedef union while width
+*Directive-operands 
+! $ ? @b @f addr basic byte c carry? dword 
+! far far16 fortran fword near near16 overflow? parity? pascal qword  
+! real4  real8 real10 sbyte sdword sign? stdcall sword syscall tbyte 
+! vararg word zero? flat near32 far32 
+! abs all assumes at casemap common compact 
+! cpu dotname emulator epilogue error export expr16 expr32 farstack flat 
+! forceframe huge language large listing ljmp loadds m510 medium memory 
+! nearstack nodotname noemulator nokeyword noljmp nom510 none nonunique 
+! nooldmacros nooldstructs noreadonly noscoped nosignextend nothing 
+! notpublic oldmacros oldstructs os_dos para private prologue radix 
+! readonly req scoped setif2 smallstack tiny use16 use32 uses 
+*Extended-instructions
+! addpd addps addsd addss andpd andps andnpd andnps 
+! cmpeqpd cmpltpd cmplepd cmpunordpd cmpnepd cmpnltpd cmpnlepd cmpordpd 
+! cmpeqps cmpltps cmpleps cmpunordps cmpneps cmpnltps cmpnleps cmpordps 
+! cmpeqsd cmpltsd cmplesd cmpunordsd cmpnesd cmpnltsd cmpnlesd cmpordsd 
+! cmpeqss cmpltss cmpless cmpunordss cmpness cmpnltss cmpnless cmpordss 
+! comisd comiss cvtdq2pd cvtdq2ps cvtpd2dq cvtpd2pi cvtpd2ps 
+! cvtpi2pd cvtpi2ps cvtps2dq cvtps2pd cvtps2pi cvtss2sd cvtss2si 
+! cvtsd2si cvtsd2ss cvtsi2sd cvtsi2ss 
+! cvttpd2dq cvttpd2pi cvttps2dq cvttps2pi cvttsd2si cvttss2si 
+! divpd divps divsd divss fxrstor fxsave ldmxscr lfence mfence 
+! maskmovdqu maskmovdq maxpd maxps paxsd maxss minpd minps minsd minss 
+! movapd movaps movdq2q movdqa movdqu movhlps movhpd movhps movd movq 
+! movlhps movlpd movlps movmskpd movmskps movntdq movnti movntpd movntps 
+! movntq movq2dq movsd movss movupd movups mulpd mulps mulsd mulss 
+! orpd orps packssdw packsswb packuswb paddb paddsb paddw paddsw 
+! paddd paddsiw paddq paddusb paddusw pand pandn pause paveb pavgb pavgw 
+! pavgusb pdistib pextrw pcmpeqb pcmpeqw pcmpeqd pcmpgtb pcmpgtw pcmpgtd 
+! pf2id pf2iw pfacc pfadd pfcmpeq pfcmpge pfcmpgt pfmax pfmin pfmul 
+! pmachriw pmaddwd pmagw pmaxsw pmaxub pminsw pminub pmovmskb 
+! pmulhrwc pmulhriw pmulhrwa pmulhuw pmulhw pmullw pmuludq 
+! pmvzb pmvnzb pmvlzb pmvgezb pfnacc pfpnacc por prefetch prefetchw 
+! prefetchnta prefetcht0 prefetcht1 prefetcht2 pfrcp pfrcpit1 pfrcpit2 
+! pfrsqit1 pfrsqrt pfsub pfsubr pi2fd pf2iw pinsrw psadbw pshufd 
+! pshufhw pshuflw pshufw psllw pslld psllq pslldq psraw psrad 
+! psrlw psrld psrlq psrldq psubb psubw psubd psubq psubsb psubsw 
+! psubusb psubusw psubsiw pswapd punpckhbw punpckhwd punpckhdq punpckhqdq 
+! punpcklbw punpcklwd punpckldq punpcklqdq pxor rcpps rcpss 
+! rsqrtps rsqrtss sfence shufpd shufps sqrtpd sqrtps sqrtsd sqrtss 
+! stmxcsr subpd subps subsd subss ucomisd ucomiss 
+! unpckhpd unpckhps unpcklpd unpcklps xorpd xorps
+
+lang asp SCLEX_ASP *.asp;*.aspx HTML-elements-and-attributes JavaScript-keywords VBScript-keywords Python-keywords PHP-keywords SGML-and-DTD-keywords 
+* HTML-elements-and-attributes 
+! a abbr acronym address applet area b base basefont 
+! bdo big blockquote body br button caption center 
+! cite code col colgroup dd del dfn dir div dl dt em 
+! fieldset font form frame frameset h1 h2 h3 h4 h5 h6 
+! head hr html i iframe img input ins isindex kbd label 
+! legend li link map menu meta noframes noscript 
+! object ol optgroup option p param pre q s samp 
+! script select small span strike strong style sub sup 
+! table tbody td textarea tfoot th thead title tr tt u ul 
+! var xml xmlns
+
+! abbr accept-charset accept accesskey action align alink 
+! alt archive axis background bgcolor border 
+! cellpadding cellspacing char charoff charset checked cite 
+! class classid clear codebase codetype color cols colspan 
+! compact content coords 
+! data datafld dataformatas datapagesize datasrc datetime 
+! declare defer dir disabled enctype event 
+! face for frame frameborder 
+! headers height href hreflang hspace http-equiv 
+! id ismap label lang language leftmargin link longdesc 
+! marginwidth marginheight maxlength media method multiple 
+! name nohref noresize noshade nowrap 
+! object onblur onchange onclick ondblclick onfocus 
+! onkeydown onkeypress onkeyup onload onmousedown 
+! onmousemove onmouseover onmouseout onmouseup 
+! onreset onselect onsubmit onunload 
+! profile prompt readonly rel rev rows rowspan rules 
+! scheme scope selected shape size span src standby start style 
+! summary tabindex target text title topmargin type usemap 
+! valign value valuetype version vlink vspace width 
+! text password checkbox radio submit reset 
+! file hidden image
+! public !doctype
+
+* JavaScript-keywords 
+! abstract boolean break byte case catch char class 
+! const continue debugger default delete do double else enum export extends 
+! final finally float for function goto if implements import in instanceof 
+! int interface long native new package private protected public 
+! return short static super switch synchronized this throw throws 
+! transient try typeof var void volatile while with
+
+* VBScript-keywords 
+! and begin case call continue do each else elseif end erase 
+! error event exit false for function get gosub goto if implement in load loop lset 
+! me mid new next not nothing on or property raiseevent rem resume return rset 
+! select set stop sub then to true unload until wend while with withevents 
+! attribute alias as boolean byref byte byval const compare currency date declare dim double 
+! enum explicit friend global integer let lib long module object option optional 
+! preserve private property public redim single static string type variant
+
+* Python-keywords 
+! and assert break class continue def del elif 
+! else except exec finally for from global if import in is lambda None 
+! not or pass print raise return try while yield
+
+* PHP-keywords 
+! and argv as argc break case cfunction class continue declare default do 
+! die echo else elseif empty enddeclare endfor endforeach endif endswitch 
+! endwhile e_all e_parse e_error e_warning eval exit extends false for 
+! foreach function global http_cookie_vars http_get_vars http_post_vars 
+! http_post_files http_env_vars http_server_vars if include include_once 
+! list new not null old_function or parent php_os php_self php_version 
+! print require require_once return static switch stdclass this true var 
+! xor virtual while __file__ __line__ __sleep __wakeup
+
+* SGML-and-DTD-keywords 
+! ELEMENT DOCTYPE ATTLIST ENTITY NOTATION
+
+# lang ave SCLEX_AVE *.ave Keywords Class Func
+# * Keywords 
+# ! nil true false else for if while then elseif end av self in exit
+
+# lang baan SCLEX_BAAN *.bc;*.cln Keywords
+# * Keywords 
+
+lang bash SCLEX_BASH *.sh;*.bsh Keywords
+* Keywords
+! alias 
+! ar asa awk banner basename bash bc bdiff break 
+! bunzip2 bzip2 cal calendar case cat cc cd chmod cksum 
+! clear cmp col comm compress continue cp cpio crypt 
+! csplit ctags cut date dc dd declare deroff dev df diff diff3 
+! dircmp dirname do done du echo ed egrep elif else env 
+! esac eval ex exec exit expand export expr false fc 
+! fgrep fi file find fmt fold for function functions 
+! getconf getopt getopts grep gres hash head help 
+! history iconv id if in integer jobs join kill local lc 
+! let line ln logname look ls m4 mail mailx make 
+! man mkdir more mt mv newgrp nl nm nohup ntps od 
+! pack paste patch pathchk pax pcat perl pg pr print 
+! printf ps pwd read readonly red return rev rm rmdir 
+! sed select set sh shift size sleep sort spell 
+! split start stop strings strip stty sum suspend 
+! sync tail tar tee test then time times touch tr 
+! trap true tsort tty type typeset ulimit umask unalias 
+! uname uncompress unexpand uniq unpack unset until 
+! uudecode uuencode vi vim vpax wait wc whence which 
+! while who wpaste wstart xargs zcat
+
+lang batch SCLEX_BATCH *.bat;*.cmd;*.nt Keywords
+* Keywords
+! rem set if exist errorlevel for in do 
+! break call chcp cd chdir choice cls country ctty date del erase dir echo 
+! exit goto loadfix loadhigh mkdir md move path pause prompt rename ren 
+! rmdir rd shift time type ver verify vol 
+! com con lpt nul
+
+lang conf SCLEX_CONF *.conf Directives Parameters
+* Directives
+! accessconfig accessfilename action addalt 
+! addaltbyencoding addaltbytype addcharset 
+! adddefaultcharset adddescription 
+! addencoding addhandler addicon addiconbyencoding 
+! addiconbytype addlanguage addmodule addmoduleinfo 
+! addtype agentlog alias aliasmatch 
+! allow allowconnect allowoverride anonymous 
+! anonymous_authoritative anonymous_logemail anonymous_mustgiveemail 
+! anonymous_nouserid anonymous_verifyemail authauthoritative 
+! authdbauthoritative authdbgroupfile authdbmauthoritative 
+! authdbmgroupfile authdbmgroupfile authdbuserfile authdbmuserfile 
+! authdigestfile authgroupfile authname authtype 
+! authuserfile bindaddress browsermatch browsermatchnocase 
+! bs2000account cachedefaultexpire cachedirlength cachedirlevels 
+! cacheforcecompletion cachegcinterval cachelastmodifiedfactor cachemaxexpire 
+! cachenegotiateddocs cacheroot cachesize checkspelling 
+! clearmodulelist contentdigest cookieexpires cookielog 
+! cookielog cookietracking coredumpdirectory customlog 
+! defaulticon defaultlanguage defaulttype define 
+! deny directory directorymatch directoryindex 
+! documentroot errordocument errorlog example 
+! expiresactive expiresbytype expiresdefault extendedstatus 
+! fancyindexing files filesmatch forcetype 
+! group header headername hostnamelookups 
+! identitycheck ifdefine ifmodule imapbase 
+! imapdefault imapmenu include indexignore 
+! indexoptions keepalive keepalivetimeout languagepriority 
+! limit limitexcept limitrequestbody limitrequestfields 
+! limitrequestfieldsize limitrequestline listen listenbacklog 
+! loadfile loadmodule location locationmatch 
+! lockfile logformat loglevel maxclients 
+! maxkeepaliverequests maxrequestsperchild maxspareservers metadir 
+! metafiles metasuffix mimemagicfile minspareservers 
+! mmapfile namevirtualhost nocache options order 
+! passenv pidfile port proxyblock proxydomain 
+! proxypass proxypassreverse proxyreceivebuffersize proxyremote 
+! proxyrequests proxyvia qsc readmename 
+! redirect redirectmatch redirectpermanent redirecttemp 
+! refererignore refererlog removehandler require 
+! resourceconfig rewritebase rewritecond rewriteengine 
+! rewritelock rewritelog rewriteloglevel rewritemap 
+! rewriteoptions rewriterule rlimitcpu rlimitmem 
+! rlimitnproc satisfy scoreboardfile script 
+! scriptalias scriptaliasmatch scriptinterpretersource scriptlog 
+! scriptlogbuffer scriptloglength sendbuffersize 
+! serveradmin serveralias servername serverpath 
+! serverroot serversignature servertokens servertype 
+! setenv setenvif setenvifnocase sethandler 
+! singlelisten startservers threadsperchild timeout 
+! transferlog typesconfig unsetenv usecanonicalname 
+! user userdir virtualhost virtualdocumentroot 
+! virtualdocumentrootip virtualscriptalias virtualscriptaliasip 
+! xbithack from all
+
+* Parameters
+! on off standalone inetd 
+! force-response-1.0 downgrade-1.0 nokeepalive 
+! indexes includes followsymlinks none 
+! x-compress x-gzip
+
+lang cpp SCLEX_CPP *.c;*.cc;*.cpp;*.cxx;*.h;*.hh;*.hpp;*.hxx Primary-keywords-and-identifiers Secondary-keywords-and-identifiers Documentation-comment-keywords Unused Global-classes-and-typedefs
+* Primary-keywords-and-identifiers 
+! and and_eq asm auto bitand bitor bool break 
+! case catch char class compl const const_cast continue 
+! default delete do double dynamic_cast else enum explicit export extern false float for 
+! friend goto if inline int long mutable namespace new not not_eq 
+! operator or or_eq private protected public 
+! register reinterpret_cast return short signed sizeof static static_cast struct switch 
+! template this throw true try typedef typeid typename union unsigned using 
+! virtual void volatile wchar_t while xor xor_eq
+
+# Secondary-keywords-and-identifiers  is for user supplied keywords.
+# maybe we'll use the c standard libary. or the Win32 API
+* Secondary-keywords-and-identifiers 
+
+* Documentation-comment-keywords 
+! a addindex addtogroup anchor arg attention 
+! author b brief bug c class code date def defgroup deprecated dontinclude 
+! e em endcode endhtmlonly endif endlatexonly endlink endverbatim enum example exception 
+! f$ f[ f] file fn hideinitializer htmlinclude htmlonly 
+! if image include ingroup internal invariant interface latexonly li line link 
+! mainpage name namespace nosubgrouping note overload 
+! p page par param post pre ref relates remarks return retval 
+! sa section see showinitializer since skip skipline struct subsection 
+! test throw todo typedef union until 
+! var verbatim verbinclude version warning weakgroup $ @ &gt; &lt; \ &amp; # { }
+
+# I'm unclear as to what these are for.. Scite Doesn't make them go.
+* Unused 
+
+# I'm unclear as to what these are for.. Scite Doesn't make them go.
+* Global-classes-and-typedefs
+
+lang cs SCLEX_CPP *.cs Primary-keywords-and-identifiers Secondary-keywords-and-identifiers Documentation-comment-keywords Unused Global-classes-and-typedefs
+* Primary-keywords-and-identifiers 
+! abstract as base bool break byte case catch char checked class 
+! const continue decimal default delegate do double else enum 
+! event explicit extern false finally fixed float for foreach goto if 
+! implicit in int interface internal is lock long namespace new null 
+! object operator out override params private protected public 
+! readonly ref return sbyte sealed short sizeof stackalloc static 
+! string struct switch this throw true try typeof uint ulong 
+! unchecked unsafe ushort using virtual void while
+
+* Secondary-keywords-and-identifiers 
+* Documentation-comment-keywords 
+* Unused 
+* Global-classes-and-typedefs
+
+lang css SCLEX_CSS *.css Keywords Pseudo-classes
+* Keywords 
+* Pseudo-classes
+
+lang diff SCLEX_DIFF *.diff;*.patch;*.rej Keywords
+* Keywords 
+
+lang docbook SCLEX_HTML *.docbook HTML-elements-and-attributes JavaScript-keywords VBScript-keywords Python-keywords PHP-keywords SGML-and-DTD-keywords 
+* HTML-elements-and-attributes
+! abbrev abstract accel ackno acronym action address affiliation alt anchor 
+! answer appendix appendixinfo application area areaset areaspec arg article 
+! articleinfo artpagenums attribution audiodata audioobject author authorblurb 
+! authorgroup authorinitials beginpage bibliocoverage bibliodiv biblioentry 
+! bibliography bibliographyinfo biblioid bibliomisc bibliomixed bibliomset 
+! bibliorelation biblioset bibliosource blockinfo blockquote book bookinfo 
+! bridgehead callout calloutlist caption caution chapter chapterinfo citation 
+! citebiblioid citerefentry citetitle city classname classsynopsis classsynopsisinfo 
+! cmdsynopsis co collab collabname colophon colspec command computeroutput 
+! confdates confgroup confnum confsponsor conftitle constant constraint 
+! constraintdef constructorsynopsis contractnum contractsponsor contrib 
+! copyright coref corpauthor corpname country database date dedication 
+! destructorsynopsis edition editor email emphasis entry entrytbl envar 
+! epigraph equation errorcode errorname errortext errortype example 
+! exceptionname fax fieldsynopsis figure filename firstname firstterm 
+! footnote footnoteref foreignphrase formalpara funcdef funcparams 
+! funcprototype funcsynopsis funcsynopsisinfo function glossary glossaryinfo 
+! glossdef glossdiv glossentry glosslist glosssee glossseealso glossterm 
+! graphic graphicco group guibutton guiicon guilabel guimenu guimenuitem 
+! guisubmenu hardware highlights holder honorific htm imagedata imageobject 
+! imageobjectco important index indexdiv indexentry indexinfo indexterm 
+! informalequation informalexample informalfigure informaltable initializer 
+! inlineequation inlinegraphic inlinemediaobject interface interfacename 
+! invpartnumber isbn issn issuenum itemizedlist itermset jobtitle keycap 
+! keycode keycombo keysym keyword keywordset label legalnotice lhs lineage 
+! lineannotation link listitem iteral literallayout lot lotentry manvolnum 
+! markup medialabel mediaobject mediaobjectco member menuchoice methodname 
+! methodparam methodsynopsis mm modespec modifier ousebutton msg msgaud 
+! msgentry msgexplan msginfo msglevel msgmain msgorig msgrel msgset msgsub 
+! msgtext nonterminal note objectinfo olink ooclass ooexception oointerface 
+! option optional orderedlist orgdiv orgname otheraddr othercredit othername 
+! pagenums para paramdef parameter part partinfo partintro personblurb 
+! personname phone phrase pob postcode preface prefaceinfo primary primaryie 
+! printhistory procedure production productionrecap productionset productname 
+! productnumber programlisting programlistingco prompt property pubdate publisher 
+! publishername pubsnumber qandadiv qandaentry qandaset question quote refclass 
+! refdescriptor refentry refentryinfo refentrytitle reference referenceinfo 
+! refmeta refmiscinfo refname refnamediv refpurpose refsect1 refsect1info refsect2 
+! refsect2info refsect3 refsect3info refsection refsectioninfo refsynopsisdiv 
+! refsynopsisdivinfo releaseinfo remark replaceable returnvalue revdescription 
+! revhistory revision revnumber revremark rhs row sbr screen screenco screeninfo 
+! screenshot secondary secondaryie sect1 sect1info sect2 sect2info sect3 sect3info 
+! sect4 sect4info sect5 sect5info section sectioninfo see seealso seealsoie 
+! seeie seg seglistitem segmentedlist segtitle seriesvolnums set setindex 
+! setindexinfo setinfo sgmltag shortaffil shortcut sidebar sidebarinfo simpara 
+! simplelist simplemsgentry simplesect spanspec state step street structfield 
+! structname subject subjectset subjectterm subscript substeps subtitle 
+! superscript surname sv symbol synopfragment synopfragmentref synopsis 
+! systemitem table tbody term tertiary tertiaryie textdata textobject tfoot 
+! tgroup thead tip title titleabbrev toc tocback tocchap tocentry tocfront 
+! toclevel1 toclevel2 toclevel3 toclevel4 toclevel5 tocpart token trademark 
+! type ulink userinput varargs variablelist varlistentry varname videodata 
+! videoobject void volumenum warning wordasword xref year
+! arch condition conformance id lang os remap role revision revisionflag security 
+! userlevel vendor xreflabel 
+! status label endterm linkend space width
+* JavaScript-keywords 
+* VBScript-keywords 
+* Python-keywords 
+* PHP-keywords 
+* SGML-and-DTD-keywords 
+ELEMENT DOCTYPE ATTLIST ENTITY NOTATION
+
+lang eiffel SCLEX_EIFFEL *.e Keywords
+* Keywords 
+
+lang erlang SCLEX_ERLANG *.erl Keywords
+* Keywords 
+
+lang errorlist SCLEX_ERRORLIST *  Keywords
+* Keywords 
+
+lang escript SCLEX_ESCRIPT *.src;*.em Primary-keywords-and-identifiers Intrinsic-functions Extended-and-user-defined-functions
+* Primary-keywords-and-identifiers 
+* Intrinsic-functions 
+* Extended-and-user-defined-functions
+
+lang f77 SCLEX_F77 *.f;*.for Primary-keywords-and-identifiers Intrinsic-functions Extended-and-user-defined-functions
+* Primary-keywords-and-identifiers 
+* Intrinsic-functions 
+* Extended-and-user-defined-functions
+
+lang f95 SCLEX_FORTRAN *.f90;*.f95;*.f2k Primary-keywords-and-identifiers Intrinsic-functions Extended-and-user-defined-functions
+* Primary-keywords-and-identifiers 
+* Intrinsic-functions 
+* Extended-and-user-defined-functions
+
+lang forth SCLEX_FORTH *.forth control-keywords keywords definition-words prewords-with-one-argument prewords-with-two-arguments string-definition-keywords
+* control-keywords 
+* keywords 
+* definition-words 
+* prewords-with-one-argument 
+* prewords-with-two-arguments 
+* string-definition-keywords
+
+lang html SCLEX_HTML *.html;*.htm;*.asp;*.shtml;*.htd;*.php3;*.phtml;*.php;*.htt;*.cfm;*.tpl;*.dtd;*.hta HTML-elements-and-attributes JavaScript-keywords VBScript-keywords Python-keywords PHP-keywords SGML-and-DTD-keywords 
+* HTML-elements-and-attributes
+$ asp HTML-elements-and-attributes
+* JavaScript-keywords 
+$ asp JavaScript-keywords 
+* VBScript-keywords 
+$ asp VBScript-keywords 
+* Python-keywords 
+$ asp Python-keywords 
+* PHP-keywords 
+$ asp PHP-keywords 
+* SGML-and-DTD-keywords 
+$ asp SGML-and-DTD-keywords 
+
+lang idl SCLEX_CPP *.idl;*.odl Primary-keywords-and-identifiers Secondary-keywords-and-identifiers Documentation-comment-keywords Unused Global-classes-and-typedefs
+* Primary-keywords-and-identifiers
+! aggregatable allocate appobject arrays async async_uuid 
+! auto_handle 
+! bindable boolean broadcast byte byte_count 
+! call_as callback char coclass code comm_status 
+! const context_handle context_handle_noserialize 
+! context_handle_serialize control cpp_quote custom 
+! decode default defaultbind defaultcollelem 
+! defaultvalue defaultvtable dispinterface displaybind dllname 
+! double dual 
+! enable_allocate encode endpoint entry enum error_status_t 
+! explicit_handle 
+! fault_status first_is float 
+! handle_t heap helpcontext helpfile helpstring 
+! helpstringcontext helpstringdll hidden hyper 
+! id idempotent ignore iid_as iid_is immediatebind implicit_handle 
+! import importlib in include in_line int __int64 __int3264 interface 
+! last_is lcid length_is library licensed local long 
+! max_is maybe message methods midl_pragma 
+! midl_user_allocate midl_user_free min_is module ms_union 
+! ncacn_at_dsp ncacn_dnet_nsp ncacn_http ncacn_ip_tcp 
+! ncacn_nb_ipx ncacn_nb_nb ncacn_nb_tcp ncacn_np 
+! ncacn_spx ncacn_vns_spp ncadg_ip_udp ncadg_ipx ncadg_mq 
+! ncalrpc nocode nonbrowsable noncreatable nonextensible notify 
+! object odl oleautomation optimize optional out out_of_line 
+! pipe pointer_default pragma properties propget propput propputref 
+! ptr public 
+! range readonly ref represent_as requestedit restricted retval 
+! shape short signed size_is small source strict_context_handle 
+! string struct switch switch_is switch_type 
+! transmit_as typedef 
+! uidefault union unique unsigned user_marshal usesgetlasterror uuid 
+! v1_enum vararg version void wchar_t wire_marshal
+! handle
+! attribute native noscript scriptable shared wstring inout
+* Secondary-keywords-and-identifiers 
+* Documentation-comment-keywords 
+* Unused 
+* Global-classes-and-typedefs
+
+lang java SCLEX_CPP *.java;*.jav Primary-keywords-and-identifiers Secondary-keywords-and-identifiers Documentation-comment-keywords Unused Global-classes-and-typedefs
+* Primary-keywords-and-identifiers 
+! abstract assert boolean break byte case catch char class 
+! const continue default do double else extends final finally float for future 
+! generic goto if implements import inner instanceof int interface long 
+! native new null outer package private protected public rest 
+! return short static super switch synchronized this throw throws 
+! transient try var void volatile while
+
+* Secondary-keywords-and-identifiers 
+* Documentation-comment-keywords 
+* Unused 
+* Global-classes-and-typedefs
+
+lang javascript SCLEX_CPP *.js Primary-keywords-and-identifiers Secondary-keywords-and-identifiers Documentation-comment-keywords Unused Global-classes-and-typedefs
+* Primary-keywords-and-identifiers 
+$ asp JavaScript-keywords
+* Secondary-keywords-and-identifiers 
+* Documentation-comment-keywords 
+* Unused 
+* Global-classes-and-typedefs
+
+# I got nothin' on KIX
+#lang kix SCLEX_KIX *.kix Keywords1 Keywords2 Keywords3
+#* Keywords1 
+#* Keywords2 
+#* Keywords3
+
+lang tex SCLEX_TEX *.tex;*.sty Keywords
+* Keywords
+! above abovedisplayshortskip abovedisplayskip 
+! abovewithdelims accent adjdemerits advance afterassignment 
+! aftergroup atop atopwithdelims 
+! badness baselineskip batchmode begingroup 
+! belowdisplayshortskip belowdisplayskip binoppenalty botmark 
+! box boxmaxdepth brokenpenalty 
+! catcode char chardef cleaders closein closeout clubpenalty 
+! copy count countdef cr crcr csname 
+! day deadcycles def defaulthyphenchar defaultskewchar 
+! delcode delimiter delimiterfactor delimeters 
+! delimitershortfall delimeters dimen dimendef discretionary 
+! displayindent displaylimits displaystyle 
+! displaywidowpenalty displaywidth divide 
+! doublehyphendemerits dp dump 
+! edef else emergencystretch end endcsname endgroup endinput 
+! endlinechar eqno errhelp errmessage errorcontextlines 
+! errorstopmode escapechar everycr everydisplay everyhbox 
+! everyjob everymath everypar everyvbox exhyphenpenalty 
+! expandafter  
+! fam fi finalhyphendemerits firstmark floatingpenalty font 
+! fontdimen fontname futurelet 
+! gdef global group globaldefs 
+! halign hangafter hangindent hbadness hbox hfil horizontal 
+! hfill horizontal hfilneg hfuzz hoffset holdinginserts hrule 
+! hsize hskip hss horizontal ht hyphenation hyphenchar 
+! hyphenpenalty hyphen 
+! if ifcase ifcat ifdim ifeof iffalse ifhbox ifhmode ifinner 
+! ifmmode ifnum ifodd iftrue ifvbox ifvmode ifvoid ifx 
+! ignorespaces immediate indent input inputlineno input 
+! insert insertpenalties interlinepenalty 
+! jobname 
+! kern 
+! language lastbox lastkern lastpenalty lastskip lccode 
+! leaders left lefthyphenmin leftskip leqno let limits 
+! linepenalty line lineskip lineskiplimit long looseness 
+! lower lowercase 
+! mag mark mathaccent mathbin mathchar mathchardef mathchoice 
+! mathclose mathcode mathinner mathop mathopen mathord 
+! mathpunct mathrel mathsurround maxdeadcycles maxdepth 
+! meaning medmuskip message mkern month moveleft moveright 
+! mskip multiply muskip muskipdef 
+! newlinechar noalign noboundary noexpand noindent nolimits 
+! nonscript scriptscript nonstopmode nulldelimiterspace 
+! nullfont number 
+! omit openin openout or outer output outputpenalty over 
+! overfullrule overline overwithdelims 
+! pagedepth pagefilllstretch pagefillstretch pagefilstretch 
+! pagegoal pageshrink pagestretch pagetotal par parfillskip 
+! parindent parshape parskip patterns pausing penalty 
+! postdisplaypenalty predisplaypenalty predisplaysize 
+! pretolerance prevdepth prevgraf 
+! radical raise read relax relpenalty right righthyphenmin 
+! rightskip romannumeral 
+! scriptfont scriptscriptfont scriptscriptstyle scriptspace 
+! scriptstyle scrollmode setbox setlanguage sfcode shipout 
+! show showbox showboxbreadth showboxdepth showlists showthe 
+! skewchar skip skipdef spacefactor spaceskip span special 
+! splitbotmark splitfirstmark splitmaxdepth splittopskip 
+! string 
+! tabskip textfont textstyle the thickmuskip thinmuskip time 
+! toks toksdef tolerance topmark topskip tracingcommands 
+! tracinglostchars tracingmacros tracingonline tracingoutput 
+! tracingpages tracingparagraphs tracingrestores tracingstats 
+! uccode uchyph underline unhbox unhcopy unkern unpenalty 
+! unskip unvbox unvcopy uppercase 
+! vadjust valign vbadness vbox vcenter vfil vfill vfilneg 
+! vfuzz voffset vrule vsize vskip vsplit vss vtop 
+! wd widowpenalty write 
+! xdef xleaders xspaceskip 
+! year
+
+! TeX 
+! bgroup egroup endgraf space empty null 
+! newcount newdimen newskip newmuskip newbox newtoks newhelp newread newwrite newfam newlanguage newinsert newif 
+! maxdimen magstephalf magstep 
+! frenchspacing nonfrenchspacing normalbaselines obeylines obeyspaces raggedright ttraggedright 
+! thinspace negthinspace enspace enskip quad qquad 
+! smallskip medskip bigskip removelastskip topglue vglue hglue 
+! break nobreak allowbreak filbreak goodbreak smallbreak medbreak bigbreak 
+! line leftline rightline centerline rlap llap underbar strutbox strut 
+! cases matrix pmatrix bordermatrix eqalign displaylines eqalignno leqalignno 
+! pageno folio tracingall showhyphens fmtname fmtversion 
+! hphantom vphantom phantom smash
+
+
+lang latex SCLEX_LATEX *.tex;*.sty;*.aux;*.toc;*.idx;*.tui;*.tuo Keywords
+* Keywords
+$ tex Keywords
+! beginL beginR botmarks 
+! clubpenalties currentgrouplevel currentgrouptype 
+! currentifbranch currentiflevel currentiftype 
+! detokenize dimexpr displaywidowpenalties 
+! endL endR eTeXrevision eTeXversion everyeof 
+! firstmarks fontchardp fontcharht fontcharic fontcharwd 
+! glueexpr glueshrink glueshrinkorder gluestretch 
+! gluestretchorder gluetomu 
+! ifcsname ifdefined iffontchar interactionmode 
+! interactionmode interlinepenalties 
+! lastlinefit lastnodetype 
+! marks topmarks middle muexpr mutoglue 
+! numexpr 
+! pagediscards parshapedimen parshapeindent parshapelength 
+! predisplaydirection 
+! savinghyphcodes savingvdiscards scantokens showgroups 
+! showifs showtokens splitdiscards splitfirstmarks 
+! TeXXeTstate tracingassigns tracinggroups tracingifs 
+! tracingnesting tracingscantokens 
+! unexpanded unless 
+! widowpenalties
+
+
+lang lisp SCLEX_LISP *.lsp;*.lisp  Keywords
+* Keywords
+! not defun + - * / = &gt; &lt; &gt;= &lt;= princ \
+! eval apply funcall quote identity function complement backquote lambda set setq setf \
+! defun defmacro gensym make symbol intern symbol name symbol value symbol plist get \
+! getf putprop remprop hash make array aref car cdr caar cadr cdar cddr caaar caadr cadar \
+! caddr cdaar cdadr cddar cdddr caaaar caaadr caadar caaddr cadaar cadadr caddar cadddr \
+! cdaaar cdaadr cdadar cdaddr cddaar cddadr cdddar cddddr cons list append reverse last nth \
+! nthcdr member assoc subst sublis nsubst  nsublis remove length list length \
+! mapc mapcar mapl maplist mapcan mapcon rplaca rplacd nconc delete atom symbolp numberp \
+! boundp null listp consp minusp zerop plusp evenp oddp eq eql equal cond case and or let l if prog \
+! prog1 prog2 progn go return do dolist dotimes catch throw error cerror break \
+! continue errset baktrace evalhook truncate float rem min max abs sin cos tan expt exp sqrt \
+! random logand logior logxor lognot bignums logeqv lognand lognor \
+! logorc2 logtest logbitp logcount integer length nil
+
+lang lot SCLEX_LOT *.lot None
+
+lang lout SCLEX_LOUT *.lt identifiers delimiters keywords
+* identifiers
+! @OptGall @Filter @FilterIn @FilterOut 
+! @FilterErr @FontDef @Family @Face @Name @Metrics @ExtraMetrics 
+! @Mapping @Recode @Common @Rump @Meld @Insert @OneOf @Next @Plus 
+! @Minus @Wide @High @HShift @VShift @BeginHeaderComponent 
+! @EndHeaderComponent @SetHeaderComponent @ClearHeaderComponent @OneCol 
+! @OneRow @HScale @VScale @HCover @VCover @Scale @KernShrink @HContract 
+! @VContract @HLimited @VLimited @HExpand @VExpand @StartHVSpan 
+! @StartHSpan @StartVSpan @HSpan @VSpan @PAdjust @HAdjust @VAdjust 
+! @Rotate @Background @IncludeGraphic @SysIncludeGraphic @Graphic 
+! @LinkSource @LinkDest @URLLink @PlainGraphic @Verbatim @RawVerbatim 
+! @Case @Yield @BackEnd @Char @Font @Space @YUnit @ZUnit @Break 
+! @Underline @SetColour @SetColor @SetTexture @Outline @Language 
+! @CurrLang @CurrFamily @CurrFace @CurrYUnit @CurrZUnit @LEnv @LClos 
+! @LUse @LEO @Open @Use @NotRevealed @Tagged @Database @SysDatabase 
+! @Include @SysInclude @IncludeGraphicRepeated @PrependGraphic 
+! @SysIncludeGraphicRepeated @SysPrependGraphic @Target @Null 
+! @PageLabel @Galley @ForceGalley @LInput @Split @Tag @Key @Optimize 
+! @Merge @Enclose @Begin @End @Moment @Second @Minute @Hour @Day @Month 
+! @Year @Century @WeekDay @YearDay @DaylightSaving @@A @@B @@C @@D @@E @@V
+
+* delimiters
+! &amp;&amp;&amp; &amp;&amp; &amp; ^// ^/ ^|| ^| ^&amp; // / || |
+* keywords
+! def langdef force horizontally into 
+! extend import export precedence associativity left right body macro 
+! named compulsory following preceding foll_or_prec now
+
+lang lua SCLEX_LUA *.lua Keywords Basic-functions String-table-math-functions coroutines XXX YYY
+* Keywords
+! and break do else elseif end false for function if 
+! in local nil not or repeat return then true until while
+* Basic-functions 
+! VERSION assert collectgarbage dofile error gcinfo loadfile loadstring 
+! print tonumber tostring type unpack
+! ALERT _ERRORMESSAGE _INPUT _PROMPT _OUTPUT 
+! _STDERR _STDIN _STDOUT call dostring foreach foreachi getn globals newtype 
+! rawget rawset require sort tinsert tremove
+! _G getfenv getmetatable ipairs loadlib next pairs pcall 
+! rawegal rawget rawset require setfenv setmetatable xpcall 
+! string table math coroutine io os debug
+
+* String-table-math-functions 
+! abs acos asin atan atan2 ceil cos deg exp 
+! floor format frexp gsub ldexp log log10 max min mod rad random randomseed 
+! sin sqrt strbyte strchar strfind strlen strlower strrep strsub strupper tan
+! string.byte string.char string.dump string.find string.len 
+! string.lower string.rep string.sub string.upper string.format string.gfind string.gsub 
+! table.concat table.foreach table.foreachi table.getn table.sort table.insert table.remove table.setn 
+! math.abs math.acos math.asin math.atan math.atan2 math.ceil math.cos math.deg math.exp 
+! math.floor math.frexp math.ldexp math.log math.log10 math.max math.min math.mod 
+! math.pi math.rad math.random math.randomseed math.sin math.sqrt math.tan
+* coroutines 
+! openfile closefile readfrom writeto appendto 
+! remove rename flush seek tmpfile tmpname read write 
+! clock date difftime execute exit getenv setlocale time
+! coroutine.create coroutine.resume coroutine.status 
+! coroutine.wrap coroutine.yield 
+! io.close io.flush io.input io.lines io.open io.output io.read io.tmpfile io.type io.write 
+! io.stdin io.stdout io.stderr 
+! os.clock os.date os.difftime os.execute os.exit os.getenv os.remove os.rename 
+! os.setlocale os.time os.tmpname
+* XXX 
+* YYY
+
+lang make SCLEX_MAKEFILE makefile;Makefile;*.mak;configure*  Keywords
+* Keywords
+
+lang matlab SCLEX_MATLAB *.m.matlab;*.m;*.m.octave Keywords
+* Keywords
+! break case catch continue else elseif end for function
+! global if otherwise persistent return switch try while
+
+lang metapost SCLEX_METAPOST *.mp;*.mpx Metapost Metafun
+* Metapost
+! btex verbatimtex etex
+! charcode day linecap linejoin miterlimit month pausing 
+! prologues showstopping time tracingcapsules tracingchoices 
+! tracingcommands tracingequations tracinglostchars 
+! tracingmacros tracingonline tracingoutput tracingrestores 
+! tracingspecs tracingstats tracingtitles truecorners 
+! warningcheck year 
+! false nullpicture pencircle true 
+! and angle arclength arctime ASCII bluepart boolean bot 
+! char color cosd cycle decimal directiontime floor fontsize 
+! greenpart hex infont intersectiontimes known length llcorner 
+! lrcorner makepath makepen mexp mlog normaldeviate not 
+! numeric oct odd or path pair pen penoffset picture point 
+! postcontrol precontrol redpart reverse rotated scaled 
+! shifted sind slanted sqrt str string subpath substring 
+! transform transformed ulcorner uniformdeviate unknown 
+! urcorner xpart xscaled xxpart xypart ypart yscaled yxpart 
+! yypart zscaled 
+! addto clip input interim let newinternal save setbounds 
+! shipout show showdependencies showtoken showvariable 
+! special 
+! begingroup endgroup of curl tension and controls 
+! reflectedabout rotatedaround interpath on off beginfig 
+! endfig def vardef enddef epxr suffix text primary secondary 
+! tertiary primarydef secondarydef tertiarydef top bottom 
+! ulft urt llft lrt randomseed also contour doublepath 
+! withcolor withpen dashed if else elseif fi for endfor forever exitif 
+! forsuffixes downto upto step until 
+! charlist extensible fontdimen headerbyte kern ligtable 
+! boundarychar chardp charext charht charic charwd designsize 
+! fontmaking charexists 
+! cullit currenttransform gfcorners grayfont hround 
+! imagerules lowres_fix nodisplays notransforms openit 
+! displaying currentwindow screen_rows screen_cols 
+! pixels_per_inch cull display openwindow numspecial 
+! totalweight autorounding fillin proofing tracingpens 
+! xoffset chardx granularity smoothing turningcheck yoffset 
+! chardy hppp tracingedges vppp 
+! extra_beginfig extra_endfig mpxbreak 
+! end
+! ahangle ahlength bboxmargin defaultpen defaultscale 
+! labeloffset background currentpen currentpicture cuttings 
+! defaultfont extra_beginfig extra_endfig 
+! beveled black blue bp butt cc cm dd ditto down epsilon 
+! evenly fullcircle green halfcircle identity in infinity left 
+! mitered mm origin pensquare pt quartercircle red right 
+! rounded squared unitsquare up white withdots 
+! abs bbox ceiling center cutafter cutbefore dir 
+! directionpoint div dotprod intersectionpoint inverse mod lft 
+! round rt unitvector whatever 
+! cutdraw draw drawarrow drawdblarrow fill filldraw drawdot 
+! loggingall pickup tracingall tracingnone undraw unfill 
+! unfilldraw 
+! buildcycle dashpattern decr dotlabel dotlabels drawoptions 
+! incr label labels max min thelabel z 
+! beginchar blacker capsule_end change_width 
+! define_blacker_pixels define_corrected_pixels 
+! define_good_x_pixels define_good_y_pixels 
+! define_horizontal_corrected_pixels define_pixels 
+! define_whole_blacker_pixels define_whole_pixels 
+! define_whole_vertical_blacker_pixels 
+! define_whole_vertical_pixels endchar extra_beginchar 
+! extra_endchar extra_setup font_coding_scheme
+! font_extra_space
+* Metafun
+
+lang mmixal SCLEX_MMIXAL *.mms Operation-Codes Special-Register Predefined-Symbols
+* Operation-Codes 
+! 2ADDU 4ADDU 8ADDU 16ADDU ADD ADDU AND ANDNH ANDNL ANDNMH ANDNML 
+! BDIF BEV BN BNN BNP BNZ BOD BP BSPEC BYTE BZ CMP CMPU CSEV CSN CSNN CSNP CSNZ CSOD CSP CSWAP CSZ 
+! DIV DIVU ESPEC EXPR FADD FCMP FCMPE FDIV FEQL FEQLE FIX FIXU FLOT FLOTU FMUL FREM FSQRT FSUB FUN FUNE 
+! GET GETA GO GREG I_BIT INCH INCL INCMH INCML IS JMP LDA LDB LDBU LDHT LDO LDOU LDSF LDT LDTU LDUNC LDVTS LDW LDWU LOC LOCAL 
+! MOR MUL MULU MUX MXOR NAND NEG NEGU NNIX NOR NXOR O_BIT OCTA ODIF OR ORH ORL ORMH ORML ORN 
+! PBEV PBN PBNN PBNP PBNZ PBOD PBP PBZ POP PREFIX PREGO PRELD PREST PUSHGO PUSHJ PUT 
+! RESUME SAVE SET SETH SETL SETMH SETML SFLOT SFLOTU SL SLU SR SRU 
+! STB STBU STCO STHT STO STOU STSF STT STTU STUNC STW STWU SUB SUBU SWYM SYNC SYNCD TDIF TETRA TRAP TRIP UNSAVE 
+! WDIF WYDEXOR ZSEV ZSN ZSNN ZSNP ZSNZ ZSOD ZSP ZSZ
+* Special-Register 
+! rA rB rC rD rE rF rG rH rI rJ rK rL rM rN rO rP rQ rR rS rT rU rV rW rX rY rZ rBB rTT rWW rXX rYY rZZ
+* Predefined-Symbols
+! @ Text_Segment Data_Segment Pool_Segment Stack_Segment 
+! StdErr StdIn StdOut 
+! Fopen Fclose Fread Fwrite Fgets Fputs Fgetws Fputws Ftell Fseek 
+! TextRead TextWrite BinaryRead BinaryWrite BinaryReadWrite
+
+lang plsql SCLEX_SQL *.spec;*.body;*.sps;*.spb;*.sf;*.sp Keywords
+lang sql SCLEX_SQL *.sql Keywords
+* Keywords
+
+! absolute action add admin after aggregate 
+! alias all allocate alter and any are array as asc 
+! assertion at authorization 
+! before begin binary bit blob boolean both breadth by 
+! call cascade cascaded case cast catalog char character 
+! check class clob close collate collation column commit 
+! completion connect connection constraint constraints 
+! constructor continue corresponding create cross cube current 
+! current_date current_path current_role current_time current_timestamp 
+! current_user cursor cycle 
+! data date day deallocate dec decimal declare default 
+! deferrable deferred delete depth deref desc describe descriptor 
+! destroy destructor deterministic dictionary diagnostics disconnect 
+! distinct domain double drop dynamic 
+! each else end end-exec equals escape every except 
+! exception exec execute external 
+! false fetch first float for foreign found from free full 
+! function 
+! general get global go goto grant group grouping 
+! having host hour 
+! identity if ignore immediate in indicator initialize initially 
+! inner inout input insert int integer intersect interval 
+! into is isolation iterate 
+! join 
+! key 
+! language large last lateral leading left less level like 
+! limit local localtime localtimestamp locator 
+! map match minute modifies modify module month 
+! names national natural nchar nclob new next no none 
+! not null numeric 
+! object of off old on only open operation option 
+! or order ordinality out outer output 
+! pad parameter parameters partial path postfix precision prefix 
+! preorder prepare preserve primary 
+! prior privileges procedure public 
+! read reads real recursive ref references referencing relative 
+! restrict result return returns revoke right 
+! role rollback rollup routine row rows 
+! savepoint schema scroll scope search second section select 
+! sequence session session_user set sets size smallint some| space 
+! specific specifictype sql sqlexception sqlstate sqlwarning start 
+! state statement static structure system_user 
+! table temporary terminate than then time timestamp 
+! timezone_hour timezone_minute to trailing transaction translation 
+! treat trigger true 
+! under union unique unknown 
+! unnest update usage user using 
+! value values varchar variable varying view 
+! when whenever where with without work write 
+! year 
+! zone
+
+lang mssql SCLEX_MSSQL *.sql Keywords
+* Keywords
+$ sql Keywords 
+
+lang plsql SCLEX_SQL *.spec;*.body;*.sps;*.spb;*.sf;*.sp Keywords
+* Keywords
+$ sql Keywords 
+! all alter and any array as asc at authid avg begin between 
+! binary_integer 
+! body boolean bulk by char char_base check close cluster collect 
+! comment commit compress connect constant create current currval 
+! cursor date day declare decimal default delete desc distinct 
+! do drop else elsif end exception exclusive execute exists exit 
+! extends false fetch float for forall from function goto group 
+! having heap hour if immediate in index indicator insert integer 
+! interface intersect interval into is isolation java level like 
+! limited lock long loop max min minus minute mlslabel mod mode 
+! month natural naturaln new nextval nocopy not nowait null number 
+! number_base ocirowid of on opaque open operator option or order 
+! organization others out package partition pctfree pls_integer 
+! positive positiven pragma prior private procedure public raise 
+! range raw real record ref release return reverse rollback row 
+! rowid rownum rowtype savepoint second select separate set share 
+! smallint space sql sqlcode sqlerrm start stddev subtype successful 
+! sum synonym sysdate table then time timestamp to trigger true 
+! type uid union unique update use user validate values varchar 
+! varchar2 variance view when whenever where while with work write 
+! year zone
+
+
+lang nncrontab SCLEX_NNCRONTAB *.tab;*.spf Section-keywords-and-Forth-words nnCrontab-keywords Modifiers
+* Section-keywords-and-Forth-words 
+! AGAIN ALLOT AND Action BEGIN CASE COMPARE CONSTANT CREATE DO Days ELSE 
+! ENDCASE ENDOF EVAL-SUBST EVALUATE FALSE Hours I IF LEAVE LOOP Minutes 
+! Months NOT OF OFF ON OR PAD REPEAT Rule SET THEN TRUE Time UNTIL VALUE 
+! VARIABLE WHILE WeekDays Years 
+* nnCrontab-keywords 
+! &lt;/JScript&gt; &lt;/SCRIPT&gt; &lt;/VBScript&gt; &lt;JScript&gt; &lt;VBScript&gt; ACCESS-DATE BEEP 
+! CALL_DIAL CALL_HANGUP CHAR CLIPBOARD CONSOLE CREATION-DATE CUR-DATE DATE- 
+! DATE-INTERVAL DELAY DIAL DIR-CREATE DIR-DELETE DIR-EMPTY DIR-SIZE Day@ 
+! Domain ERR-MSG EXIST FILE-ACCESS-DATE FILE-APPEND FILE-COPY FILE-CREATE 
+! FILE-CREATION-DATE FILE-CROP FILE-DATE FILE-DELETE FILE-EMPTY FILE-EXIST 
+! FILE-MOVE FILE-RENAME FILE-SIZE FILE-WRITE FILE-WRITE-DATE FOR-CHILD-WINDOWS 
+! FOR-FILES FOR-WINDOWS FREE-SPACE GET-CUR-TIME GET-REG GET-VER GetTickCount 
+! HANGUP HIDE-ICON HINT HINT-OFF HINT-POS HINT-SIZE HINTW HOST-EXIST Hour@ 
+! IDLE INTERVAL IS-ARCHIVE IS-DIR IS-HIDDEN IS-READONLY IS-SYSTEM KILL LAUNCH 
+! LOG LOGGEDON LOGOFF LogonBatch LogonInteractive LogonNetwork MOUSE-LBCLK 
+! MOUSE-LBDCLK MOUSE-LBDN MOUSE-LBUP MOUSE-MOVE MOUSE-MOVER MOUSE-MOVEW 
+! MOUSE-RBCLK MOUSE-RBDCLK MOUSE-RBDN MOUSE-RBUP MSG Min@ Mon@ 
+! MonitorResponseTime NHOST-EXIST No ONLINE PAUSE PLAY-SOUND PLAY-SOUNDW 
+! POP3-CHECK POWEROFF PROC-EXIST PROC-TIME PURGE-OLD PURGE-OLDA PURGE-OLDW 
+! Password QSTART-APP QSTART-APPW QUERY QUIT RASDomain RASError RASPassword 
+! RASPhone RASSecPassword RASUser RE-ALL RE-MATCH REBOOT REG-DELETE-KEY 
+! REG-DELETE-VALUE REG-DWORD REG-SZ REMINDER RUN SEND-KEYS SEND-KEYS-DELAY 
+! SHOW-ICON SHUTDOWN START-APP START-APPW START-QUIT START-TIME Sec@ 
+! SecPassword THINT THINTW TimeSec@ TMSG TQUERY User WDay@ WIN-ACTIVATE 
+! WIN-ACTIVE WIN-CLICK WIN-CLOSE WIN-EXIST WIN-HIDE WIN-HWND WIN-MAXIMIZE 
+! WIN-MINIMIZE WIN-MOVE WIN-MOVER WIN-RESTORE WIN-SEND-KEYS WIN-SHOW 
+! WIN-TERMINATE WIN-TOPMOST WIN-VER WIN-WAIT WINAPI WRITE-DATE WatchClipboard 
+! WatchConnect WatchDir WatchDisconnect WatchDriveInsert WatchDriveRemove 
+! WatchFile WatchProc WatchProcStop WatchWinActivate WatchWinCreate 
+! WatchWinDestroy WatchWindow WinNT Year@ Yes 
+* Modifiers
+! ALL AboveNormalPriority AsService BelowNormalPriority FILESONLY 
+! HighPriority IdlePriority LoadProfile NoActive NoDel NoLog NoRunAs 
+! NormalPriority OnceADay OnceAHour OnceAMonth OnceAWeek RECURSIVE 
+! RealtimePriority RunOnce SWHide ShowMaximized ShowMinimized ShowNoActivate 
+! ShowNormal StartIn StartPos StartSize TODEPTH WATCH-CHANGE-ATTRIBUTES 
+! WATCH-CHANGE-DIR-NAME WATCH-CHANGE-FILE-NAME WATCH-CHANGE-LAST-WRITE 
+! WATCH-CHANGE-SECURITY WATCH-CHANGE-SIZE WaitFor WatchSubtree WithoutProfile 
+
+lang nsis SCLEX_NSIS *.nsi;*.nsh Functions Variables Lables UserDefined
+* Functions
+! What Abort AddSize AllowRootDirInstall AutoCloseWindow 
+! BGGradient BrandingText BringToFront CRCCheck Call CallInstDLL Caption ClearErrors 
+! CompletedText ComponentText CopyFiles CreateDirectory CreateShortCut Delete 
+! DeleteINISec DeleteINIStr DeleteRegKey DeleteRegValue DetailPrint DetailsButtonText 
+! DirShow DirText DisabledBitmap EnabledBitmap EnumRegKey EnumRegValue Exch Exec 
+! ExecShell ExecWait ExpandEnvStrings File FileClose FileErrorText FileOpen FileRead 
+! FileReadByte FileSeek FileWrite FileWriteByte FindClose FindFirst FindNext FindWindow 
+! FlushINI Function FunctionEnd GetCurrentAddress GetDLLVersionLocal GetDLLVersion GetFileTime 
+! GetFileTimeLocal GetFullPathName GetFunctionAddress GetLabelAddress GetTempFileName 
+! Goto HideWindow Icon IfErrors IfFileExists IfRebootFlag InstProgressFlags InstType 
+! InstallButtonText InstallColors InstallDir InstallDirRegKey IntCmp IntCmpU IntFmt IntOp 
+! IsWindow LicenseData LicenseText MessageBox MiscButtonText Name OutFile Pop Push 
+! Quit RMDir ReadEnvStr ReadINIStr ReadRegDword ReadRegStr Reboot RegDLL Rename 
+! Return SearchPath Section SectionDivider SectionEnd SectionIn SendMessage SetAutoClose 
+! SetCompress SetDatablockOptimize SetDateSave SetDetailsPrint SetDetailsView SetErrors 
+! SetFileAttributes SetOutPath SetOverwrite SetRebootFlag ShowInstDetails ShowUninstDetails 
+! SilentInstall SilentUnInstall Sleep SpaceTexts StrCmp StrCpy StrLen SubCaption UnRegDLL 
+! UninstallButtonText UninstallCaption UninstallEXEName UninstallIcon UninstallSubCaption 
+! UninstallText WindowIcon WriteINIStr WriteRegBin WriteRegDword WriteRegExpandStr 
+! WriteRegStr WriteUninstaller SectionGetFlags SectionSetFlags SectionSetText SectionGetText 
+! LogText LogSet CreateFont SetShellVarContext SetStaticBkColor SetBrandingImage PluginDir 
+! SubSectionEnd SubSection CheckBitmap ChangeUI SetFont AddBrandingImage XPStyle 
+! LangString !define !undef !ifdef !ifndef !endif !else !macro !echo !warning !error !verbose 
+! !macroend !insertmacro !system !include !cd !packhdr
+
+* Variables 
+! $0 $1 $2 $3 $4 $5 $6 $7 $8 $9 
+! $R0 $R1 $R2 $R3 $R4 $R5 $R6 $R7 $R8 $R9 $CMDLINE $DESKTOP 
+! $EXEDIR $HWNDPARENT $INSTDIR $OUTDIR $PROGRAMFILES ${NSISDIR} $\n $\r 
+! $QUICKLAUNCH $SMPROGRAMS $SMSTARTUP $STARTMENU $SYSDIR $TEMP $WINDIR
+
+* Lables 
+! ARCHIVE FILE_ATTRIBUTE_ARCHIVE FILE_ATTRIBUTE_HIDDEN 
+! FILE_ATTRIBUTE_NORMAL FILE_ATTRIBUTE_OFFLINE FILE_ATTRIBUTE_READONLY 
+! FILE_ATTRIBUTE_SYSTEM FILE_ATTRIBUTE_TEMPORARY HIDDEN HKCC HKCR HKCU 
+! HKDD HKEY_CLASSES_ROOT HKEY_CURRENT_CONFIG HKEY_CURRENT_USER HKEY_DYN_DATA 
+! HKEY_LOCAL_MACHINE HKEY_PERFORMANCE_DATA HKEY_USERS HKLM HKPD HKU IDABORT 
+! IDCANCEL IDIGNORE IDNO IDOK IDRETRY IDYES MB_ABORTRETRYIGNORE MB_DEFBUTTON1 
+! MB_DEFBUTTON2 MB_DEFBUTTON3 MB_DEFBUTTON4 MB_ICONEXCLAMATION 
+! MB_ICONINFORMATION MB_ICONQUESTION MB_ICONSTOP MB_OK MB_OKCANCEL 
+! MB_RETRYCANCEL MB_RIGHT MB_SETFOREGROUND MB_TOPMOST MB_YESNO MB_YESNOCANCEL 
+! NORMAL OFFLINE READONLY SW_SHOWMAXIMIZED SW_SHOWMINIMIZED SW_SHOWNORMAL 
+! SYSTEM TEMPORARY auto colored false force hide ifnewer nevershow normal 
+! off on show silent silentlog smooth true try
+
+* UserDefined
+
+lang octave SCLEX_OCTAVE *.m.octave Keywords
+* Keywords
+! break case catch continue do else elseif end 
+! end_unwind_protect endfor endif endswitch endwhile for function endfunction global if otherwise 
+! persistent return switch try until unwind_protect unwind_protect_cleanup while
+
+lang pascal SCLEX_PASCAL *.dpr;*.dpk;*.pas;*.dfm;*.inc;*.pp Keywords Classwords
+* Keywords
+! and array asm begin case cdecl class const constructor default 
+! destructor div do downto else end end. except exit exports external far file 
+! finalization finally for function goto if implementation in index inherited 
+! initialization inline interface label library message mod near nil not 
+! object of on or out overload override packed pascal private procedure program 
+! property protected public published raise read record register repeat resourcestring 
+! safecall set shl shr stdcall stored string then threadvar to try type unit 
+! until uses var virtual while with write xor
+* Classwords
+! write read default public protected private property published stored
+
+lang perl SCLEX_PERL *.pl;*.pm;*.cgi;*.pod  Keywords
+* Keywords
+! NULL __FILE__ __LINE__ __PACKAGE__ __DATA__ __END__ AUTOLOAD 
+! BEGIN CORE DESTROY END EQ GE GT INIT LE LT NE CHECK abs accept 
+! alarm and atan2 bind binmode bless caller chdir chmod chomp chop 
+! chown chr chroot close closedir cmp connect continue cos crypt 
+! dbmclose dbmopen defined delete die do dump each else elsif endgrent 
+! endhostent endnetent endprotoent endpwent endservent eof eq eval 
+! exec exists exit exp fcntl fileno flock for foreach fork format 
+! formline ge getc getgrent getgrgid getgrnam gethostbyaddr gethostbyname 
+! gethostent getlogin getnetbyaddr getnetbyname getnetent getpeername 
+! getpgrp getppid getpriority getprotobyname getprotobynumber getprotoent 
+! getpwent getpwnam getpwuid getservbyname getservbyport getservent 
+! getsockname getsockopt glob gmtime goto grep gt hex if index 
+! int ioctl join keys kill last lc lcfirst le length link listen 
+! local localtime lock log lstat lt m map mkdir msgctl msgget msgrcv 
+! msgsnd my ne next no not oct open opendir or ord our pack package 
+! pipe pop pos print printf prototype push q qq qr quotemeta qu 
+! qw qx rand read readdir readline readlink readpipe recv redo 
+! ref rename require reset return reverse rewinddir rindex rmdir 
+! s scalar seek seekdir select semctl semget semop send setgrent 
+! sethostent setnetent setpgrp setpriority setprotoent setpwent 
+! setservent setsockopt shift shmctl shmget shmread shmwrite shutdown 
+! sin sleep socket socketpair sort splice split sprintf sqrt srand 
+! stat study sub substr symlink syscall sysopen sysread sysseek 
+! system syswrite tell telldir tie tied time times tr truncate 
+! uc ucfirst umask undef unless unlink unpack unshift untie until 
+! use utime values vec wait waitpid wantarray warn while write 
+! x xor y
+
+lang php SCLEX_PHP *.php3;*.phtml;*.php HTML-elements-and-attributes JavaScript-keywords VBScript-keywords Python-keywords PHP-keywords SGML-and-DTD-keywords 
+* HTML-elements-and-attributes
+$ asp HTML-elements-and-attributes
+* JavaScript-keywords 
+$ asp JavaScript-keywords 
+* VBScript-keywords 
+$ asp VBScript-keywords 
+* Python-keywords 
+$ asp Python-keywords 
+* PHP-keywords 
+$ asp PHP-keywords 
+* SGML-and-DTD-keywords 
+$ asp SGML-and-DTD-keywords 
+
+
+lang pov SCLEX_POV *.pov;*.inc Language-directives Objects-CSG-Appearance Types-Modifiers-Items Predefined-Identifiers Predefined-Functions User-defined-1 User-defined-2 User-defined-3
+* Language-directives 
+! declare local include undef fopen fclose read write default version 
+! case range break debug error warning 
+! if ifdef ifndef switch while macro else end
+* Objects-CSG-Appearance 
+! camera light_source light_group 
+! object blob sphere cylinder box cone height_field julia_fractal 
+! lathe prism sphere_sweep superellipsoid sor text torus 
+! bicubic_patch disc mesh mesh2 polygon triangle smooth_triangle 
+! plane poly cubic quartic quadric isosurface parametric 
+! union intersection difference merge function array spline 
+! vertex_vectors normal_vectors uv_vectors face_indices normal_indices uv_indices 
+! texture texture_list interior_texture 
+! texture_map material_map image_map color_map colour_map pigment_map 
+! normal_map slope_map bump_map density_map 
+! pigment normal material interior finish reflection irid slope pigment_pattern image_pattern 
+! warp media scattering density background fog sky_sphere rainbow 
+! global_settings radiosity photons pattern 
+! transform looks_like projected_through contained_by clipped_by bounded_by
+
+* Types-Modifiers-Items 
+! linear_spline quadratic_spline cubic_spline natural_spline bezier_spline b_spline 
+! read write append inverse open 
+! perspective orthographic fisheye ultra_wide_angle omnimax panoramic 
+! spherical spotlight jitter circular orient 
+! media_attenuation media_interaction shadowless parallel 
+! refraction collect pass_through global_lights hierarchy sturm smooth 
+! gif tga iff pot png pgm ppm jpeg tiff sys ttf 
+! quaternion hypercomplex linear_sweep conic_sweep 
+! type all_intersections split_union cutaway_textures 
+! no_shadow no_image no_reflection double_illuminate hollow 
+! uv_mapping all use_index use_color use_colour no_bump_scale 
+! conserve_energy fresnel 
+! average agate boxed bozo bumps cells crackle cylindrical density_file dents 
+! facets granite leopard marble onion planar quilted radial ripples spotted waves wood wrinkles 
+! solid use_alpha interpolate magnet noise_generator toroidal 
+! ramp_wave triangle_wave sine_wave scallop_wave cubic_wave poly_wave 
+! once map_type method fog_type hf_gray_16 charset ascii utf8 
+! rotate scale translate matrix location right up direction sky 
+! angle look_at aperture blur_samples focal_point confidence variance 
+! radius falloff tightness point_at area_light adaptive fade_distance fade_power 
+! threshold strength water_level tolerance max_iteration precision slice 
+! u_steps v_steps flatness inside_vector 
+! accuracy max_gradient evaluate max_trace precompute 
+! target ior dispersion dispersion_samples caustics 
+! color colour rgb rgbf rgbt rgbft red green blue filter transmit gray hf 
+! fade_color fade_colour quick_color quick_colour 
+! brick checker hexagon brick_size mortar bump_size 
+! ambient diffuse brilliance crand phong phong_size metallic specular 
+! roughness reflection_exponent exponent thickness 
+! gradient spiral1 spiral2 agate_turb form metric 
+! offset df3 coords size mandel exterior julia 
+! control0 control1 altitude turbulence octaves omega lambda 
+! repeat flip black-hole orientation dist_exp major_radius 
+! frequency phase intervals samples ratio absorption emission aa_threshold aa_level 
+! eccentricity extinction distance turb_depth fog_offset fog_alt width arc_angle falloff_angle 
+! adc_bailout ambient_light assumed_gamma irid_wavelength number_of_waves 
+! always_sample brigthness count error_bound gray_threshold load_file 
+! low_error_factor max_sample minimum_reuse nearest_count 
+! pretrace_end pretrace_start recursion_limit save_file 
+! spacing gather max_trace_level autostop expand_thresholds
+
+* Predefined-Identifiers 
+! x y z t u v 
+! yes no true false on off 
+! clock clock_delta clock_on final_clock final_frame frame_number 
+! image_height image_width initial_clock initial_frame pi version
+* Predefined-Functions 
+! bs acos acosh asc asin asinh atan atanh atan2 
+! ceil cos cosh defined degrees dimensions dimension_size div exp file_exists floor 
+! inside int ln log max min mod pow prod radians rand seed select sin sinh sqrt strcmp 
+! strlen sum tan tanh val vdot vlength min_extent max_extent trace vaxis_rotate 
+! vcross vrotate vnormalize vturbulence chr concat str strlwr strupr substr vstr 
+! sqr cube reciprocal pwr
+* User-defined-1 
+* User-defined-2 
+* User-defined-3
+
+lang props SCLEX_PROPERTIES *.properties;*.ini;*.inf;*.reg;*.url;*.cfg;*.cnf;*.aut;*.iss  Keywords
+* Keywords
+
+lang ps SCLEX_PS *.ps PS-Level-1-operators PS-Level-2-operators PS-Level-3-operators RIP-specific-operators User-defined-operators
+* PS-Level-1-operators 
+! $error = == FontDirectory StandardEncoding UserObjects abs add aload 
+! anchorsearch and arc arcn arcto array ashow astore atan awidthshow begin bind 
+! bitshift bytesavailable cachestatus ceiling charpath clear cleardictstack 
+! cleartomark clip clippath closefile closepath concat concatmatrix copy copypage 
+! cos count countdictstack countexecstack counttomark currentcmykcolor 
+! currentcolorspace currentdash currentdict currentfile currentflat currentfont 
+! currentgray currenthsbcolor currentlinecap currentlinejoin currentlinewidth 
+! currentmatrix currentmiterlimit currentpagedevice currentpoint currentrgbcolor 
+! currentscreen currenttransfer cvi cvlit cvn cvr cvrs cvs cvx def defaultmatrix 
+! definefont dict dictstack div dtransform dup echo end eoclip eofill eq 
+! erasepage errordict exch exec execstack executeonly executive exit exp false 
+! file fill findfont flattenpath floor flush flushfile for forall ge get 
+! getinterval grestore grestoreall gsave gt idetmatrix idiv idtransform if ifelse 
+! image imagemask index initclip initgraphics initmatrix inustroke invertmatrix 
+! itransform known kshow le length lineto ln load log loop lt makefont mark 
+! matrix maxlength mod moveto mul ne neg newpath noaccess nor not null nulldevice 
+! or pathbbox pathforall pop print prompt pstack put putinterval quit rand rcheck 
+! rcurveto read readhexstring readline readonly readstring rectstroke repeat 
+! resetfile restore reversepath rlineto rmoveto roll rotate round rrand run save 
+! scale scalefont search setblackgeneration setcachedevice setcachelimit 
+! setcharwidth setcolorscreen setcolortransfer setdash setflat setfont setgray 
+! sethsbcolor setlinecap setlinejoin setlinewidth setmatrix setmiterlimit 
+! setpagedevice setrgbcolor setscreen settransfer setvmthreshold show showpage 
+! sin sqrt srand stack start status statusdict stop stopped store string 
+! stringwidth stroke strokepath sub systemdict token token transform translate 
+! true truncate type ueofill undefineresource userdict usertime version vmstatus 
+! wcheck where widthshow write writehexstring writestring xcheck xor
+
+* PS-Level-2-operators 
+! GlobalFontDirectory ISOLatin1Encoding SharedFontDirectory UserObject arct 
+! colorimage cshow currentblackgeneration currentcacheparams currentcmykcolor 
+! currentcolor currentcolorrendering currentcolorscreen currentcolorspace 
+! currentcolortransfer currentdevparams currentglobal currentgstate 
+! currenthalftone currentobjectformat currentoverprint currentpacking 
+! currentpagedevice currentshared currentstrokeadjust currentsystemparams 
+! currentundercolorremoval currentuserparams defineresource defineuserobject 
+! deletefile execform execuserobject filenameforall fileposition filter 
+! findencoding findresource gcheck globaldict glyphshow gstate ineofill infill 
+! instroke inueofill inufill inustroke languagelevel makepattern packedarray 
+! printobject product realtime rectclip rectfill rectstroke renamefile 
+! resourceforall resourcestatus revision rootfont scheck selectfont serialnumber 
+! setbbox setblackgeneration setcachedevice2 setcacheparams setcmykcolor setcolor 
+! setcolorrendering setcolorscreen setcolorspace setcolortranfer setdevparams 
+! setfileposition setglobal setgstate sethalftone setobjectformat setoverprint 
+! setpacking setpagedevice setpattern setshared setstrokeadjust setsystemparams 
+! setucacheparams setundercolorremoval setuserparams setvmthreshold shareddict 
+! startjob uappend ucache ucachestatus ueofill ufill undef undefinefont 
+! undefineresource undefineuserobject upath ustroke ustrokepath vmreclaim 
+! writeobject xshow xyshow yshow
+
+* PS-Level-3-operators 
+! cliprestore clipsave composefont currentsmoothness findcolorrendering 
+! setsmoothness shfill
+* RIP-specific-operators 
+! .begintransparencygroup .begintransparencymask .bytestring .charboxpath 
+! .currentaccuratecurves .currentblendmode .currentcurvejoin .currentdashadapt 
+! .currentdotlength .currentfilladjust2 .currentlimitclamp .currentopacityalpha 
+! .currentoverprintmode .currentrasterop .currentshapealpha 
+! .currentsourcetransparent .currenttextknockout .currenttexturetransparent 
+! .dashpath .dicttomark .discardtransparencygroup .discardtransparencymask 
+! .endtransparencygroup .endtransparencymask .execn .filename .filename 
+! .fileposition .forceput .forceundef .forgetsave .getbitsrect .getdevice 
+! .inittransparencymask .knownget .locksafe .makeoperator .namestring .oserrno 
+! .oserrorstring .peekstring .rectappend .runandhide .setaccuratecurves 
+! .setblendmode .setcurvejoin .setdashadapt .setdebug .setdefaultmatrix 
+! .setdotlength .setfilladjust2 .setlimitclamp .setmaxlength .setopacityalpha 
+! .setoverprintmode .setrasterop .setsafe .setshapealpha .setsourcetransparent 
+! .settextknockout .settexturetransparent .stringbreak .stringmatch .tempfile 
+! .type1decrypt .type1encrypt .type1execchar .unread arccos arcsin copydevice 
+! copyscanlines currentdevice finddevice findlibfile findprotodevice flushpage 
+! getdeviceprops getenv makeimagedevice makewordimagedevice max min 
+! putdeviceprops setdevice
+* User-defined-operators
+
+lang python SCLEX_PYTHON *.py;*.pyw Keywords
+* Keywords
+$ asp Python-keywords 
+
+
+lang rc SCLEX_CPP *.rc;*.rc2;*.dlg Primary-keywords-and-identifiers Secondary-keywords-and-identifiers Documentation-comment-keywords Unused Global-classes-and-typedefs
+* Primary-keywords-and-identifiers 
+! ACCELERATORS ALT AUTO3STATE AUTOCHECKBOX AUTORADIOBUTTON 
+! BEGIN BITMAP BLOCK BUTTON CAPTION CHARACTERISTICS CHECKBOX CLASS 
+! COMBOBOX CONTROL CTEXT CURSOR DEFPUSHBUTTON DIALOG DIALOGEX DISCARDABLE 
+! EDITTEXT END EXSTYLE FONT GROUPBOX ICON LANGUAGE LISTBOX LTEXT 
+! MENU MENUEX MENUITEM MESSAGETABLE POPUP 
+! PUSHBUTTON RADIOBUTTON RCDATA RTEXT SCROLLBAR SEPARATOR SHIFT STATE3 
+! STRINGTABLE STYLE TEXTINCLUDE VALUE VERSION VERSIONINFO VIRTKEY
+
+* Secondary-keywords-and-identifiers 
+* Documentation-comment-keywords 
+* Unused 
+* Global-classes-and-typedefs
+
+lang ruby SCLEX_RUBY *.rb Keywords
+* Keywords
+! __FILE__ and def end in or self unless __LINE__ begin 
+! defined? ensure module redo super until BEGIN break do false next rescue 
+! then when END case else for nil require retry true while alias class elsif if 
+! not return undef yield
+
+lang scheme SCLEX_LISP *.scm;*.smd;*.ss Keywords
+* Keywords
+! + - * / = &lt; &gt; &lt;= &gt;= =&gt; 
+! abs acos and angle append apply asin assoc assoc assq assv atan 
+! begin boolean? 
+! caar cadr call-with-current-continuation call/cc 
+! call-with-input-file call-with-output-file call-with-values 
+! car cdr 
+! caar cadr cdar cddr 
+! caaar caadr cadar caddr cdaar cdadr cddar cdddr 
+! caaaar caaadr caadar caaddr cadaar cadadr caddar cadddr 
+! cdaaar cdaadr cdadar cdaddr cddaar cddadr cdddar cddddr 
+! case ceiling char-&gt;integer 
+! char-alphabetic? char-ci&lt;=? char-ci&lt;? char-ci=? char-ci&gt;=? char-ci&gt;? 
+! char-downcase char-lower-case? char-numeric? char-ready? 
+! char-upcase char-upper-case? char-whitespace? 
+! char&lt;=? char&lt;? char=? char&gt;=? char&gt;? char? 
+! close-input-port close-output-port complex? cond cons cos 
+! current-input-port current-output-port 
+! define define-syntax delay denominator display do dynamic-wind 
+! else eof-object? eq? equal? eqv? eval even? exact-&gt;inexact exact? 
+! exp expt 
+! floor for-each force 
+! gcd 
+! if imag-part inexact-&gt;exact inexact? input-port? integer-&gt;char integer? interaction-environment 
+! lambda lcm length let let* let-syntax letrec letrec-syntax 
+! list list-&gt;string list-&gt;vector list-ref list-tail list? load log 
+! magnitude make-polar make-rectangular make-string make-vector 
+! map max member memq memv min modulo 
+! negative? newline not null-environment null? number-&gt;string number? numerator 
+! odd? open-input-file open-output-file or output-port? 
+! pair? peek-char input-port? output-port? positive? procedure? 
+! quasiquote quote quotient 
+! rational? rationalize read read-char real-part real? remainder reverse round 
+! scheme-report-environment set! set-car! set-cdr! sin sqrt string 
+! string-&gt;list string-&gt;number string-&gt;symbol string-append 
+! string-ci&lt;=? string-ci&lt;? string-ci=? string-ci&gt;=? string-ci&gt;? 
+! string-copy string-fill! string-length string-ref string-set! 
+! string&lt;=? string&lt;? string=? string&gt;=? string&gt;? string? 
+! substring symbol-&gt;string symbol? syntax-rules 
+! transcript-off transcript-on truncate 
+! unquote unquote-splicing 
+! values vector vector-&gt;list vector-fill! vector-length vector-ref vector-set! vector? 
+! with-input-from-file with-output-to-file write write-char 
+! zero?
+
+lang scriptol SCLEX_SCRIPTOL *.sol Keywords
+* Keywords
+! act action alias always and array as 
+! bool boolean break by byte 
+! class case catch const constant continue 
+! dyn def define dict do double 
+! echo else elsif end enum error false file for float forever function 
+! globak gtk 
+! in if ifdef import include int integer java javax 
+! let long match mod nil not natural null number 
+! or print protected public real return redo 
+! scan script scriptol sol short super static step until using 
+! var text then this true try 
+! void volatile while when 
+! undef zero
+
+lang tcl SCLEX_TCL *.tcl Primary-keywords-and-identifiers Secondary-keywords-and-identifiers Documentation-comment-keywords Unused Global-classes-and-typedefs
+* Primary-keywords-and-identifiers 
+! after append array auto_execok auto_import auto_load 
+! auto_load_index auto_qualify beep binary break case catch cd clock 
+! close concat continue dde default echo else elseif encoding eof 
+! error eval exec exit expr fblocked fconfigure fcopy file 
+! fileevent flush for foreach format gets glob global history if 
+! incr info interp join lappend lindex linsert list llength load 
+! lrange lreplace lsearch lsort namespace open package pid 
+! pkg_mkIndex proc puts pwd read regexp regsub rename resource 
+! return scan seek set socket source split string subst switch 
+! tclLog tclMacPkgSearch tclPkgSetup tclPkgUnknown tell time 
+! trace unknown unset update uplevel upvar variable vwait while
+! bell bind bindtags button canvas checkbutton console 
+! destroy entry event focus font frame grab grid image label listbox menu 
+! menubutton message pack place radiobutton raise scale scrollbar 
+! text tk tkwait toplevel winfo wm
+! tkButtonDown tkButtonEnter tkButtonInvoke 
+! tkButtonLeave tkButtonUp tkCancelRepeat tkCheckRadioInvoke tkDarken 
+! tkEntryAutoScan 	tkEntryBackspace tkEntryButton1 tkEntryClosestGap 
+! tkEntryInsert tkEntryKeySelect tkEntryMouseSelect tkEntryNextWord 
+! tkEntryPaste tkEntryPreviousWord tkEntrySeeInsert tkEntrySetCursor 
+! tkEntryTranspose tkEventMotifBindings tkFDGetFileTypes tkFirstMenu 
+! tkFocusGroup_Destroy tkFocusGroup_In tkFocusGroup_Out tkFocusOK 
+! tkListboxAutoScan tkListboxBeginExtend tkListboxBeginSelect 
+! tkListboxBeginToggle tkListboxCancel tkListboxDataExtend 
+! tkListboxExtendUpDown tkListboxMotion tkListboxSelectAll 
+! tkListboxUpDown tkMbButtonUp tkMbEnter tkMbLeave tkMbMotion 
+! tkMbPost tkMenuButtonDown tkMenuDownArrow tkMenuDup tkMenuEscape 
+! tkMenuFind tkMenuFindName tkMenuFirstEntry tkMenuInvoke tkMenuLeave 
+! tkMenuLeftArrow tkMenuMotion tkMenuNextEntry tkMenuNextMenu 
+! tkMenuRightArrow tkMenuUnpost tkMenuUpArrow tkMessageBox 
+! tkPostOverPoint tkRecolorTree tkRestoreOldGrab tkSaveGrabInfo 
+! tkScaleActivate tkScaleButton2Down tkScaleButtonDown 
+! tkScaleControlPress tkScaleDrag tkScaleEndDrag tkScaleIncrement 
+! tkScreenChanged tkScrollButton2Down tkScrollButtonDown 
+! tkScrollButtonUp tkScrollByPages tkScrollByUnits tkScrollDrag 
+! tkScrollEndDrag tkScrollSelect tkScrollStartDrag tkScrollToPos  
+! tkScrollTopBottom tkTabToWindow tkTearOffMenu tkTextAutoScan 
+! tkTextButton1 tkTextClosestGap tkTextInsert tkTextKeyExtend 
+! tkTextKeySelect tkTextNextPara tkTextNextPos tkTextNextWord 
+! tkTextPaste tkTextPrevPara tkTextPrevPos tkTextResetAnchor 
+! tkTextScrollPages tkTextSelectTo tkTextSetCursor tkTextTranspose 
+! tkTextUpDownLine tkTraverseToMenu tkTraverseWithinMenu tk_bisque 
+! tk_chooseColor tk_dialog tk_focusFollowsMouse tk_focusNext 
+! tk_focusPrev tk_getOpenFile tk_getSaveFile tk_messageBox 
+! tk_optionMenu tk_popup tk_setPalette tk_textCopy tk_textCut 
+! tk_textPaste
+* Secondary-keywords-and-identifiers 
+* Documentation-comment-keywords 
+* Unused 
+* Global-classes-and-typedefs
+
+## lang text SCLEX_NULL *.txt;*.log;*.lst;*.doc;*.diz;*.nfo Keywords
+
+lang vb SCLEX_VB *.vb;*.bas;*.frm;*.cls;*.ctl;*.pag;*.dsr;*.dob Keywords User1 User2 User3
+* Keywords
+! addhandler addressof andalso alias and ansi as assembly auto boolean 
+! byref byte byval call case catch cbool cbyte cchar cdate cdec cdbl char cint class 
+! clng cobj const cshort csng cstr ctype date decimal declare default delegate dim do double 
+! each else elseif end enum erase error event exit false finally for friend function get 
+! gettype goto  handles if implements imports in inherits integer interface is let lib like long 
+! loop me mod module mustinherit mustoverride mybase myclass namespace new 
+! next not nothing notinheritable notoverridable object on option optional or 
+! orelse overloads overridable overrides paramarray preserve private property protected public 
+! raiseevent readonly redim rem removehandler resume return select set shadows 
+! shared short single static step stop string structure sub synclock then throw to true try 
+! typeof unicode until variant when while with withevents writeonly xor
+* User1
+* User2
+* User3
+
+lang vbscript SCLEX_VBSCRIPT *.vbs;*.dsm Keywords User1 User2 User3
+* Keywords
+$ asp VBScript-keywords 
+* User1 
+* User2
+* User3
+
+lang verilog SCLEX_VERILOG *.v;*.vh Primary-keywords-and-identifiers Secondary-keywords-and-identifiers System-Tasks User-defined-tasks-and-identifiers Unused
+* Primary-keywords-and-identifiers 
+! always and assign begin 
+! xbuf buf bufif0 bufif1 case casex casez cmos 
+! default defparam else end endcase 
+! endfunction endmodule endprimitive endspecify 
+! endtable endtask event for force forever 
+! fork function if initial inout input 
+! integer join macromodule makefile module 
+! nand negedge nmos nor not notif0 notif1 
+! or output parameter pmos posedge primitive 
+! pulldown pullup rcmos real realtime reg 
+! repeat rnmos rpmos rtran rtranif0 rtranif1 
+! signed specify specparam supply supply0 supply1 table 
+! task time tran tranif0 tranif1 tri tri0 
+! tri1 triand trior trireg vectored wait 
+! wand while wire wor xnor xor
+* Secondary-keywords-and-identifiers 
+* System-Tasks 
+! $readmemb $readmemh $sreadmemb $sreadmemh $display $write $strobe $monitor $fdisplay $fwrite $fstrobe 
+! $fmonitor $fopen $fclose $time $stime $realtime $scale $printtimescale $timeformat $stop $finish $save 
+! $incsave $restart $input $log $nolog $key $nokey $scope $showscopes $showscopes $showvars $showvars 
+! $countdrivers $list $monitoron $monitoroff $dumpon $dumpoff $dumpfile $dumplimit $dumpflush $dumpvars 
+! $dumpall $reset $reset $reset $reset $reset $random $getpattern $rtoi $itor $realtobits $bitstoreal 
+! $setup $hold $setuphold $period $width $skew $recovery
+* User-defined-tasks-and-identifiers 
+* Unused
+
+lang vxml SCLEX_HTML *.vxml HTML-elements-and-attributes JavaScript-keywords VBScript-keywords Python-keywords PHP-keywords SGML-and-DTD-keywords 
+* HTML-elements-and-attributes
+! assign audio block break catch choice clear disconnect else elseif \
+! emphasis enumerate error exit field filled form goto grammar help \
+! if initial link log menu meta noinput nomatch object option p paragraph \
+! param phoneme prompt property prosody record reprompt return s say-as \
+! script sentence subdialog submit throw transfer value var voice vxml
+! accept age alphabet anchor application base beep bridge category charset \
+! classid cond connecttimeout content contour count dest destexpr dtmf dtmfterm \
+! duration enctype event eventexpr expr expritem fetchtimeout finalsilence \
+! gender http-equiv id level maxage maxstale maxtime message messageexpr \
+! method mime modal mode name namelist next nextitem ph pitch range rate \
+! scope size sizeexpr skiplist slot src srcexpr sub time timeexpr timeout \
+! transferaudio type value variant version volume xml:lang public !doctype
+* JavaScript-keywords 
+$ asp JavaScript-keywords 
+* VBScript-keywords 
+* Python-keywords 
+* PHP-keywords 
+* SGML-and-DTD-keywords 
+
+lang xml SCLEX_XML *.xml;*.xsl;*.svg;*.xul;*.xsd;*.dtd;*.xslt;*.axl;*.xrc;*.ant;*.config;*.build HTML-elements-and-attributes JavaScript-keywords VBScript-keywords Python-keywords PHP-keywords SGML-and-DTD-keywords 
+* HTML-elements-and-attributes
+* JavaScript-keywords 
+$ asp JavaScript-keywords 
+* VBScript-keywords 
+$ asp VBScript-keywords 
+* Python-keywords 
+* PHP-keywords 
+* SGML-and-DTD-keywords 
+ELEMENT DOCTYPE ATTLIST ENTITY NOTATION
+
+lang yaml SCLEX_YAML *.yaml;*.yml Keywords
+* Keywords
+true false yes no

@@ -1,0 +1,92 @@
+﻿##|TYPE Template
+##|UNIQUEID ca3f3d5f-76df-4a56-be7e-af59a0340732
+##|TITLE Chapter 2 - Column Properties  (JScript)
+##|NAMESPACE Tutorials.JScript.Chapter 2
+##|OUTPUT_LANGUAGE None
+##|GUI_ENGINE Microsoft Script
+##|GUI_LANGUAGE JScript
+##|GUI_BEGIN
+var cboxDatabases;
+var lboxTables;
+
+//==============================================================
+// setup() is the entry point to your user interface, this 
+// is called automatically by the MyGeneration scripting engine
+//==============================================================
+function setup()
+{
+	ui.Title = "Chapter 2";
+	ui.Width  = 330;
+	ui.Height = 300;
+
+	// Create our Database(s) ComboBox
+	ui.AddLabel("lblDatabases", "Select a database:", "Select a database in the dropdown below.");
+	cboxDatabases = ui.AddComboBox("cboxDatabases", "Select a database.");
+
+	// Create our Tables Listbox
+	ui.AddLabel("lblTables", "Select tables:", "Select tables from the listbox below.");
+	lboxTables = ui.AddListBox ("lboxTables", "Select tables:");
+	lboxTables.IsMultiSelect = false;
+	lboxTables.Height = 120;
+
+	// Populate our Database ComboBox
+	cboxDatabases.BindData(MyMeta.Databases);
+
+	if (MyMeta.DefaultDatabase != null) 
+	{	
+		// Populate our Tables Listbox if we can
+		cboxDatabases.SelectedValue = MyMeta.DefaultDatabase.Name;
+		bindTables(cboxDatabases.SelectedValue);
+	}
+	
+	// Attach the onchange event to the cboxDatabases control.	
+	cboxDatabases.AttachEvent("onchange", "cboxDatabases_onchange");
+
+	// Without this the UI wouldn't display
+	ui.ShowGUI = true;
+}
+
+//---------------------------------------------------------------
+// Event Handler
+//---------------------------------------------------------------
+// Attach the onchange event to the cboxDatabases control.	
+// cboxDatabases.AttachEvent "onchange", "cboxDatabases_onchange"
+//----------------------------------------------------------------
+function cboxDatabases_onchange(control)
+{
+	bindTables(cboxDatabases.SelectedText);
+}
+
+//---------------------------------------------------------------
+// Simple sub-routine that we use to populate our Tables Listbox
+//---------------------------------------------------------------
+function bindTables(sDatabase)
+{
+	db = MyMeta.Databases(sDatabase)
+	lboxTables.BindData(db.Tables)
+}
+##|GUI_END
+##|BODY_MODE Markup
+##|BODY_ENGINE Microsoft Script
+##|BODY_LANGUAGE JScript
+##|BODY_TAG_START <%
+##|BODY_TAG_END %>
+##|BODY_BEGIN
+<% 
+// The names such as "lboxTables" were provided in the "Interface Code" Tab
+var tableName    = input.Item("lboxTables").item(0);
+var databaseName = input.Item("cboxDatabases");
+
+var objDatabase = MyMeta.Databases(databaseName);
+var objTable    = objDatabase.Tables(tableName);
+
+output.writeLn("Columns for Table '" + objTable.Name + "'");
+output.writeLn("");
+
+for (var i = 0; i < objTable.Columns.Count; i++)
+{
+	var objColumn = objTable.Columns.Item(i);
+	output.writeLn(objColumn.Name + " : " + objColumn.DataTypeName);
+}
+%>
+##|BODY_END
