@@ -57,6 +57,15 @@ namespace MyMeta
 		internal DataColumn f_AutoKeySeed		= null;
 		internal DataColumn f_AutoKeyIncrement	= null;
 
+        internal DataColumn UI_ShowInList = null;
+        internal DataColumn UI_ColumnWidth = null;
+        internal DataColumn UI_ViewControl = null;
+        internal DataColumn UI_AddControl = null;
+        internal DataColumn UI_EditControl = null;
+
+        #region UI
+
+        #endregion
 
 		private void BindToColumns(DataTable metaData)
 		{

@@ -712,5 +712,70 @@ namespace MyMeta
         }
 
         #endregion
+
+        #region UI 
+
+        public bool UIShowInList
+        {
+            get
+            {
+                return this.GetBool(Columns.UI_ShowInList);
+            }
+            set
+            {
+                this._row[Columns.UI_ShowInList] = value;
+            }
+        }
+
+        public int UIColumnWidth
+        {
+            get
+            {
+                return this.GetInt32(Columns.UI_ColumnWidth);
+            }
+            set
+            {
+                this._row[Columns.UI_ColumnWidth] = value;
+            }
+        }
+
+        public string UIViewControl
+        {
+            get
+            {
+                return this.GetString(Columns.UI_ViewControl);
+            }
+            set
+            {
+                this._row[Columns.UI_ViewControl] = value;
+            }
+        }
+
+        public string UIAddControl
+        {
+            get
+            {
+                return this.GetString(Columns.UI_AddControl);
+            }
+            set
+            {
+                this._row[Columns.UI_AddControl] = value;
+            }
+        }
+
+        public string UIEditControl
+        {
+            get
+            {
+                return this.GetString(Columns.UI_EditControl);
+            }
+            set
+            {
+                this._row[Columns.UI_EditControl] = value;
+            }
+        }
+
+        #endregion
+        
     }
 }

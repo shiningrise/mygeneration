@@ -318,6 +318,17 @@ namespace MyMeta
         /// <param name="key">A key identifying the type of meta data desired.</param>
         /// <returns>A meta-data object or collection.</returns>
         object DatabaseSpecificMetaData(string key);
+
+        #region UI
+
+        bool UIShowInList { get; set; }
+        int UIColumnWidth { get; set; }
+        System.String UIViewControl { get; set; }
+        System.String UIAddControl { get; set; }
+        System.String UIEditControl { get; set; }
+
+        #endregion
+        
 	}
 }
 
