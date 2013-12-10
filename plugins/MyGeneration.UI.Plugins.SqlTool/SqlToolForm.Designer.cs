@@ -90,7 +90,7 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.toolStripComboBoxDatabase});
             this.toolStripSqlTool.Location = new System.Drawing.Point(0, 0);
             this.toolStripSqlTool.Name = "toolStripSqlTool";
-            this.toolStripSqlTool.Size = new System.Drawing.Size(984, 25);
+            this.toolStripSqlTool.Size = new System.Drawing.Size(984, 23);
             this.toolStripSqlTool.TabIndex = 0;
             this.toolStripSqlTool.Visible = false;
             // 
@@ -102,7 +102,7 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.toolStripButtonSave.MergeAction = System.Windows.Forms.MergeAction.Insert;
             this.toolStripButtonSave.MergeIndex = 2;
             this.toolStripButtonSave.Name = "toolStripButtonSave";
-            this.toolStripButtonSave.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonSave.Size = new System.Drawing.Size(23, 20);
             this.toolStripButtonSave.Text = "Save";
             this.toolStripButtonSave.Click += new System.EventHandler(this.toolStripButtonSave_Click);
             // 
@@ -111,7 +111,7 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.toolStripSeparator1.MergeAction = System.Windows.Forms.MergeAction.Insert;
             this.toolStripSeparator1.MergeIndex = 3;
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 23);
             // 
             // toolStripButtonExecute
             // 
@@ -121,7 +121,7 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.toolStripButtonExecute.MergeAction = System.Windows.Forms.MergeAction.Insert;
             this.toolStripButtonExecute.MergeIndex = 4;
             this.toolStripButtonExecute.Name = "toolStripButtonExecute";
-            this.toolStripButtonExecute.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonExecute.Size = new System.Drawing.Size(23, 20);
             this.toolStripButtonExecute.Text = "Execute";
             this.toolStripButtonExecute.Click += new System.EventHandler(this.toolStripButtonExecute_Click);
             // 
@@ -130,47 +130,47 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.toolStripSeparator2.MergeAction = System.Windows.Forms.MergeAction.Insert;
             this.toolStripSeparator2.MergeIndex = 5;
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 23);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 23);
             // 
             // toolStripLabelCommandSep
             // 
             this.toolStripLabelCommandSep.Name = "toolStripLabelCommandSep";
-            this.toolStripLabelCommandSep.Size = new System.Drawing.Size(105, 22);
+            this.toolStripLabelCommandSep.Size = new System.Drawing.Size(107, 20);
             this.toolStripLabelCommandSep.Text = "Command Seperator";
             // 
             // toolStripTextBoxSeperator
             // 
             this.toolStripTextBoxSeperator.Name = "toolStripTextBoxSeperator";
-            this.toolStripTextBoxSeperator.Size = new System.Drawing.Size(35, 25);
+            this.toolStripTextBoxSeperator.Size = new System.Drawing.Size(35, 23);
             this.toolStripTextBoxSeperator.Text = "GO";
             this.toolStripTextBoxSeperator.KeyUp += new System.Windows.Forms.KeyEventHandler(this.toolStripTextBoxSeperator_KeyUp);
             // 
             // toolStripSeparatorDatabase
             // 
             this.toolStripSeparatorDatabase.Name = "toolStripSeparatorDatabase";
-            this.toolStripSeparatorDatabase.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparatorDatabase.Size = new System.Drawing.Size(6, 23);
             // 
             // toolStripLabelDatabase
             // 
             this.toolStripLabelDatabase.Name = "toolStripLabelDatabase";
             this.toolStripLabelDatabase.RightToLeftAutoMirrorImage = true;
-            this.toolStripLabelDatabase.Size = new System.Drawing.Size(53, 22);
+            this.toolStripLabelDatabase.Size = new System.Drawing.Size(53, 20);
             this.toolStripLabelDatabase.Text = "Database";
             // 
             // toolStripComboBoxDatabase
             // 
             this.toolStripComboBoxDatabase.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripComboBoxDatabase.Name = "toolStripComboBoxDatabase";
-            this.toolStripComboBoxDatabase.Size = new System.Drawing.Size(121, 25);
-            this.toolStripComboBoxDatabase.Leave += new System.EventHandler(this.toolStripComboBoxDatabase_Click);
+            this.toolStripComboBoxDatabase.Size = new System.Drawing.Size(121, 23);
             this.toolStripComboBoxDatabase.TextUpdate += new System.EventHandler(this.toolStripComboBoxDatabase_Click);
-            this.toolStripComboBoxDatabase.TextChanged += new System.EventHandler(this.toolStripComboBoxDatabase_Click);
+            this.toolStripComboBoxDatabase.Leave += new System.EventHandler(this.toolStripComboBoxDatabase_Click);
             this.toolStripComboBoxDatabase.Click += new System.EventHandler(this.toolStripComboBoxDatabase_Click);
+            this.toolStripComboBoxDatabase.TextChanged += new System.EventHandler(this.toolStripComboBoxDatabase_Click);
             // 
             // menuStripSqlTool
             // 
@@ -180,7 +180,7 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.templateToolStripMenuItem});
             this.menuStripSqlTool.Location = new System.Drawing.Point(0, 0);
             this.menuStripSqlTool.Name = "menuStripSqlTool";
-            this.menuStripSqlTool.Size = new System.Drawing.Size(984, 24);
+            this.menuStripSqlTool.Size = new System.Drawing.Size(984, 22);
             this.menuStripSqlTool.TabIndex = 1;
             this.menuStripSqlTool.Visible = false;
             // 
@@ -194,7 +194,7 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.fileToolStripMenuItem.MergeAction = System.Windows.Forms.MergeAction.MatchOnly;
             this.fileToolStripMenuItem.MergeIndex = 0;
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // saveToolStripMenuItem
@@ -203,7 +203,7 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.saveToolStripMenuItem.MergeIndex = 4;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -212,9 +212,9 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.saveAsToolStripMenuItem.MergeAction = System.Windows.Forms.MergeAction.Insert;
             this.saveAsToolStripMenuItem.MergeIndex = 5;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt)
-                        | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.S)));
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.saveAsToolStripMenuItem.Text = "Save  &As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
@@ -224,7 +224,7 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.closeToolStripMenuItem.MergeIndex = 6;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.closeToolStripMenuItem.Text = "&Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -233,7 +233,7 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.toolStripMenuItem7.MergeAction = System.Windows.Forms.MergeAction.Insert;
             this.toolStripMenuItem7.MergeIndex = 7;
             this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(183, 6);
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(180, 6);
             // 
             // editToolStripMenuItem
             // 
@@ -252,7 +252,7 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.editToolStripMenuItem.MergeAction = System.Windows.Forms.MergeAction.Insert;
             this.editToolStripMenuItem.MergeIndex = 1;
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // cutToolStripMenuItem
@@ -356,81 +356,81 @@ namespace MyGeneration.UI.Plugins.SqlTool
             this.templateToolStripMenuItem.MergeAction = System.Windows.Forms.MergeAction.Insert;
             this.templateToolStripMenuItem.MergeIndex = 2;
             this.templateToolStripMenuItem.Name = "templateToolStripMenuItem";
-            this.templateToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.templateToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.templateToolStripMenuItem.Text = "&Tools";
             // 
             // executeToolStripMenuItem
             // 
             this.executeToolStripMenuItem.Name = "executeToolStripMenuItem";
             this.executeToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.executeToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.executeToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
             this.executeToolStripMenuItem.Text = "E&xecute";
             this.executeToolStripMenuItem.Click += new System.EventHandler(this.executeToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(207, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(211, 6);
             this.toolStripMenuItem2.Visible = false;
             // 
             // lineNumbersToolStripMenuItem
             // 
             this.lineNumbersToolStripMenuItem.Name = "lineNumbersToolStripMenuItem";
-            this.lineNumbersToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.lineNumbersToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
             this.lineNumbersToolStripMenuItem.Text = "Line &Numbers";
             this.lineNumbersToolStripMenuItem.Visible = false;
             // 
             // whitespaceToolStripMenuItem
             // 
             this.whitespaceToolStripMenuItem.Name = "whitespaceToolStripMenuItem";
-            this.whitespaceToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.whitespaceToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
             this.whitespaceToolStripMenuItem.Text = "Whitespace";
             this.whitespaceToolStripMenuItem.Visible = false;
             // 
             // indentationGuidsToolStripMenuItem
             // 
             this.indentationGuidsToolStripMenuItem.Name = "indentationGuidsToolStripMenuItem";
-            this.indentationGuidsToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.indentationGuidsToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
             this.indentationGuidsToolStripMenuItem.Text = "Indentation Guids";
             this.indentationGuidsToolStripMenuItem.Visible = false;
             // 
             // endOfLineToolStripMenuItem
             // 
             this.endOfLineToolStripMenuItem.Name = "endOfLineToolStripMenuItem";
-            this.endOfLineToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.endOfLineToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
             this.endOfLineToolStripMenuItem.Text = "End of Line";
             this.endOfLineToolStripMenuItem.Visible = false;
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(207, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(211, 6);
             this.toolStripMenuItem3.Visible = false;
             // 
             // enlargeFontToolStripMenuItem
             // 
             this.enlargeFontToolStripMenuItem.Name = "enlargeFontToolStripMenuItem";
-            this.enlargeFontToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.enlargeFontToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
             this.enlargeFontToolStripMenuItem.Text = "Enlarge Font";
             this.enlargeFontToolStripMenuItem.Visible = false;
             // 
             // reduceFontToolStripMenuItem
             // 
             this.reduceFontToolStripMenuItem.Name = "reduceFontToolStripMenuItem";
-            this.reduceFontToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.reduceFontToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
             this.reduceFontToolStripMenuItem.Text = "Reduce Font";
             this.reduceFontToolStripMenuItem.Visible = false;
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(207, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(211, 6);
             this.toolStripMenuItem5.Visible = false;
             // 
             // copyOutputToClipboardToolStripMenuItem
             // 
             this.copyOutputToClipboardToolStripMenuItem.Name = "copyOutputToClipboardToolStripMenuItem";
-            this.copyOutputToClipboardToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.copyOutputToClipboardToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
             this.copyOutputToClipboardToolStripMenuItem.Text = "Copy &Output To Clipboard";
             this.copyOutputToClipboardToolStripMenuItem.Visible = false;
             // 
@@ -438,21 +438,22 @@ namespace MyGeneration.UI.Plugins.SqlTool
             // 
             this.sqlToolUserControl1.CommandSeperator = "GO";
             this.sqlToolUserControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sqlToolUserControl1.Location = new System.Drawing.Point(0, 25);
+            this.sqlToolUserControl1.Location = new System.Drawing.Point(0, 0);
             this.sqlToolUserControl1.Name = "sqlToolUserControl1";
             this.sqlToolUserControl1.SelectedDatabase = null;
-            this.sqlToolUserControl1.Size = new System.Drawing.Size(984, 586);
+            this.sqlToolUserControl1.Size = new System.Drawing.Size(984, 564);
             this.sqlToolUserControl1.TabIndex = 2;
             this.sqlToolUserControl1.TextContent = "";
             // 
             // SqlToolForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(984, 611);
+            this.ClientSize = new System.Drawing.Size(984, 564);
             this.Controls.Add(this.sqlToolUserControl1);
             this.Controls.Add(this.toolStripSqlTool);
             this.Controls.Add(this.menuStripSqlTool);
+            this.Font = new System.Drawing.Font("ËÎÌו", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripSqlTool;
             this.Name = "SqlToolForm";

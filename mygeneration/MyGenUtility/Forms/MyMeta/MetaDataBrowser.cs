@@ -42,6 +42,8 @@ namespace MyGeneration
 		private System.Windows.Forms.CheckBox chkSystem;
         private ToolBarButton toolBarButtonExecute;
 		private System.Windows.Forms.ToolBarButton toolBarButton2;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem toolStripMenuItem1;
 
         private delegate void AddRootNodeCallback();
         private System.Windows.Forms.Timer timerIconAnimate;
@@ -143,6 +145,9 @@ namespace MyGeneration
             this.TreeImageList = new System.Windows.Forms.ImageList(this.components);
             this.chkSystem = new System.Windows.Forms.CheckBox();
             this.timerIconAnimate = new System.Windows.Forms.Timer(this.components);
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolBar1
@@ -200,6 +205,7 @@ namespace MyGeneration
             // MyTree
             // 
             this.MyTree.BackColor = System.Drawing.Color.LightYellow;
+            this.MyTree.ContextMenuStrip = this.contextMenuStrip1;
             this.MyTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MyTree.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MyTree.FullRowSelect = true;
@@ -213,9 +219,9 @@ namespace MyGeneration
             this.MyTree.SelectedImageIndex = 21;
             this.MyTree.Size = new System.Drawing.Size(264, 711);
             this.MyTree.TabIndex = 4;
-            this.MyTree.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MyTree_MouseClick);
             this.MyTree.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.MyTree_BeforeExpand);
             this.MyTree.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.MyTree_BeforeSelect);
+            this.MyTree.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MyTree_MouseClick);
             // 
             // TreeImageList
             // 
@@ -254,9 +260,9 @@ namespace MyGeneration
             // 
             // chkSystem
             // 
-            this.chkSystem.Location = new System.Drawing.Point(28, 4);
+            this.chkSystem.Location = new System.Drawing.Point(34, 4);
             this.chkSystem.Name = "chkSystem";
-            this.chkSystem.Size = new System.Drawing.Size(148, 16);
+            this.chkSystem.Size = new System.Drawing.Size(177, 18);
             this.chkSystem.TabIndex = 5;
             this.chkSystem.Text = "Show System Data";
             this.chkSystem.CheckedChanged += new System.EventHandler(this.chkSystem_CheckedChanged);
@@ -266,15 +272,30 @@ namespace MyGeneration
             this.timerIconAnimate.Interval = 75;
             this.timerIconAnimate.Tick += new System.EventHandler(this.timerIconAnimate_Tick);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 48);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem1.Text = "´ò¿ª";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
             // MetaDataBrowser
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+            this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
             this.ClientSize = new System.Drawing.Size(264, 737);
             this.ControlBox = false;
             this.Controls.Add(this.chkSystem);
             this.Controls.Add(this.MyTree);
             this.Controls.Add(this.toolBar1);
             this.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.Font = new System.Drawing.Font("ËÎÌå", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.HideOnClose = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MetaDataBrowser";
@@ -282,8 +303,10 @@ namespace MyGeneration
             this.Text = "MyMeta  Browser";
             this.Load += new System.EventHandler(this.MetaDataBrowser_Load);
             this.Enter += new System.EventHandler(this.MetaDataBrowser_Enter);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
+
 		}
 		#endregion
 
@@ -709,6 +732,7 @@ namespace MyGeneration
                         case NodeType.TABLES:
                         case NodeType.SUBTABLES:
                             UserData.EditNiceNames(data.Meta as Tables);
+
                             break;
 
                         case NodeType.VIEWS:
@@ -1383,5 +1407,22 @@ namespace MyGeneration
         }
 
         #endregion
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var node = this.MyTree.SelectedNode;
+            if (node == null)
+                return;
+            var nodeData = node.Tag as NodeData;
+
+            if (nodeData != null && nodeData.Type == NodeType.TABLE)
+            {
+                var fileType = "XML File";
+                var table = nodeData.Meta as ITable;
+                var databaseName = table.Database.Name;
+                this.mdi.CreateDocument(fileType,databaseName,table.Name);
+            }
+            
+        }
 	}
 }

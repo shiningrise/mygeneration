@@ -1171,7 +1171,7 @@ namespace MyGeneration
             this.tabInterfaceCode.BackColor = System.Drawing.Color.Transparent;
             this.tabInterfaceCode.Location = new System.Drawing.Point(4, 21);
             this.tabInterfaceCode.Name = "tabInterfaceCode";
-            this.tabInterfaceCode.Size = new System.Drawing.Size(704, 717);
+            this.tabInterfaceCode.Size = new System.Drawing.Size(519, 664);
             this.tabInterfaceCode.TabIndex = 1;
             this.tabInterfaceCode.Text = "Interface Code";
             this.tabInterfaceCode.UseVisualStyleBackColor = true;
@@ -1180,7 +1180,7 @@ namespace MyGeneration
             // 
             this.tabTemplateSource.Location = new System.Drawing.Point(4, 21);
             this.tabTemplateSource.Name = "tabTemplateSource";
-            this.tabTemplateSource.Size = new System.Drawing.Size(704, 717);
+            this.tabTemplateSource.Size = new System.Drawing.Size(519, 664);
             this.tabTemplateSource.TabIndex = 2;
             this.tabTemplateSource.Text = "Template Source";
             this.tabTemplateSource.UseVisualStyleBackColor = true;
@@ -1189,7 +1189,7 @@ namespace MyGeneration
             // 
             this.tabInterfaceSource.Location = new System.Drawing.Point(4, 21);
             this.tabInterfaceSource.Name = "tabInterfaceSource";
-            this.tabInterfaceSource.Size = new System.Drawing.Size(704, 717);
+            this.tabInterfaceSource.Size = new System.Drawing.Size(519, 664);
             this.tabInterfaceSource.TabIndex = 4;
             this.tabInterfaceSource.Text = "Interface Source";
             this.tabInterfaceSource.UseVisualStyleBackColor = true;
@@ -1198,7 +1198,7 @@ namespace MyGeneration
             // 
             this.tabOutput.Location = new System.Drawing.Point(4, 21);
             this.tabOutput.Name = "tabOutput";
-            this.tabOutput.Size = new System.Drawing.Size(704, 717);
+            this.tabOutput.Size = new System.Drawing.Size(519, 664);
             this.tabOutput.TabIndex = 3;
             this.tabOutput.Text = "Output";
             this.tabOutput.UseVisualStyleBackColor = true;
