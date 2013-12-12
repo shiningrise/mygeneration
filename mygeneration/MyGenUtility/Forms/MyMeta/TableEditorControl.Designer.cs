@@ -1,4 +1,4 @@
-﻿namespace MyGeneration.UI.Plugins.EntityManager
+﻿namespace MyGeneration
 {
     partial class TableEditorControl
     {

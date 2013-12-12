@@ -294,6 +294,16 @@ namespace MyGeneration.UI.Plugins.EntityManager
             }
         }
 
+        private void BindColumns()
+        {
+            //var dbRoot = this.CurrentDbRoot();
+            //if (dbRoot != null)
+            //{
+            //    var dbs = dbRoot.Databases;
+            //    this.tableEditorControl1.BindColumns(dbs);
+            //}
+        }
+
         private void toolBar1_ButtonClick(object sender, ToolBarButtonClickEventArgs e)
         {
             switch (e.Button.Tag as string)

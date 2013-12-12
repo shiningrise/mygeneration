@@ -209,6 +209,18 @@
     <Compile Include="Forms\GeneratedFileList\GeneratedFilesForm.Designer.cs">
       <DependentUpon>GeneratedFilesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\MyMeta\TableEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MyMeta\TableEditor.Designer.cs">
+      <DependentUpon>TableEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MyMeta\TableEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\MyMeta\TableEditorControl.Designer.cs">
+      <DependentUpon>TableEditorControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ProjectEditor\ProjectBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -378,6 +390,12 @@
     <EmbeddedResource Include="Forms\MyMeta\MetaProperties.resx">
       <DependentUpon>MetaProperties.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MyMeta\TableEditor.resx">
+      <DependentUpon>TableEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MyMeta\TableEditorControl.resx">
+      <DependentUpon>TableEditorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MyMeta\TestConnectionForm.resx">
       <DependentUpon>TestConnectionForm.cs</DependentUpon>

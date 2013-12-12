@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using MyMeta;
 
-namespace MyGeneration.UI.Plugins.EntityManager
+namespace MyGeneration
 {
     public partial class TableEditorControl : UserControl
     {
