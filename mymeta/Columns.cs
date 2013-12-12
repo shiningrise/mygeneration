@@ -107,6 +107,12 @@ namespace MyMeta
 				if(metaData.Columns.Contains("IS_AUTO_KEY"))						f_IsAutoKey			= metaData.Columns["IS_AUTO_KEY"];
 				if(metaData.Columns.Contains("AUTO_KEY_SEED"))						f_AutoKeySeed		= metaData.Columns["AUTO_KEY_SEED"];
 				if(metaData.Columns.Contains("AUTO_KEY_INCREMENT"))					f_AutoKeyIncrement	= metaData.Columns["AUTO_KEY_INCREMENT"];
+
+                if (metaData.Columns.Contains("UI_SHOWINLIST"))     UI_ShowInList = metaData.Columns["UI_SHOWINLIST"];
+                if (metaData.Columns.Contains("UI_COLUMNWIDTH"))    UI_ColumnWidth = metaData.Columns["UI_COLUMNWIDTH"];
+                if (metaData.Columns.Contains("UI_VIEWCONTROL"))    UI_ViewControl = metaData.Columns["UI_VIEWCONTROL"];
+                if (metaData.Columns.Contains("UI_ADDCONTROL"))     UI_AddControl = metaData.Columns["UI_ADDCONTROL"];
+                if (metaData.Columns.Contains("UI_EDITCONTROL"))    UI_EditControl = metaData.Columns["UI_EDITCONTROL"];
 			}																		
 		}
 		#endregion
