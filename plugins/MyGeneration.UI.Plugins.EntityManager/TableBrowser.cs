@@ -42,20 +42,21 @@ namespace MyGeneration.UI.Plugins.EntityManager
             //_table = table;
 
             InitializeComponent();
+            
         }
 
-        public TableBrowser(IMyGenerationMDI mdi,string databaseName,string tableName)
-        {
-            //,ITable table
-            this._mdi = mdi;
-            this.DockAreas = DockAreas.Document;
-            this._databaseName = databaseName;
-            this._tableName = tableName;
-            this._database = this.CurrentDbRoot().Databases[this._databaseName];
-            _table = _database.Tables[_tableName];
+        //public TableBrowser(IMyGenerationMDI mdi,string databaseName,string tableName)
+        //{
+        //    //,ITable table
+        //    this._mdi = mdi;
+        //    this.DockAreas = DockAreas.Document;
+        //    this._databaseName = databaseName;
+        //    this._tableName = tableName;
+        //    this._database = this.CurrentDbRoot().Databases[this._databaseName];
+        //    _table = _database.Tables[_tableName];
 
-            InitializeComponent();
-        }
+        //    InitializeComponent();
+        //}
 
         public string DocumentIndentity
         {
@@ -279,7 +280,30 @@ namespace MyGeneration.UI.Plugins.EntityManager
 
         private void TableBrowser_Load(object sender, EventArgs e)
         {
-            this.dataGridView1.DataSource = this._table.Columns;
+            BindData();
+            
+        }
+
+        private void BindData()
+        {
+            var dbRoot = this.CurrentDbRoot();
+            if (dbRoot != null)
+            {
+                var dbs = dbRoot.Databases;
+                this.tableEditorControl1.BindData(dbs);
+            }
+        }
+
+        private void toolBar1_ButtonClick(object sender, ToolBarButtonClickEventArgs e)
+        {
+            switch (e.Button.Tag as string)
+            {
+                case "refresh":
+                    BindData();
+                    break;
+                case "execute":
+                    break;
+            }
         }
     }
 }

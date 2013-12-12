@@ -104,9 +104,9 @@ namespace MyGeneration.UI.Plugins.EntityManager
                     break;
             }
             //this.mdi.CreateDocument(fileType,databaseName,table.Name);
-            var databaseName = args[1].ToString();
-            var tableName = args[2].ToString();
-            TableBrowser edit = new TableBrowser(mdi,databaseName,tableName);
+            //var databaseName = args[1].ToString();
+            //var tableName = args[2].ToString();
+            TableBrowser edit = new TableBrowser(mdi);
             return edit;
         }
     }

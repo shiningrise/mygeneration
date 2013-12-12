@@ -116,6 +116,10 @@
       <Project>{ABBEC999-2427-4AD8-B772-99FDE4CA3C0C}</Project>
       <Name>MyGeneration.UI.Plugins.EntityManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\plugins\MyMeta.Plugins.Emdb\MyMeta.Plugins.Emdb.csproj">
+      <Project>{39B4C533-A6DC-45B4-BC21-74C6512D8330}</Project>
+      <Name>MyMeta.Plugins.Emdb</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EngineInterface\PluginInterfaces.csproj">
       <Name>PluginInterfaces</Name>
       <Project>{61B369D1-95DD-4158-9F30-2E051CEB9D50}</Project>

@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMetaEffiProzPlugin", "..\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGeneration.UI.Plugins.EntityManager", "..\plugins\MyGeneration.UI.Plugins.EntityManager\MyGeneration.UI.Plugins.EntityManager.csproj", "{ABBEC999-2427-4AD8-B772-99FDE4CA3C0C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMeta.Plugins.Emdb", "..\plugins\MyMeta.Plugins.Emdb\MyMeta.Plugins.Emdb.csproj", "{39B4C533-A6DC-45B4-BC21-74C6512D8330}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{ABBEC999-2427-4AD8-B772-99FDE4CA3C0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABBEC999-2427-4AD8-B772-99FDE4CA3C0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABBEC999-2427-4AD8-B772-99FDE4CA3C0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39B4C533-A6DC-45B4-BC21-74C6512D8330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39B4C533-A6DC-45B4-BC21-74C6512D8330}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39B4C533-A6DC-45B4-BC21-74C6512D8330}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39B4C533-A6DC-45B4-BC21-74C6512D8330}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

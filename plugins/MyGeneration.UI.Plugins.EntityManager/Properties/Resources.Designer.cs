@@ -66,5 +66,19 @@ namespace MyGeneration.UI.Plugins.EntityManager.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static System.Drawing.Bitmap Image11 {
+            get {
+                object obj = ResourceManager.GetObject("Image11", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Image12 {
+            get {
+                object obj = ResourceManager.GetObject("Image12", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
