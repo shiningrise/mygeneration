@@ -24,6 +24,7 @@ namespace MyGeneration
 		private DataTable emptyTable;
 		private System.Windows.Forms.DataGridTextBoxColumn col_Property;
 		private System.Windows.Forms.DataGridTextBoxColumn col_Value;
+        private System.Windows.Forms.DataGridTextBoxColumn col_Description;
 
 		private Type stringType = Type.GetType("System.String");
         private System.Windows.Forms.LinkLabel lnkHELP;
@@ -42,6 +43,7 @@ namespace MyGeneration
 
 			emptyTable.Columns.Add("Property", stringType);
 			emptyTable.Columns.Add("Value", stringType);
+            emptyTable.Columns.Add("Description", stringType);
 
             InitializeComponent();
             this.mdi = mdi;
@@ -80,6 +82,7 @@ namespace MyGeneration
             this.MyStyle = new System.Windows.Forms.DataGridTableStyle();
             this.col_Property = new System.Windows.Forms.DataGridTextBoxColumn();
             this.col_Value = new System.Windows.Forms.DataGridTextBoxColumn();
+            this.col_Description = new System.Windows.Forms.DataGridTextBoxColumn();
             this.lnkHELP = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.Grid)).BeginInit();
             this.SuspendLayout();
@@ -114,7 +117,8 @@ namespace MyGeneration
             this.MyStyle.DataGrid = this.Grid;
             this.MyStyle.GridColumnStyles.AddRange(new System.Windows.Forms.DataGridColumnStyle[] {
             this.col_Property,
-            this.col_Value});
+            this.col_Value,
+            this.col_Description});
             this.MyStyle.GridLineColor = System.Drawing.Color.Goldenrod;
             this.MyStyle.HeaderForeColor = System.Drawing.SystemColors.ControlText;
             this.MyStyle.MappingName = "MyData";
@@ -141,6 +145,15 @@ namespace MyGeneration
             this.col_Value.NullText = "";
             this.col_Value.ReadOnly = true;
             this.col_Value.Width = 75;
+
+            this.col_Description.Format = "";
+            this.col_Description.FormatInfo = null;
+            this.col_Description.HeaderText = "Description";
+            this.col_Description.MappingName = "Description";
+            this.col_Description.NullText = "";
+            this.col_Description.ReadOnly = true;
+            this.col_Description.Width = 75;
+            
             // 
             // lnkHELP
             // 
@@ -290,6 +303,15 @@ namespace MyGeneration
 			dt.Rows.Add(new object[] {"CompFlags", column.CompFlags.ToString()});
 			dt.Rows.Add(new object[] {"DomainName", column.DomainName});
 			dt.Rows.Add(new object[] {"HasDomain", column.HasDomain ? "True" : "False"});
+
+            dt.Rows.Add(new object[] { "UIShowInList", column.UIShowInList });
+            dt.Rows.Add(new object[] { "UIColumnWidth", column.UIColumnWidth });
+            dt.Rows.Add(new object[] { "UIViewControl", column.UIViewControl });
+            dt.Rows.Add(new object[] { "UIEditControl", column.UIEditControl });
+            dt.Rows.Add(new object[] { "UIEditControl", column.UIEditControl });
+
+
+            dt.Columns.Add("Description", stringType);
 
 			this.Grid.DataSource = dt;
 
@@ -681,7 +703,7 @@ namespace MyGeneration
                     if (gridHelper == null)
                     {
                         gridHelper = new GridLayoutHelper(this.Grid, this.MyStyle,
-                            new decimal[] { 0.50M, 0.50M }, new int[] { 130, 130 });
+                            new decimal[] { 0.30M, 0.40M, 0.30M }, new int[] { 80, 100, 80 });
                     }
 
 				}
