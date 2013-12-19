@@ -38,5 +38,10 @@ namespace MyGeneration.UI.Plugins.EntityManager
         {
 
         }
+
+        public void ClearDataSource()
+        {
+            this.dataGridView1.DataSource = null;
+        }
     }
 }

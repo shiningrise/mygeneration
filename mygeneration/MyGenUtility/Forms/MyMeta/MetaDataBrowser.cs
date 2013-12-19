@@ -31,6 +31,8 @@ namespace MyGeneration
         public MetaProperties MetaData = null;
         public UserMetaData UserData = null;
         public GlobalUserMetaData GlobalUserData = null;
+        public TableEditor tableEditor = null;
+
         private System.Windows.Forms.ToolBar toolBar1;
 		private System.Windows.Forms.ImageList ToolbarImageList;
 		private System.ComponentModel.IContainer components;

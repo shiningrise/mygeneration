@@ -51,6 +51,8 @@ namespace MyGeneration
         private MetaDataBrowser metaDataBrowser;
         private UserMetaData userMetaData;
         private GlobalUserMetaData globalUserMetaData;
+        private TableEditor tableEditor = null;
+
         private MetaProperties metaProperties;
         private DefaultProperties options;
         private TemplateBrowser templateBrowser;
@@ -1077,6 +1079,16 @@ namespace MyGeneration
                     globalUserMetaData.MetaDataBrowser = this.MetaDataBrowserDockContent;
                 }
                 return globalUserMetaData;
+            }
+        }
+
+        public TableEditor TableEditor
+        {
+            get
+            {
+                if ((tableEditor != null) && tableEditor.IsDisposed) tableEditor = null;
+                if (tableEditor == null) tableEditor = new TableEditor(this);
+                return tableEditor;
             }
         }
 
