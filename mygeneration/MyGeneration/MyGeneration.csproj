@@ -112,10 +112,6 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\..\plugins\MyGeneration.UI.Plugins.EntityManager\MyGeneration.UI.Plugins.EntityManager.csproj">
-      <Project>{ABBEC999-2427-4AD8-B772-99FDE4CA3C0C}</Project>
-      <Name>MyGeneration.UI.Plugins.EntityManager</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\plugins\MyMeta.Plugins.Emdb\MyMeta.Plugins.Emdb.csproj">
       <Project>{39B4C533-A6DC-45B4-BC21-74C6512D8330}</Project>
       <Name>MyMeta.Plugins.Emdb</Name>
@@ -199,6 +195,7 @@
     <None Include="Web References\com.mygenerationsoftware.www\VersionInfo.disco" />
     <None Include="Web References\com.mygenerationsoftware.www\VersionInfo.wsdl" />
     <Content Include="MyGeneration.ico" />
+    <None Include="Resources\E.bmp" />
     <Content Include="Settings\DbTargets.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -1049,7 +1049,8 @@ namespace MyGeneration
             {
                 if ((metaDataBrowser != null) && metaDataBrowser.IsDisposed) metaDataBrowser = null;
                 if (metaDataBrowser == null) metaDataBrowser = new MetaDataBrowser(this,
-                    MetaPropertiesDockContent, UserMetaDataDockContent, GlobalUserMetaDataDockContent);
+                    MetaPropertiesDockContent, UserMetaDataDockContent, GlobalUserMetaDataDockContent
+                    ,this.TableEditorDockContent);
                 return metaDataBrowser;
             }
         }
@@ -1082,7 +1083,7 @@ namespace MyGeneration
             }
         }
 
-        public TableEditor TableEditor
+        public TableEditor TableEditorDockContent
         {
             get
             {
@@ -1522,6 +1523,18 @@ namespace MyGeneration
             catch { }
         }
         #endregion
+
+        private void toolStripButtonTableEditor_Click(object sender, EventArgs e)
+        {
+            if (this.TableEditorDockContent.IsHidden)
+            {
+                this.TableEditorDockContent.Show(this.dockPanel);
+            }
+            else
+            {
+                this.TableEditorDockContent.Activate();
+            }
+        }
 
     }
 }

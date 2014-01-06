@@ -13,13 +13,15 @@ namespace MyGeneration
     public partial class TableEditor : DockContent, IMyGenContent
     {
         private IMyGenerationMDI mdi;
+        private int _currentHashCode = Int32.MinValue;
 
         public TableEditor(IMyGenerationMDI mdi)
         {
             InitializeComponent();
             this.mdi = mdi;
-            this.DockAreas = WeifenLuo.WinFormsUI.Docking.DockAreas.Document;
-        //    this.ShowHint = DockState.DockRight;
+            //this.DockAreas = WeifenLuo.WinFormsUI.Docking.DockAreas.Document;
+            this.ShowHint = DockState.DockRight;
+
         }
 
         #region IMyGenContent Members
@@ -34,11 +36,6 @@ namespace MyGeneration
             {
                 this.Clear();
             }
-        }
-
-        private void Clear()
-        {
-            this.tableEditorControl1.ClearDataSource();
         }
 
         public bool CanClose(bool allowPrevent)
@@ -56,5 +53,48 @@ namespace MyGeneration
             get { return this; }
         }
         #endregion
+
+        private void TableEditor_Load(object sender, EventArgs e)
+        {
+            //this.dataGridView1.DataSource = null;
+            //this.ClearOrRefresh();
+        }
+
+        private void Clear()
+        {
+            //this.dataGridView1.Columns.Clear();
+            this.dataGridView1.DataSource = null;
+        }
+
+        internal void Edit(MyMeta.Table o)
+        {
+            var table = o;
+            if (this._currentHashCode == table.GetHashCode()) return;
+
+            if (table != null)
+            {
+                //ClearOrRefresh();
+                Clear();
+                //this.dataGridView1.AutoGenerateColumns = false;
+                this.dataGridView1.DataSource = table.Columns;
+                //this.dataGridView1.
+                //MessageBox.Show(table.Name);
+            }
+            else
+                throw new Exception("TableEditorControl table is null");
+            this._currentHashCode = table.GetHashCode();
+        }
+
+        public void ClearOrRefresh()
+        {
+            if (_currentHashCode != Int32.MinValue)
+            {
+                this.Refresh();
+            }
+            else
+            {
+                Clear();
+            }
+        }
     }
 }

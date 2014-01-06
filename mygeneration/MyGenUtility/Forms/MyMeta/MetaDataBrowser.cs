@@ -31,7 +31,7 @@ namespace MyGeneration
         public MetaProperties MetaData = null;
         public UserMetaData UserData = null;
         public GlobalUserMetaData GlobalUserData = null;
-        public TableEditor tableEditor = null;
+        public TableEditor TableData = null;
 
         private System.Windows.Forms.ToolBar toolBar1;
 		private System.Windows.Forms.ImageList ToolbarImageList;
@@ -92,7 +92,7 @@ namespace MyGeneration
             }
         }
 
-        public MetaDataBrowser(IMyGenerationMDI mdi, MetaProperties p, UserMetaData u, GlobalUserMetaData g)
+        public MetaDataBrowser(IMyGenerationMDI mdi, MetaProperties p, UserMetaData u, GlobalUserMetaData g,TableEditor t)
 		{
             InitializeComponent();
             this.mdi = mdi;
@@ -103,6 +103,8 @@ namespace MyGeneration
 
             this.UserData.MetaDataBrowser = this;
             this.GlobalUserData.MetaDataBrowser = this;
+
+            this.TableData = t;
 
             loadingNode = new TreeNode("Tree Loading...");
 
@@ -794,11 +796,11 @@ namespace MyGeneration
 
                         case NodeType.TABLE:
                             {
-
                                 Table o = obj as Table;
                                 MetaData.DisplayTableProperties(o, node);
                                 UserData.EditSingle(o, o.Alias);
                                 GlobalUserData.Edit(o);
+                                TableData.Edit(o);
                             }
                             break;
 
