@@ -14,6 +14,15 @@ namespace MyGeneration
     {
         private IMyGenerationMDI mdi;
         private int _currentHashCode = Int32.MinValue;
+        private MyGeneration.MetaDataBrowser _metaDataBrowser;
+
+        public MetaDataBrowser MetaDataBrowser
+        {
+            set
+            {
+                _metaDataBrowser = value;
+            }
+        }
 
         public TableEditor(IMyGenerationMDI mdi)
         {
@@ -75,10 +84,9 @@ namespace MyGeneration
             {
                 //ClearOrRefresh();
                 Clear();
-                //this.dataGridView1.AutoGenerateColumns = false;
+                this.Text = "实体编辑器-" + table.Name;
+                this.dataGridView1.AutoGenerateColumns = false;
                 this.dataGridView1.DataSource = table.Columns;
-                //this.dataGridView1.
-                //MessageBox.Show(table.Name);
             }
             else
                 throw new Exception("TableEditorControl table is null");

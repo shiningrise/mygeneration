@@ -104,6 +104,7 @@
             this.ClientSize = new System.Drawing.Size(917, 661);
             this.Controls.Add(this.dataGridView1);
             this.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.HideOnClose = true;
             this.Name = "TableEditor";
             this.Text = "实体编辑器";
             this.Load += new System.EventHandler(this.TableEditor_Load);

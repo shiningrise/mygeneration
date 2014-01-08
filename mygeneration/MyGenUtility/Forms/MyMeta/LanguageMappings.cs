@@ -117,7 +117,7 @@ namespace MyGeneration
             this.XmlEditor.HeaderForeColor = System.Drawing.SystemColors.ControlText;
             this.XmlEditor.Location = new System.Drawing.Point(2, 49);
             this.XmlEditor.Name = "XmlEditor";
-            this.XmlEditor.Size = new System.Drawing.Size(494, 951);
+            this.XmlEditor.Size = new System.Drawing.Size(494, 894);
             this.XmlEditor.TabIndex = 7;
             this.XmlEditor.TableStyles.AddRange(new System.Windows.Forms.DataGridTableStyle[] {
             this.MyXmlStyle});
@@ -198,12 +198,13 @@ namespace MyGeneration
             // 
             // LanguageMappings
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+            this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(498, 1002);
+            this.ClientSize = new System.Drawing.Size(498, 945);
             this.Controls.Add(this.XmlEditor);
             this.Controls.Add(this.toolBar1);
             this.Controls.Add(this.cboxLanguage);
+            this.Font = new System.Drawing.Font("ËÎÌו", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.HideOnClose = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LanguageMappings";

@@ -234,7 +234,7 @@ namespace MyGeneration
             this.toolBar1.Location = new System.Drawing.Point(0, 0);
             this.toolBar1.Name = "toolBar1";
             this.toolBar1.ShowToolTips = true;
-            this.toolBar1.Size = new System.Drawing.Size(776, 26);
+            this.toolBar1.Size = new System.Drawing.Size(776, 28);
             this.toolBar1.TabIndex = 10;
             this.toolBar1.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBar1_ButtonClick);
             // 
@@ -248,9 +248,9 @@ namespace MyGeneration
             this.Grid.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.Grid.HeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Grid.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-            this.Grid.Location = new System.Drawing.Point(0, 26);
+            this.Grid.Location = new System.Drawing.Point(0, 28);
             this.Grid.Name = "Grid";
-            this.Grid.Size = new System.Drawing.Size(776, 976);
+            this.Grid.Size = new System.Drawing.Size(776, 917);
             this.Grid.TabIndex = 20;
             this.Grid.TableStyles.AddRange(new System.Windows.Forms.DataGridTableStyle[] {
             this.MyStyle});
@@ -287,10 +287,11 @@ namespace MyGeneration
             // 
             // GlobalUserMetaData
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(776, 1002);
+            this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
+            this.ClientSize = new System.Drawing.Size(776, 945);
             this.Controls.Add(this.Grid);
             this.Controls.Add(this.toolBar1);
+            this.Font = new System.Drawing.Font("ËÎÌו", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.HideOnClose = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GlobalUserMetaData";

@@ -99,12 +99,12 @@ namespace MyGeneration
             this.MetaData = p;
             this.UserData = u;
             this.GlobalUserData = g;
+            this.TableData = t;
 			this.ShowHint = DockState.DockLeft;
 
             this.UserData.MetaDataBrowser = this;
             this.GlobalUserData.MetaDataBrowser = this;
-
-            this.TableData = t;
+            this.TableData.MetaDataBrowser  = this;
 
             loadingNode = new TreeNode("Tree Loading...");
 
