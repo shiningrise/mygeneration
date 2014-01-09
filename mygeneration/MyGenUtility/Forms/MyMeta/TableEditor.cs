@@ -85,8 +85,12 @@ namespace MyGeneration
                 //ClearOrRefresh();
                 Clear();
                 this.Text = "实体编辑器-" + table.Name;
-                this.dataGridView1.AutoGenerateColumns = false;
-                this.dataGridView1.DataSource = table.Columns;
+                //this.dataGridView1.AutoGenerateColumns = false;
+                //this.dataGridView1.DataSource = table.Columns;
+                this.bindingSource1.DataMember = null;
+                this.bindingSource1.DataSource = table.Columns;
+                this.dataGridView1.DataSource = this.bindingSource1;
+                
             }
             else
                 throw new Exception("TableEditorControl table is null");
